@@ -1,29 +1,50 @@
 <?php
 /**
  * /vistas_pantallas/menu.php
- * MENÚ PRINCIPAL – PRODUCCIÓN AZURE
+ * ---------------------------------------
+ * MENÚ PRINCIPAL del sistema
+ * Acceso SOLO después de login correcto
+ * Compatible Azure App Service (Linux + nginx)
  */
 
-// Seguridad (BASE_PATH y BASE_URL ya existen)
+/* =========================================================
+ * 0) CARGAR CONTEXTO GLOBAL (OBLIGATORIO)
+ * =========================================================
+ * Esto asegura que existan:
+ * - BASE_PATH
+ * - BASE_URL
+ * y evita 404 cuando se accede directo al archivo
+ */
+require_once __DIR__ . '/../config_ajustes/app.php';
+
+/* =========================================================
+ * 1) SEGURIDAD
+ * ========================================================= */
 require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
 require_login();
 force_password_change();
 
-// Variables de diseño
-$PAGE_TITLE = "📊 Menú Principal";
+/* =========================================================
+ * 2) VARIABLES DE DISEÑO
+ * ========================================================= */
+$PAGE_TITLE    = "📊 Menú Principal";
 $PAGE_SUBTITLE = "";
 
-// Acción superior
+/* Acción superior */
 $PAGE_ACTION_HTML = '
   <a class="btn btn-outline-danger btn-sm shadow-sm" href="'.BASE_URL.'/cruds/logout.php">
     <i class="bi bi-box-arrow-right"></i> Cerrar sesión
   </a>
 ';
 
-// Header
+/* =========================================================
+ * 3) HEADER
+ * ========================================================= */
 require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
-// Datos de sesión
+/* =========================================================
+ * 4) DATOS DE SESIÓN
+ * ========================================================= */
 $nombreCompleto = (string)($_SESSION['nombre_completo'] ?? '');
 $idArea         = (int)($_SESSION['id_area'] ?? 0);
 
@@ -37,12 +58,15 @@ $textoScope = can_see_all_areas()
 <div class="row g-4">
 
     <?php if (can_create()): ?>
+    <!-- TARJETA: NUEVO MONITOREO -->
     <div class="col-md-4">
         <div class="card shadow-sm h-100">
             <div class="card-body text-center">
                 <i class="bi bi-clipboard-check fs-1 text-primary"></i>
                 <h5 class="mt-3 fw-bold">Nuevo Monitoreo</h5>
-                <p class="text-muted small">Registrar un nuevo monitoreo.</p>
+                <p class="text-muted small">
+                    Registrar un nuevo monitoreo.
+                </p>
                 <a href="<?= BASE_URL ?>/vistas_pantallas/formulario.php"
                    class="btn btn-primary btn-sm fw-bold">
                     Ingresar
@@ -52,12 +76,15 @@ $textoScope = can_see_all_areas()
     </div>
     <?php endif; ?>
 
+    <!-- TARJETA: LISTADO DE MONITOREOS -->
     <div class="col-md-4">
         <div class="card shadow-sm h-100">
             <div class="card-body text-center">
                 <i class="bi bi-list-check fs-1 text-success"></i>
                 <h5 class="mt-3 fw-bold">Listado de Monitoreos</h5>
-                <p class="text-muted small">Consultar y revisar monitoreos.</p>
+                <p class="text-muted small">
+                    Consultar y revisar monitoreos registrados.
+                </p>
                 <a href="<?= BASE_URL ?>/vistas_pantallas/listado_monitoreos.php"
                    class="btn btn-success btn-sm fw-bold">
                     Ver listado
@@ -67,12 +94,15 @@ $textoScope = can_see_all_areas()
     </div>
 
     <?php if (can_create()): ?>
+    <!-- TARJETA: MÓDULO DE PREGUNTAS -->
     <div class="col-md-4">
         <div class="card shadow-sm h-100 border-warning">
             <div class="card-body text-center">
                 <i class="bi bi-question-circle fs-1 text-warning"></i>
                 <h5 class="mt-3 fw-bold">Módulo de Preguntas</h5>
-                <p class="text-muted small">Crear y administrar preguntas.</p>
+                <p class="text-muted small">
+                    Crear y administrar preguntas.
+                </p>
                 <a href="<?= BASE_URL ?>/vistas_pantallas/listado_preguntas.php"
                    class="btn btn-warning btn-sm fw-bold">
                     Administrar
@@ -82,6 +112,7 @@ $textoScope = can_see_all_areas()
     </div>
     <?php endif; ?>
 
+    <!-- TARJETA: PERFIL -->
     <div class="col-md-4">
         <div class="card shadow-sm h-100">
             <div class="card-body text-center">
@@ -108,4 +139,7 @@ $textoScope = can_see_all_areas()
 <!-- =============== FIN CONTENIDO =============== -->
 
 <?php
+/* =========================================================
+ * 5) FOOTER
+ * ========================================================= */
 require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
