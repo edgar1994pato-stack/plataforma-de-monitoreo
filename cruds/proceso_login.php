@@ -2,13 +2,13 @@
 /**
  * ARCHIVO: /cruds/proceso_login.php
  * =========================================================
- * PROCESO DE LOGIN (BACKEND) – FINAL PRODUCCIÓN + LOCALHOST
+ * PROCESO DE LOGIN (BACKEND) – FINAL PRODUCCIÓN AZURE
  *
- * ✔ Compatible con Azure App Service
- * ✔ Compatible con localhost
- * ✔ Mantiene mensajes de error
- * ✔ Mantiene roles, SP y reglas de negocio
- * ✔ Elimina definitivamente el error 404
+ * ✔ Mantiene SP, roles y reglas de negocio
+ * ✔ Mantiene guardado de nombre_completo (clave para formularios)
+ * ✔ Sin lógica localhost
+ * ✔ Sin BASE_URL local
+ * ✔ Sin errores 404 en redirecciones
  */
 
 /* =========================================================
@@ -24,33 +24,18 @@ if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
 session_start();
 
 /* =========================================================
- * 2) CONEXIÓN BD + BASE URL DINÁMICA
+ * 2) CONEXIÓN BD
  * ========================================================= */
-require_once '../config_ajustes/conectar_db.php';
-
-$esLocalhost = in_array($_SERVER['HTTP_HOST'] ?? '', ['localhost', '127.0.0.1']);
-$BASE_URL = $esLocalhost ? '/plataforma_de_monitoreo' : '';
+require_once BASE_PATH . '/config_ajustes/conectar_db.php';
 
 /* =========================================================
- * 3) HTTPS OBLIGATORIO (EXCEPTO LOCALHOST)
- * ========================================================= */
-if (
-    !$esLocalhost &&
-    (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off')
-) {
-    $_SESSION['login_error'] = 'Acceso no seguro. Use HTTPS.';
-    header("Location: {$BASE_URL}/");
-    exit;
-}
-
-/* =========================================================
- * 4) LEER DATOS DEL FORMULARIO
+ * 3) LEER DATOS DEL FORMULARIO (POST)
  * ========================================================= */
 $correo   = strtolower(trim($_POST['correo'] ?? ''));
 $password = (string)($_POST['password'] ?? '');
 
 /* =========================================================
- * 5) VALIDACIÓN BÁSICA
+ * 4) VALIDACIÓN BÁSICA
  * ========================================================= */
 if (
     $correo === '' ||
@@ -59,17 +44,17 @@ if (
 ) {
     usleep(600000);
     $_SESSION['login_error'] = 'Credenciales incorrectas.';
-    header("Location: {$BASE_URL}/");
+    header('Location: ' . BASE_URL . '/');
     exit;
 }
 
 /* =========================================================
- * 6) LÓGICA PRINCIPAL
+ * 5) LÓGICA PRINCIPAL
  * ========================================================= */
 try {
 
     /* =====================================================
-     * 6.1) CONSULTAR USUARIO (SP)
+     * 5.1) CONSULTAR USUARIO (SP)
      * ===================================================== */
     $stmt = $conexion->prepare("EXEC dbo.PR_LOGIN_GET_USUARIO :correo");
     $stmt->execute([':correo' => $correo]);
@@ -77,17 +62,17 @@ try {
     $stmt->closeCursor();
 
     /* =====================================================
-     * 6.2) VALIDAR EXISTENCIA + ACTIVO
+     * 5.2) VALIDAR EXISTENCIA + ACTIVO
      * ===================================================== */
     if (!$usuario || (int)($usuario['activo'] ?? 0) !== 1) {
         usleep(600000);
         $_SESSION['login_error'] = 'Credenciales incorrectas.';
-        header("Location: {$BASE_URL}/");
+        header('Location: ' . BASE_URL . '/');
         exit;
     }
 
     /* =====================================================
-     * 6.3) VALIDAR HASH
+     * 5.3) VALIDAR HASH
      * ===================================================== */
     $hashBD = (string)($usuario['password_hash'] ?? '');
 
@@ -97,27 +82,27 @@ try {
 
     if (!$pareceHash) {
         $_SESSION['login_error'] = 'Debe restablecer su contraseña.';
-        header("Location: {$BASE_URL}/vistas_pantallas/recuperar_password.php");
+        header('Location: ' . BASE_URL . '/vistas_pantallas/recuperar_password.php');
         exit;
     }
 
     /* =====================================================
-     * 6.4) VALIDAR CONTRASEÑA
+     * 5.4) VALIDAR CONTRASEÑA
      * ===================================================== */
     if (!password_verify($password, $hashBD)) {
         usleep(600000);
         $_SESSION['login_error'] = 'Credenciales incorrectas.';
-        header("Location: {$BASE_URL}/");
+        header('Location: ' . BASE_URL . '/');
         exit;
     }
 
     /* =====================================================
-     * 6.5) LOGIN OK → REGENERAR SESIÓN
+     * 5.5) LOGIN OK → REGENERAR SESIÓN
      * ===================================================== */
     session_regenerate_id(true);
 
     /* =====================================================
-     * 6.6) CREAR SESIÓN
+     * 5.6) CREAR SESIÓN (IDENTIDAD + DATOS ÚTILES)
      * ===================================================== */
     $_SESSION['id_usuario'] = (int)$usuario['id_usuario'];
     $_SESSION['id_rol']     = (int)($usuario['id_rol'] ?? 0);
@@ -143,22 +128,22 @@ try {
     }
 
     /* =====================================================
-     * 6.7) REDIRECCIONES
+     * 5.7) REDIRECCIONES
      * ===================================================== */
     if (!empty($_SESSION['debe_cambiar_password'])) {
-        header("Location: {$BASE_URL}/vistas_pantallas/cambiar_password.php");
+        header('Location: ' . BASE_URL . '/vistas_pantallas/cambiar_password.php');
         exit;
     }
 
-    header("Location: {$BASE_URL}/vistas_pantallas/menu.php");
+    header('Location: ' . BASE_URL . '/vistas_pantallas/menu.php');
     exit;
 
 } catch (Throwable $e) {
 
     /* =====================================================
-     * 7) ERROR GENERAL
+     * 6) ERROR GENERAL
      * ===================================================== */
     $_SESSION['login_error'] = 'Credenciales incorrectas.';
-    header("Location: {$BASE_URL}/");
+    header('Location: ' . BASE_URL . '/');
     exit;
 }
