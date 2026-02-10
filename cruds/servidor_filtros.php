@@ -1,6 +1,8 @@
 <?php
-require_once '../config_ajustes/conectar_db.php';
-require_once '../includes_partes_fijas/seguridad.php';
+require_once __DIR__ . '/../config_ajustes/app.php';
+require_once BASE_PATH . '/config_ajustes/conectar_db.php';
+require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
+
 
 require_login();
 force_password_change();
