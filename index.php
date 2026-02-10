@@ -4,6 +4,7 @@ declare(strict_types=1);
 /*
  |=================================================
  | index.php – FRONT CONTROLLER FINAL (PRODUCCIÓN)
+ | Azure App Service · Linux · nginx · PHP 8.2
  |=================================================
 */
 
@@ -12,11 +13,11 @@ session_start();
 
 define('BASE_PATH', __DIR__);
 
-// CONFIGURACIÓN (NO IMPRIME NADA)
+// Configuración global (no imprime nada)
 require_once BASE_PATH . '/config_ajustes/app.php';
 
 /* =================================================
- * POST SIEMPRE PRIMERO (FRONT CONTROLLER)
+ * POST SIEMPRE PRIMERO
  * ================================================= */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -26,11 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    /*
-     * 🔒 POST no reconocido
-     * En Azure, devolver 400/exit provoca 404 visual.
-     * Por eso se retorna al login de forma segura.
-     */
+    // POST no reconocido → login seguro
     require_once BASE_PATH . '/vistas_pantallas/login.php';
     exit;
 }
@@ -39,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
  * FLUJO GET
  * ================================================= */
 if (!empty($_SESSION['id_usuario'])) {
-    header("Location: {$BASE_URL}/vistas_pantallas/menu.php");
+    header('Location: ' . BASE_URL . '/vistas_pantallas/menu.php');
     exit;
 }
 

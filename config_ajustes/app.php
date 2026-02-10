@@ -3,18 +3,16 @@ declare(strict_types=1);
 
 /*
  |=================================================
- | ARCHIVO: app.php
- | CONFIGURACIÓN GENERAL
+ | app.php – CONFIGURACIÓN GENERAL (PRODUCCIÓN)
  |=================================================
- | ✔ Compatible con Azure App Service Linux
- | ✔ No provoca errores 404
- | ✔ No acopla el código a una URL fija
- | ✔ Portátil (local, staging, producción)
+ | ✔ Azure App Service Linux
+ | ✔ nginx
+ | ✔ PHP 8.2
+ | ✔ Variables desde Application Settings
  */
 
-// En Azure la aplicación vive en la raíz del dominio.
-// NO usar BASE_URL para redirecciones.
-$BASE_URL = '';
+// URL base desde Azure
+define('BASE_URL', rtrim(getenv('APP_URL'), '/'));
 
-// Zona horaria (recomendado)
+// Zona horaria
 date_default_timezone_set('America/Guayaquil');
