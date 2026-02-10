@@ -4,13 +4,15 @@
  * ✅ NO TOCA SP NI BD
  * ✅ Solo agrega buscador de preguntas que funciona aunque estén en tabs (secciones) no visibles
  */
+require_once __DIR__ . '/../config_ajustes/app.php';
+require_once BASE_PATH . '/config_ajustes/conectar_db.php';
 
-require_once '../config_ajustes/conectar_db.php';
 
 /* ============================================================
    1) SEGURIDAD CENTRALIZADA (LOGIN + CAMBIO PASSWORD)
 ============================================================ */
 require_once '../includes_partes_fijas/seguridad.php';
+
 require_login();
 force_password_change();
 
@@ -24,7 +26,7 @@ function h($str) {
 /* ============================================================
    3) BASE URL
 ============================================================ */
-$BASE_URL = '/plataforma_de_monitoreo';
+
 
 /* ============================================================
    4) PERMISOS (SOLO DESDE seguridad.php)
@@ -45,7 +47,7 @@ if (!$puedeCrear) {
       <i class="bi bi-house"></i> Volver al menú
     </a>
   ';
-  require_once '../includes_partes_fijas/diseno_arriba.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   echo '<div class="alert alert-danger"><i class="bi bi-shield-x me-1"></i>No tiene permisos para crear monitoreos.</div>';
   require_once '../includes_partes_fijas/diseno_abajo.php';
   exit;
@@ -1001,6 +1003,6 @@ echo '
 ';
 
 
-require_once '../includes_partes_fijas/diseno_abajo.php';
+require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
 
 ?>
