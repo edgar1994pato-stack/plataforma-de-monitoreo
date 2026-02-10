@@ -2,16 +2,7 @@
 /**
  * ARCHIVO: /includes_partes_fijas/seguridad.php
  * =========================================================
- * SEGURIDAD CENTRALIZADA DEL SISTEMA (FINAL)
- *
- * ✔ Autenticación (login)
- * ✔ Autorización por ROL
- * ✔ Autorización por ÁREA
- * ✔ Forzar cambio de contraseña
- *
- * DISEÑADO PARA:
- * - Escalar roles sin tocar vistas ni SP
- * - Mantener lógica de negocio intacta
+ * SEGURIDAD CENTRALIZADA DEL SISTEMA – PRODUCCIÓN AZURE
  */
 
 /* =========================================================
@@ -30,27 +21,27 @@ if (session_status() === PHP_SESSION_NONE) {
 
 /* =========================================================
  * 2) BASE URL
- * ========================================================= */
-$BASE_URL = $BASE_URL ?? '/plataforma_de_monitoreo';
-
-/* =========================================================
- * 3) ROLES DEL SISTEMA (IDs OFICIALES)
- * ========================================================= */
-const ROLE_ADMIN        = 1; // ADMINISTRADOR DEL SISTEMA
-const ROLE_COORD_QA     = 2; // COORDINADOR DE ATC MONITOREO Y CALIDAD
-const ROLE_COORD_CX     = 3; // COORDINADOR DE EXPERIENCIA AL CLIENTE
-const ROLE_SUPERVISOR   = 4; // SUPERVISOR DE OMNICANALIDAD
-const ROLE_AGENTE_QA    = 5; // AGENTE DE MONITOREO
-const ROLE_GERENTE      = 6; // GERENTE DE PROYECTOS, PROCESOS Y MEJORA CONTINUA
-const ROLE_SIN_ACCESO   = 7; // ASESOR (SIN ACCESO)
-
-/* =========================================================
- * 4) MATRIZ DE PERMISOS (ÚNICA FUENTE DE VERDAD)
- * ========================================================= */
-
-/**
- * ROLES QUE PUEDEN VER TODAS LAS ÁREAS
+ * =========================================================
+ * 👉 Se usa SOLO la definida en app.php
  */
+if (!defined('BASE_URL')) {
+    throw new RuntimeException('BASE_URL no está definido.');
+}
+
+/* =========================================================
+ * 3) ROLES DEL SISTEMA
+ * ========================================================= */
+const ROLE_ADMIN        = 1;
+const ROLE_COORD_QA     = 2;
+const ROLE_COORD_CX     = 3;
+const ROLE_SUPERVISOR   = 4;
+const ROLE_AGENTE_QA    = 5;
+const ROLE_GERENTE      = 6;
+const ROLE_SIN_ACCESO   = 7;
+
+/* =========================================================
+ * 4) MATRIZ DE PERMISOS
+ * ========================================================= */
 function role_can_see_all_areas(): bool {
     $rol = (int)($_SESSION['id_rol'] ?? 0);
     return in_array($rol, [
@@ -61,35 +52,14 @@ function role_can_see_all_areas(): bool {
     ], true);
 }
 
-/**
- * ROLES QUE PUEDEN CREAR MONITOREOS
- */
 function role_can_create(): bool {
-    $rol = (int)($_SESSION['id_rol'] ?? 0);
-    return in_array($rol, [
-        ROLE_ADMIN,
-        ROLE_COORD_QA,
-        ROLE_AGENTE_QA,
-        ROLE_GERENTE,
-    ], true);
+    return role_can_see_all_areas();
 }
 
-/**
- * ROLES QUE PUEDEN CORREGIR MONITOREOS
- */
 function role_can_correct(): bool {
-    $rol = (int)($_SESSION['id_rol'] ?? 0);
-    return in_array($rol, [
-        ROLE_ADMIN,
-        ROLE_COORD_QA,
-        ROLE_AGENTE_QA,
-        ROLE_GERENTE,
-    ], true);
+    return role_can_see_all_areas();
 }
 
-/**
- * ROLES SOLO LECTURA
- */
 function role_is_readonly(): bool {
     $rol = (int)($_SESSION['id_rol'] ?? 0);
     return in_array($rol, [
@@ -102,14 +72,12 @@ function role_is_readonly(): bool {
  * 5) AUTENTICACIÓN
  * ========================================================= */
 function require_login(): void {
-    global $BASE_URL;
 
     if (empty($_SESSION['id_usuario'])) {
-        header("Location: {$BASE_URL}/vistas_pantallas/login.php");
+        header('Location: ' . BASE_URL . '/');
         exit;
     }
 
-    // Rol sin acceso bloqueado aquí mismo
     if ((int)($_SESSION['id_rol'] ?? 0) === ROLE_SIN_ACCESO) {
         http_response_code(403);
         exit('403 - Su rol no tiene acceso al sistema.');
@@ -120,29 +88,28 @@ function require_login(): void {
  * 6) FORZAR CAMBIO DE CONTRASEÑA
  * ========================================================= */
 function force_password_change(): void {
-    global $BASE_URL;
 
     if (!empty($_SESSION['debe_cambiar_password'])) {
         if (strpos($_SERVER['PHP_SELF'], 'cambiar_password.php') === false) {
-            header("Location: {$BASE_URL}/vistas_pantallas/cambiar_password.php");
+            header('Location: ' . BASE_URL . '/vistas_pantallas/cambiar_password.php');
             exit;
         }
     }
 }
 
 /* =========================================================
- * 7) FILTRO DE ÁREA PARA SQL (BACKEND)
+ * 7) FILTRO DE ÁREA PARA SQL
  * ========================================================= */
 function area_filter_sql(string $campoArea = 'id_area'): array {
 
     $idArea = (int)($_SESSION['id_area'] ?? 0);
 
     if (role_can_see_all_areas()) {
-        return ['', []]; // ve todo
+        return ['', []];
     }
 
     if ($idArea <= 0) {
-        return [' AND 1 = 0 ', []]; // no ve nada
+        return [' AND 1 = 0 ', []];
     }
 
     return [
@@ -152,20 +119,9 @@ function area_filter_sql(string $campoArea = 'id_area'): array {
 }
 
 /* =========================================================
- * 8) HELPERS DE CONVENIENCIA (FRONTEND)
+ * 8) HELPERS
  * ========================================================= */
-function can_create(): bool {
-    return role_can_create();
-}
-
-function can_correct(): bool {
-    return role_can_correct();
-}
-
-function is_readonly(): bool {
-    return role_is_readonly();
-}
-
-function can_see_all_areas(): bool {
-    return role_can_see_all_areas();
-}
+function can_create(): bool { return role_can_create(); }
+function can_correct(): bool { return role_can_correct(); }
+function is_readonly(): bool { return role_is_readonly(); }
+function can_see_all_areas(): bool { return role_can_see_all_areas(); }
