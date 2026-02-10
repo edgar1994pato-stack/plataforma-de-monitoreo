@@ -5,6 +5,9 @@
  * CIERRE DE SESIÓN – PRODUCCIÓN AZURE
  */
 
+// 🔴 CONTEXTO GLOBAL (OBLIGATORIO)
+require_once __DIR__ . '/../config_ajustes/app.php';
+
 ini_set('session.use_strict_mode', 1);
 ini_set('session.cookie_httponly', 1);
 
@@ -32,7 +35,7 @@ if (ini_get('session.use_cookies')) {
         $params['path'],
         $params['domain'],
         $params['secure'],
-        true // httponly
+        true
     );
 }
 
@@ -42,7 +45,7 @@ if (ini_get('session.use_cookies')) {
 session_destroy();
 
 /* =========================================================
- * 4) Redirigir al login (Front Controller)
+ * 4) Redirigir al login
  * ========================================================= */
 header('Location: ' . BASE_URL . '/');
 exit;
