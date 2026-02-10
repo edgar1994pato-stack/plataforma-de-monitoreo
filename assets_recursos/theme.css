@@ -1,0 +1,496 @@
+/* =========================
+   ALFANET THEME (GLOBAL) theme.css
+   ========================= */
+
+:root{
+  --bg:#f4f6f9;
+  --primary:#0d6efd;
+  --dark:#212529;
+  --soft:#f8fafc;
+
+  --radius:14px;
+  --shadow:0 4px 8px rgba(0,0,0,.06);
+  --shadow-lg:0 10px 25px rgba(0,0,0,.12);
+  --border-soft:1px solid rgba(0,0,0,.06);
+}
+
+html, body{
+  height:100%;
+}
+
+body{
+  background: var(--bg);
+  font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  color:#333;
+}
+
+/* Page header */
+.page-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.page-title{
+  margin:0;
+  font-weight:800;
+  color:var(--primary);
+}
+
+.page-subtitle{
+  color:#6c757d;
+  font-size:.875rem;
+}
+
+/* Cards */
+.card-soft{
+  border:none;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
+
+.card-soft .card-header{
+  border-bottom: 1px solid rgba(0,0,0,.05);
+  font-weight:800;
+}
+
+.card-header-dark{
+  background: var(--dark);
+  color:#fff;
+}
+
+.card-header-soft{
+  background: var(--soft);
+}
+
+/* Sticky bar */
+.sticky-bar{
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  background: rgba(244, 246, 249, 0.95);
+  backdrop-filter: blur(8px);
+  padding-bottom: 10px;
+}
+
+/* Helpers */
+.badge-soft{
+  background:#e9ecef;
+  color:#495057;
+  font-weight:800;
+}
+
+.help-mini{
+  font-size:.72rem;
+  color:#6c757d;
+}
+
+/* Preguntas / estados */
+.pregunta-card{
+  transition: all .2s ease;
+  border-left: 6px solid transparent;
+  border-radius: var(--radius);
+}
+
+.estado-neutro{ background:#fff; }
+.estado-cumple{ background:#f0fbf4; border-left-color:#198754 !important; }
+.estado-falla { background:#fff5f5; border-left-color:#dc3545 !important; }
+.estado-na    { background:#f8f9fa; border-left-color:#6c757d !important; }
+
+/* Loading inline */
+.loading-inline{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  justify-content:center;
+  padding:40px;
+  color:#666;
+}
+
+/* Resultado flotante */
+.resultado-box{
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: 190px;
+  z-index: 2000;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  background: #fff;
+  overflow: hidden;
+  border: var(--border-soft);
+}
+
+.resultado-box .hdr{
+  padding: 10px 12px;
+  font-weight: 900;
+  font-size: .9rem;
+  background: var(--soft);
+  border-bottom: var(--border-soft);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.resultado-box .body{
+  padding: 12px;
+}
+
+.resultado-box .score{
+  font-size: 2.1rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.resultado-box .over{
+  font-size: .9rem;
+  color: #6c757d;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.resultado-box .state{
+  margin-top: 6px;
+  font-size: .8rem;
+  font-weight: 900;
+  padding: 4px 8px;
+  border-radius: 999px;
+  display:inline-block;
+}
+
+.state-ok{ background:#e9f7ef; color:#198754; }
+.state-bad{ background:#fdecec; color:#dc3545; }
+.state-warn{ background:#fff3cd; color:#a07800; }
+
+.hint-mini{
+  font-size: .72rem;
+  color:#6c757d;
+  margin-top: 8px;
+  line-height: 1.2;
+}
+
+
+/* =========================
+   QA MINI (marcador compacto en header)
+========================= */
+.qa-mini{
+  min-width: 170px;
+  max-width: 230px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,.06);
+  line-height: 1.1;
+}
+
+.qa-mini__top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom: 4px;
+}
+
+.qa-mini__title{
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+  color: #111;
+  opacity: .85;
+}
+
+.qa-mini__badge{
+  font-size: .65rem;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.qa-mini__mid{
+  display:flex;
+  align-items:baseline;
+  gap:4px;
+}
+
+.qa-mini__score{
+  font-size: 1.25rem; /* más pequeño */
+  font-weight: 900;
+  line-height: 1;
+  color: #111;
+}
+
+.qa-mini__over{
+  font-size: .75rem;
+  color: #6c757d;
+  font-weight: 700;
+}
+
+.qa-mini__bottom{
+  margin-top: 4px;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.qa-mini__state{
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .2px;
+}
+
+.qa-mini__hint{
+  font-size: .70rem;
+  color: #6c757d;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
+
+/* Chip flotante mini */
+.qa-mini{
+  position: relative; /* necesario para el chip */
+}
+
+.qa-mini__chip{
+  position:absolute;
+  top:-8px;
+  right:10px;
+  font-size:.62rem;
+  font-weight:900;
+  padding:2px 6px;
+  border-radius:999px;
+  background:#111;
+  color:#fff;
+  letter-spacing:.2px;
+  box-shadow:0 4px 10px rgba(0,0,0,.10);
+  opacity:.92;
+}
+
+
+
+/* ✅ Chip QA Premium */
+.chip-qa{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid rgba(0,0,0,.08);
+  font-size:.72rem;
+  font-weight:900;
+  line-height:1;
+  white-space:nowrap;
+  user-select:none;
+}
+
+.chip-dot{
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  display:inline-block;
+  box-shadow:0 0 0 3px rgba(0,0,0,.03) inset;
+}
+
+/* Estados */
+.chip-ok{
+  background:#e9f7ef;
+  color:#198754;
+  border-color:rgba(25,135,84,.25);
+}
+.chip-ok .chip-dot{ background:#198754; }
+
+.chip-bad{
+  background:#fdecec;
+  color:#dc3545;
+  border-color:rgba(220,53,69,.25);
+}
+.chip-bad .chip-dot{ background:#dc3545; }
+
+.chip-warn{
+  background:#fff3cd;
+  color:#a07800;
+  border-color:rgba(160,120,0,.25);
+}
+.chip-warn .chip-dot{ background:#a07800; }
+
+
+
+/* =========================
+   QA MINI BOX (header action)
+========================= */
+.qa-mini{
+  border: 1px solid rgba(0,0,0,.10);
+  border-radius: 12px;
+  padding: 8px 10px;
+  min-width: 170px;
+  background:#fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,.06);
+  line-height: 1.1;
+}
+
+.qa-mini-top{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:6px;
+}
+
+.qa-mini-icon{
+  font-size:.95rem;
+  line-height:1;
+}
+
+.qa-mini-title{
+  font-weight: 900;
+  font-size: .78rem;
+}
+
+.qa-mini-metrics{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:10px;
+}
+
+.qa-mini-score{
+  font-weight: 900;
+  font-size: 1.25rem;
+  line-height:1;
+}
+
+.qa-mini-unit{
+  font-size:.75rem;
+  font-weight:800;
+  color:#6c757d;
+  margin-left:2px;
+}
+
+.qa-mini-umbral{
+  font-size:.72rem;
+  font-weight:800;
+  color:#6c757d;
+  white-space:nowrap;
+}
+
+/* Estados */
+.qa-mini-ok{
+  border-color: rgba(25,135,84,.25);
+  background: #f0fbf4;
+}
+.qa-mini-ok .qa-mini-title{ color:#198754; }
+
+.qa-mini-bad{
+  border-color: rgba(220,53,69,.25);
+  background:#fff5f5;
+}
+.qa-mini-bad .qa-mini-title{ color:#dc3545; }
+
+.qa-mini-warn{
+  border-color: rgba(255,193,7,.35);
+  background:#fff8e1;
+}
+.qa-mini-warn .qa-mini-title{ color:#a07800; }
+
+
+/* =========================
+   QA CHIP RESULTADO (COMPACTO)
+========================= */
+.qa-chip{
+  border-radius: 14px;
+  padding: 6px 10px;
+  min-width: 120px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.08);
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+  line-height: 1.1;
+  text-align: center;
+}
+
+/* fila superior */
+.qa-chip-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  margin-bottom:2px;
+}
+
+.qa-chip-icon{
+  font-size:.9rem;
+}
+
+.qa-chip-label{
+  font-size:.72rem;
+  font-weight:800;
+}
+
+/* porcentaje */
+.qa-chip-score{
+  font-size:1.15rem;
+  font-weight:900;
+  line-height:1.1;
+}
+
+/* umbral */
+.qa-chip-umbral{
+  font-size:.65rem;
+  font-weight:700;
+  color:#6c757d;
+}
+
+/* estados */
+.qa-chip-ok{
+  background:#f0fbf4;
+  border-color:#b6e2c6;
+}
+.qa-chip-ok .qa-chip-label{ color:#198754; }
+
+.qa-chip-bad{
+  background:#fff5f5;
+  border-color:#f1b4b4;
+}
+.qa-chip-bad .qa-chip-label{ color:#dc3545; }
+
+.qa-chip-warn{
+  background:#fff8e1;
+  border-color:#ffe08a;
+}
+.qa-chip-warn .qa-chip-label{ color:#a07800; }
+
+
+
+
+/* 🔕 Ocultar contadores numéricos del menú de secciones */
+.list-group a.list-group-item .badge {
+  display: none !important;
+}
+
+
+
+.list-group-item.seccion-calificada {
+  background-color: #e7f1ff !important;
+  border-left: 4px solid #0d6efd !important;
+  font-weight: 600;
+}
+
+.list-group-item.seccion-calificada.active {
+  background-color: #cfe2ff !important;
+  border-left: 6px solid #0d6efd !important;
+  font-weight: 700;
+}
+
+
+
+/* ⛔ Bloqueo visual y funcional del campo de duración automática */
+.bloqueo-tiempo {
+  pointer-events: none;      /* no permite click ni edición */
+  background-color: #f8f9fa; /* look readonly */
+  cursor: not-allowed;
+}
