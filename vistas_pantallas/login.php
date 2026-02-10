@@ -2,25 +2,30 @@
 /**
  * ARCHIVO: /vistas_pantallas/login.php
  * =========================================================
- * VISTA DE LOGIN (FRONTEND) - PRODUCCIÓN + LOCALHOST
- * FIX: enviar POST a /index.php para evitar 404 de nginx en POST /
+ * VISTA DE LOGIN (FRONTEND) – PRODUCCIÓN AZURE
+ *
+ * ✔ No detecta entornos (no localhost)
+ * ✔ Usa BASE_URL definido en app.php
+ * ✔ POST entra por index.php (Front Controller)
+ * ✔ No rompe diseño ni lógica de negocio
  */
 
-$esLocalhost = in_array($_SERVER['HTTP_HOST'] ?? '', ['localhost', '127.0.0.1']);
-$BASE_URL = $esLocalhost ? '/plataforma_de_monitoreo' : '';
-
+// Si ya hay sesión → menú
 if (!empty($_SESSION['id_usuario'])) {
-    header("Location: {$BASE_URL}/vistas_pantallas/menu.php");
+    header('Location: ' . BASE_URL . '/vistas_pantallas/menu.php');
     exit;
 }
 
+// Error de login (si existe)
 $error = $_SESSION['login_error'] ?? '';
 unset($_SESSION['login_error']);
 
+// Variables de diseño
 $PAGE_TITLE       = "🔐 Iniciar Sesión";
 $PAGE_SUBTITLE    = "Plataforma de Monitoreo · Alfanet";
 $PAGE_ACTION_HTML = "";
 
+// Header
 require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 ?>
 
@@ -30,7 +35,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
     <div class="card card-soft shadow-sm">
       <div class="card-header card-header-soft py-3">
         <div class="fw-bold">
-          <i class="bi bi-shield-lock me-2"></i>ACCESO
+          <i class="bi bi-shield-lock me-2"></i>Acceso al sistema
         </div>
         <div class="help-mini mt-1">
           Ingrese su correo corporativo y contraseña.
@@ -46,12 +51,16 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
           </div>
         <?php endif; ?>
 
-        <!-- ✅ FIX REAL: POST A /index.php (archivo real) -->
-        <form method="POST" action="<?= $BASE_URL ?>/index.php" novalidate>
+        <!--
+          POST AL FRONT CONTROLLER (index.php)
+          nginx + Azure no usan reescrituras tipo Apache
+        -->
+        <form method="POST" action="<?= BASE_URL ?>/index.php" novalidate>
 
-          <!-- ✅ requerido por tu index.php -->
+          <!-- requerido por index.php -->
           <input type="hidden" name="accion" value="login">
 
+          <!-- CORREO -->
           <div class="mb-3">
             <label class="form-label small fw-bold text-muted">
               CORREO CORPORATIVO
@@ -65,6 +74,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
               required>
           </div>
 
+          <!-- CONTRASEÑA -->
           <div class="mb-2">
             <label class="form-label small fw-bold text-muted">
               CONTRASEÑA
@@ -84,13 +94,15 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
             <div class="help-mini">Puede mostrar/ocultar la contraseña.</div>
           </div>
 
+          <!-- OLVIDÉ CONTRASEÑA -->
           <div class="text-end mb-3">
-            <a href="<?= $BASE_URL ?>/vistas_pantallas/recuperar_password.php"
+            <a href="<?= BASE_URL ?>/vistas_pantallas/recuperar_password.php"
                class="small text-decoration-none">
               ¿Olvidaste tu contraseña?
             </a>
           </div>
 
+          <!-- BOTÓN -->
           <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm">
             Ingresar
           </button>
@@ -121,6 +133,5 @@ document.getElementById('btnTogglePassword')?.addEventListener('click', function
 </script>
 
 <?php
+// Footer
 require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
-?>
-
