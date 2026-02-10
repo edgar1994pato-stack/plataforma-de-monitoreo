@@ -30,7 +30,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
     <div class="card card-soft shadow-sm">
       <div class="card-header card-header-soft py-3">
         <div class="fw-bold">
-          <i class="bi bi-shield-lock me-2"></i>Acceso al sistema
+          <i class="bi bi-shield-lock me-2"></i>ACCESO
         </div>
         <div class="help-mini mt-1">
           Ingrese su correo corporativo y contraseña.
