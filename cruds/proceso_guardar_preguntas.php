@@ -6,15 +6,16 @@
  * - Usa SP: dbo.PR_CREAR_PREGUNTA
  */
 
-require_once '../config_ajustes/conectar_db.php';
-require_once '../includes_partes_fijas/seguridad.php';
+require_once __DIR__ . '/../config_ajustes/app.php';
+require_once BASE_PATH . '/config_ajustes/conectar_db.php';
+require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
 
 require_login();
 force_password_change();
 
 function h($str) { return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8'); }
 
-$BASE_URL = '/plataforma_de_monitoreo';
+$BASE_URL = BASE_URL;
 
 /* ===============================
    Seguridad / permisos
@@ -23,9 +24,10 @@ if (is_readonly() || !can_create()) {
   http_response_code(403);
   $PAGE_TITLE = "⛔ Acceso denegado";
   $PAGE_SUBTITLE = "No tiene permisos para crear preguntas.";
-  require_once '../includes_partes_fijas/diseno_arriba.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   echo '<div class="alert alert-danger">Acceso denegado.</div>';
-  require_once '../includes_partes_fijas/diseno_abajo.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
   exit;
 }
 
@@ -36,9 +38,10 @@ if (!$veTodo && $idAreaSes <= 0) {
   http_response_code(403);
   $PAGE_TITLE = "⛔ Acceso denegado";
   $PAGE_SUBTITLE = "Usuario sin área asignada.";
-  require_once '../includes_partes_fijas/diseno_arriba.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   echo '<div class="alert alert-danger">Tu usuario no tiene área asignada. Contacta al administrador.</div>';
-  require_once '../includes_partes_fijas/diseno_abajo.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
   exit;
 }
 
@@ -109,12 +112,13 @@ if (!empty($errores)) {
   http_response_code(400);
   $PAGE_TITLE = "⚠️ Validación";
   $PAGE_SUBTITLE = "Revisa los campos.";
-  require_once '../includes_partes_fijas/diseno_arriba.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   echo '<div class="alert alert-danger"><b>Corrige lo siguiente:</b><ul class="mb-0 mt-2">';
   foreach ($errores as $e) echo '<li>'.h($e).'</li>';
   echo '</ul></div>';
   echo '<a class="btn btn-outline-secondary btn-sm" href="javascript:history.back()">Volver</a>';
-  require_once '../includes_partes_fijas/diseno_abajo.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
   exit;
 }
 
@@ -169,9 +173,10 @@ try {
   http_response_code(500);
   $PAGE_TITLE = "❌ Error al crear";
   $PAGE_SUBTITLE = "El SP rechazó la operación o hubo un error.";
-  require_once '../includes_partes_fijas/diseno_arriba.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   echo '<div class="alert alert-danger"><b>No se pudo crear la pregunta.</b><div class="mt-2 small">'.h($msg).'</div></div>';
   echo '<a class="btn btn-outline-secondary btn-sm" href="javascript:history.back()">Volver</a>';
-  require_once '../includes_partes_fijas/diseno_abajo.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
   exit;
 }

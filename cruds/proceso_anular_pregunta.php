@@ -9,15 +9,16 @@
  * SP: dbo.PR_ANULAR_PREGUNTA
  */
 
-require_once '../config_ajustes/conectar_db.php';
-require_once '../includes_partes_fijas/seguridad.php';
+require_once __DIR__ . '/../config_ajustes/app.php';
+require_once BASE_PATH . '/config_ajustes/conectar_db.php';
+require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
 
 require_login();
 force_password_change();
 
 function h($str) { return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8'); }
 
-$BASE_URL = '/plataforma_de_monitoreo';
+$BASE_URL = BASE_URL;
 
 /* ===============================
    Permisos
@@ -26,9 +27,10 @@ if (is_readonly() || !can_create()) {
   http_response_code(403);
   $PAGE_TITLE = "⛔ Acceso denegado";
   $PAGE_SUBTITLE = "No tiene permisos para anular preguntas.";
-  require_once '../includes_partes_fijas/diseno_arriba.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   echo '<div class="alert alert-danger">Acceso denegado.</div>';
-  require_once '../includes_partes_fijas/diseno_abajo.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
   exit;
 }
 
@@ -40,9 +42,10 @@ if (!$veTodo && $idAreaSes <= 0) {
   http_response_code(403);
   $PAGE_TITLE = "⛔ Acceso denegado";
   $PAGE_SUBTITLE = "Usuario sin área asignada.";
-  require_once '../includes_partes_fijas/diseno_arriba.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   echo '<div class="alert alert-danger">Tu usuario no tiene área asignada. Contacta al administrador.</div>';
-  require_once '../includes_partes_fijas/diseno_abajo.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
   exit;
 }
 
@@ -68,10 +71,11 @@ if ($id_pregunta <= 0 || $id_cola <= 0) {
   http_response_code(400);
   $PAGE_TITLE = "⚠️ Validación";
   $PAGE_SUBTITLE = "Datos incompletos.";
-  require_once '../includes_partes_fijas/diseno_arriba.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   echo '<div class="alert alert-danger">ID de pregunta o cola inválido.</div>';
   echo '<a class="btn btn-outline-secondary btn-sm" href="javascript:history.back()">Volver</a>';
-  require_once '../includes_partes_fijas/diseno_abajo.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
   exit;
 }
 
@@ -87,9 +91,10 @@ if (!$veTodo) {
     http_response_code(404);
     $PAGE_TITLE = "❌ No encontrado";
     $PAGE_SUBTITLE = "La pregunta no existe.";
-    require_once '../includes_partes_fijas/diseno_arriba.php';
+    require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
     echo '<div class="alert alert-danger">La pregunta no existe.</div>';
-    require_once '../includes_partes_fijas/diseno_abajo.php';
+   require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
     exit;
   }
 
@@ -97,9 +102,10 @@ if (!$veTodo) {
     http_response_code(403);
     $PAGE_TITLE = "⛔ Acceso denegado";
     $PAGE_SUBTITLE = "La pregunta no pertenece a tu área.";
-    require_once '../includes_partes_fijas/diseno_arriba.php';
+    require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
     echo '<div class="alert alert-danger">Acceso denegado: esta pregunta no pertenece a tu área.</div>';
-    require_once '../includes_partes_fijas/diseno_abajo.php';
+    require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
     exit;
   }
 }
@@ -131,9 +137,10 @@ try {
   http_response_code(500);
   $PAGE_TITLE = "❌ Error al anular";
   $PAGE_SUBTITLE = "El SP rechazó la operación.";
-  require_once '../includes_partes_fijas/diseno_arriba.php';
+ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   echo '<div class="alert alert-danger"><b>No se pudo anular la pregunta.</b><div class="mt-2 small">'.h($e->getMessage()).'</div></div>';
   echo '<a class="btn btn-outline-secondary btn-sm" href="javascript:history.back()">Volver</a>';
-  require_once '../includes_partes_fijas/diseno_abajo.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
   exit;
 }
