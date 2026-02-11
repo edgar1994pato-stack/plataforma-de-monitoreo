@@ -11,7 +11,7 @@ require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
 
 require_login();
 force_password_change();
-
+$BASE_URL = BASE_URL;
 
 
 function h($str) { return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8'); }
