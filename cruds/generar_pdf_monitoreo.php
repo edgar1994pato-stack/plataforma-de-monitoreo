@@ -13,9 +13,11 @@
  * =========================================================
  */
 
-require_once '../config_ajustes/conectar_db.php';
-require_once '../includes_partes_fijas/seguridad.php';
-require_once '../libs/dompdf/autoload.inc.php';
+require_once __DIR__ . '/../config_ajustes/app.php';
+require_once BASE_PATH . '/config_ajustes/conectar_db.php';
+require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
+require_once BASE_PATH . '/libs/dompdf/autoload.inc.php';
+
 
 use Dompdf\Dompdf;
 
@@ -391,6 +393,9 @@ try {
   $dompdf->setPaper('A4', 'portrait');
   $dompdf->render();
 
+  // Headers seguros y compatibles con nginx + Azure
+  header('Content-Type: application/pdf');
+  header('X-Content-Type-Options: nosniff');
   header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
   header('Pragma: no-cache');
 
