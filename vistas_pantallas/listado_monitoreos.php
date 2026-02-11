@@ -21,8 +21,10 @@
  * - Se usa EXEC con placeholders (?) por compatibilidad SQL Server + PDO
  */
 
-require_once '../config_ajustes/conectar_db.php';
-require_once '../includes_partes_fijas/seguridad.php';
+require_once __DIR__ . '/../config_ajustes/app.php';
+require_once BASE_PATH . '/config_ajustes/conectar_db.php';
+require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
+
 
 /* =========================================================
  * 1) SEGURIDAD CENTRALIZADA
@@ -38,7 +40,7 @@ function h($str) { return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8'); }
 /* =========================================================
  * 3) BASE URL
  * ========================================================= */
-$BASE_URL = '/plataforma_de_monitoreo';
+
 
 /* =========================================================
  * 4) SESIÓN
@@ -82,15 +84,16 @@ $PAGE_SUBTITLE = "Sesión: <b>" . h($nombreUsuarioSesion) . "</b>";
 
 $PAGE_ACTION_HTML = '
   <div class="d-flex align-items-center gap-2 flex-wrap">
-    <a class="btn btn-outline-secondary btn-sm shadow-sm" href="'.h($BASE_URL).'/vistas_pantallas/menu.php">
+    <a class="btn btn-outline-secondary btn-sm shadow-sm" href="'.h(BASE_URL).'/vistas_pantallas/menu.php">
       <i class="bi bi-house"></i> Inicio
     </a>
 
-    <a class="btn btn-outline-danger btn-sm shadow-sm" href="'.h($BASE_URL).'/cruds/logout.php">
+    <a class="btn btn-outline-danger btn-sm shadow-sm" href="'.h(BASE_URL).'/cruds/logout.php">
       <i class="bi bi-box-arrow-right"></i> Salir
     </a>
   </div>
 ';
+
 
 /* =========================================================
  * 8) FILTROS (GET)
@@ -176,7 +179,9 @@ try {
 /* =========================================================
  * 12) INCLUDE HEADER
  * ========================================================= */
-require_once '../includes_partes_fijas/diseno_arriba.php';
+require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
+
 ?>
 
 <!-- =========================================================
@@ -442,5 +447,6 @@ fArea?.addEventListener('change', () => {
 <?php
 $PAGE_SCRIPTS = ob_get_clean();
 
-require_once '../includes_partes_fijas/diseno_abajo.php';
+require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
+
 ?>
