@@ -21,15 +21,17 @@
  *   - dbo.PR_LISTAR_PREGUNTAS(@ID_AREA, @ID_COLA, @SOLO_VIGENTES)
  */
 
-require_once '../config_ajustes/conectar_db.php';
-require_once '../includes_partes_fijas/seguridad.php';
+require_once __DIR__ . '/../config_ajustes/app.php';
+require_once BASE_PATH . '/config_ajustes/conectar_db.php';
+require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
+
 
 require_login();
 force_password_change();
 
 function h($str) { return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8'); }
 
-$BASE_URL = '/plataforma_de_monitoreo';
+
 
 /* =========================================================
  * SESIÓN
@@ -68,7 +70,8 @@ $PAGE_ACTION_HTML = '
   </div>
 ';
 
-require_once '../includes_partes_fijas/diseno_arriba.php';
+require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
 
 /* =========================================================
  * FLASH (mensajes)
@@ -475,4 +478,5 @@ fArea?.addEventListener('change', () => {
 <?php
 $PAGE_SCRIPTS = ob_get_clean();
 
-require_once '../includes_partes_fijas/diseno_abajo.php';
+require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
+

@@ -5,13 +5,14 @@
  * FORMULARIO (UI) - CREAR / DUPLICAR PREGUNTAS
  */
 
-require_once '../config_ajustes/conectar_db.php';
-require_once '../includes_partes_fijas/seguridad.php';
+require_once __DIR__ . '/../config_ajustes/app.php';
+require_once BASE_PATH . '/config_ajustes/conectar_db.php';
+require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
 
 require_login();
 force_password_change();
 
-$BASE_URL = '/plataforma_de_monitoreo';
+
 
 function h($str) { return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8'); }
 
@@ -22,9 +23,9 @@ if (is_readonly()) {
   http_response_code(403);
   $PAGE_TITLE = "⛔ Acceso denegado";
   $PAGE_SUBTITLE = "Modo solo lectura.";
-  require_once '../includes_partes_fijas/diseno_arriba.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   echo '<div class="alert alert-danger">Acceso denegado: usuario en modo solo lectura.</div>';
-  require_once '../includes_partes_fijas/diseno_abajo.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
   exit;
 }
 
@@ -32,9 +33,9 @@ if (!can_create()) {
   http_response_code(403);
   $PAGE_TITLE = "⛔ Acceso denegado";
   $PAGE_SUBTITLE = "No tiene permisos para crear/duplicar preguntas.";
-  require_once '../includes_partes_fijas/diseno_arriba.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   echo '<div class="alert alert-danger">Acceso denegado: no tiene permisos para crear/duplicar preguntas.</div>';
-  require_once '../includes_partes_fijas/diseno_abajo.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
   exit;
 }
 
@@ -45,9 +46,9 @@ if (!$veTodo && $idAreaSes <= 0) {
   http_response_code(403);
   $PAGE_TITLE = "⛔ Acceso denegado";
   $PAGE_SUBTITLE = "Usuario sin área asignada.";
-  require_once '../includes_partes_fijas/diseno_arriba.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   echo '<div class="alert alert-danger">Tu usuario no tiene área asignada. Contacta al administrador.</div>';
-  require_once '../includes_partes_fijas/diseno_abajo.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
   exit;
 }
 
@@ -126,9 +127,9 @@ if ($modo === 'duplicar') {
         http_response_code(403);
         $PAGE_TITLE = "⛔ Acceso denegado";
         $PAGE_SUBTITLE = "La pregunta origen no pertenece a tu área.";
-        require_once '../includes_partes_fijas/diseno_arriba.php';
+        require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         echo '<div class="alert alert-danger">Acceso denegado: la pregunta origen no pertenece a tu área.</div>';
-        require_once '../includes_partes_fijas/diseno_abajo.php';
+        require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
         exit;
       }
 
@@ -260,7 +261,7 @@ $PAGE_ACTION_HTML = '
   </div>
 ';
 
-require_once '../includes_partes_fijas/diseno_arriba.php';
+require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 ?>
 
 <?php if (!empty($errores)): ?>
@@ -581,5 +582,6 @@ document.getElementById('frmPregunta')?.addEventListener('submit', (e) => {
 </script>
 <?php
 $PAGE_SCRIPTS = ob_get_clean();
-require_once '../includes_partes_fijas/diseno_abajo.php';
+require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
+
 ?>

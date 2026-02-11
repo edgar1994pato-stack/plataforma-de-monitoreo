@@ -13,8 +13,9 @@
  * - listado_monitoreos.php envía ?id=<id_version>
  */
 
-require_once '../config_ajustes/conectar_db.php';
-require_once '../includes_partes_fijas/seguridad.php';
+require_once __DIR__ . '/../config_ajustes/app.php';
+require_once BASE_PATH . '/config_ajustes/conectar_db.php';
+require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
 
 /* ============================================================
    1) SEGURIDAD CENTRALIZADA
@@ -35,7 +36,7 @@ function abort_msg($msg, $code = 400) {
 /* ============================================================
    3) BASE URL
    ============================================================ */
-$BASE_URL = '/plataforma_de_monitoreo';
+
 
 /* ============================================================
    4) SESIÓN / PERMISOS (SOLO DESDE seguridad.php)
@@ -251,7 +252,9 @@ $PAGE_ACTION_HTML = '
   </div>
 ';
 
-require_once '../includes_partes_fijas/diseno_arriba.php';
+require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
+
 ?>
 
 <div id="alertBox" class="alert d-none" role="alert"></div>
@@ -1050,5 +1053,6 @@ echo '
 </style>
 ';
 
-require_once '../includes_partes_fijas/diseno_abajo.php';
+require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
+
 ?>
