@@ -278,7 +278,8 @@ try {
   /* =========================================================
    * 9) ÉXITO
    * ========================================================= */
-  header('Location: ../index.php?monitoreo=ok');
+  header('Location: ' . BASE_URL . '/index.php?monitoreo=ok');
+
   exit;
 
 } catch (Throwable $e) {
