@@ -50,7 +50,8 @@ if (!$puedeCrear) {
   ';
   require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   echo '<div class="alert alert-danger"><i class="bi bi-shield-x me-1"></i>No tiene permisos para crear monitoreos.</div>';
-  require_once '../includes_partes_fijas/diseno_abajo.php';
+  require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
   exit;
 }
 
@@ -127,7 +128,7 @@ $hoy = date('Y-m-d');
 /* ============================================================
    9) INCLUDE HEADER
 ============================================================ */
-require_once '../includes_partes_fijas/diseno_arriba.php';
+require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 ?>
 
 <div id="alertBox" class="alert d-none" role="alert"></div>
