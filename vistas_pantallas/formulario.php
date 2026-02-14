@@ -718,6 +718,34 @@ function setHoraFinYDuracion() {
 }
 
 /* contador observaciones */
+
+
+/* 📞 NORMALIZAR TELÉFONO ECUADOR */
+const telefonoInput = document.getElementById('numero_contacto');
+
+telefonoInput?.addEventListener('input', function() {
+
+  // Quitar todo lo que no sea número
+  let valor = this.value.replace(/\D/g, '');
+
+  // Si empieza con 593 y tiene 12 dígitos → convertir a 09XXXXXXXX
+  if (valor.startsWith('593') && valor.length === 12) {
+    valor = '0' + valor.substring(3);
+  }
+
+  this.value = valor;
+});
+
+
+/* 🔢 LIMPIEZA AUTOMÁTICA NRO CONTRATO */
+const contratoInput = document.getElementById('numero_contrato');
+
+contratoInput?.addEventListener('input', function() {
+  const numeros = this.value.match(/\d+/g);
+  this.value = numeros ? numeros.join('') : '';
+});
+
+
 const txtObs = document.getElementById('descripcion_final');
 const charCount = document.getElementById('char_count');
 txtObs?.addEventListener('input', () => { if(charCount) charCount.textContent = txtObs.value.length; });
@@ -942,9 +970,39 @@ function recalcularScoreEnVivo(){
 
 /* submit */
 document.getElementById('formAuditoria').addEventListener('submit', (e) => {
+
   if(SOLO_LECTURA){
     e.preventDefault();
     alert('Modo solo lectura: no puede guardar.');
+    return;
+  }
+
+
+  // 📞 Validar teléfono Ecuador (09XXXXXXXX)
+const telefono = document.getElementById('numero_contacto');
+
+if (!telefono.value.trim()) {
+  alert('❌ Debe ingresar un número de teléfono.');
+  e.preventDefault();
+  telefono.focus();
+  return;
+}
+
+if (!/^09\d{8}$/.test(telefono.value)) {
+  alert('❌ Ingrese un número celular válido (09XXXXXXXX).');
+  e.preventDefault();
+  telefono.focus();
+  return;
+}
+
+
+  // 🔢 Validar número de contrato obligatorio
+  const contrato = document.getElementById('numero_contrato');
+
+  if (!contrato.value.trim()) {
+    alert('❌ Debe ingresar un número de contrato válido.');
+    e.preventDefault();
+    contrato.focus();
     return;
   }
 
@@ -964,6 +1022,7 @@ document.getElementById('formAuditoria').addEventListener('submit', (e) => {
     e.preventDefault();
     return;
   }
+
   if(respuestas.length === 0){
     alert('❌ Debe calificar al menos una pregunta.');
     e.preventDefault();
@@ -984,6 +1043,7 @@ document.getElementById('formAuditoria').addEventListener('submit', (e) => {
   btnSubmit.disabled = true;
   btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Guardando...';
 });
+
 
 /* reset */
 document.getElementById('btnReset').addEventListener('click', () => {
