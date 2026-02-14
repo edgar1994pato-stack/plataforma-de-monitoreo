@@ -55,42 +55,94 @@ $flashMonitoreo = $_SESSION['flash_monitoreo_id'] ?? null;
 
 if (!empty($flashMonitoreo)) {
 
-    // Guardamos el valor antes de limpiar sesión
     $numeroMonitoreo = (int)$flashMonitoreo;
-
-    // Limpiamos flash
     unset($_SESSION['flash_monitoreo_id']);
 ?>
-    <div id="overlayMonitoreo" class="overlay-monitoreo">
-        <div class="card-monitoreo">
-            <div class="circle-check">
-                <div class="checkmark"></div>
-            </div>
+<style>
+#overlayMonitoreo {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,0.85) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 999999 !important;
+}
 
-            <div class="titulo-monitoreo">
-                MONITOREO REGISTRADO
-            </div>
+#overlayMonitoreo .card-monitoreo {
+    background: #E0E621;
+    padding: 70px 60px;
+    border-radius: 30px;
+    text-align: center;
+    box-shadow: 0 30px 70px rgba(0,0,0,.4);
+    animation: zoomIn .35s ease;
+}
 
-            <div class="numero-monitoreo">
-                #<?= $numeroMonitoreo ?>
-            </div>
+#overlayMonitoreo .circle-check {
+    width: 130px;
+    height: 130px;
+    border: 8px solid #000;
+    border-radius: 50%;
+    margin: 0 auto 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#overlayMonitoreo .checkmark {
+    width: 50px;
+    height: 90px;
+    border-right: 8px solid #2E9BFF;
+    border-bottom: 8px solid #2E9BFF;
+    transform: rotate(45deg) scale(0);
+    animation: drawCheck .4s ease forwards;
+}
+
+#overlayMonitoreo .titulo-monitoreo {
+    font-weight: 700;
+    font-size: 18px;
+    color: #000;
+}
+
+#overlayMonitoreo .numero-monitoreo {
+    font-size: 60px;
+    font-weight: 900;
+    color: #000;
+    margin-top: 10px;
+}
+
+@keyframes drawCheck {
+    to { transform: rotate(45deg) scale(1); }
+}
+
+@keyframes zoomIn {
+    from { transform: scale(.6); opacity:0; }
+    to { transform: scale(1); opacity:1; }
+}
+</style>
+
+<div id="overlayMonitoreo">
+    <div class="card-monitoreo">
+        <div class="circle-check">
+            <div class="checkmark"></div>
         </div>
+        <div class="titulo-monitoreo">MONITOREO REGISTRADO</div>
+        <div class="numero-monitoreo">#<?= $numeroMonitoreo ?></div>
     </div>
+</div>
 
-    <script>
-    setTimeout(function () {
-        const overlay = document.getElementById('overlayMonitoreo');
-        if (overlay) {
-            overlay.classList.add('fade-out');
-            setTimeout(function () {
-                overlay.remove();
-            }, 400);
-        }
-    }, 3000);
-    </script>
+<script>
+setTimeout(function(){
+    const el = document.getElementById('overlayMonitoreo');
+    if(el){
+        el.style.transition = "opacity .4s";
+        el.style.opacity = "0";
+        setTimeout(()=>el.remove(),400);
+    }
+},3000);
+</script>
 <?php
 }
-/* =================================================== */
 
 
 /* =========================================================
