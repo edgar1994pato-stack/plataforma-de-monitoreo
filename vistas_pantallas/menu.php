@@ -139,7 +139,7 @@ setTimeout(function(){
         el.style.opacity = "0";
         setTimeout(()=>el.remove(),400);
     }
-},3000);
+},6000);
 </script>
 <?php
 }
