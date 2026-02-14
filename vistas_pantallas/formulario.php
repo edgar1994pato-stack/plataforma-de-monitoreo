@@ -191,35 +191,37 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
           <input type="hidden" name="TipoMonitoreo" id="hidden_tipo_monitoreo" value="">
         </div>
 
-        <!-- COLA -->
-        <div class="col-md-3">
-          <label class="form-label small fw-bold text-muted">COLA <span class="text-danger">*</span></label>
+         <!-- COLA (oculto pero funcional) -->
+<div class="col-md-3 d-none">
 
-          <select <?= $READONLY_ATTR ?> id="sel_medio" class="form-select form-select-sm" required>
-            <option value="1">ATC CALL CENTER</option>
-            <option value="2">ATC APP</option>
-            <option value="3">ATC BOT ALI</option>
+  <label class="form-label small fw-bold text-muted">COLA</label>
 
-            <option value="4">ATC CHAT WEB</option>
-            <option value="5">ATC REDES SOCIALES</option>
-            <option value="6">CORREO ATC</option>
-            <option value="7">FACEBOOK MURO</option>
-            <option value="8">INB EMPLEADOS</option>
-            <option value="9">ST N2 APP</option>
-            <option value="10">ST N2 CALL CENTER</option>
-            <option value="11">ST N2 CHAT WEB</option>
-            <option value="12">ST N2 FB MURO</option>
-            <option value="13">ST N2 IG MURO</option>
-            <option value="14">ST N2 RS</option>
-            <option value="15">FRONT PRESENCIAL</option>
-            <option value="16">COBRANZA CALL</option>
-            <option value="17">AGENDAMIENTO CALL</option>
-            
-          </select>
+  <select <?= $READONLY_ATTR ?> id="sel_medio" class="form-select form-select-sm">
+    <option value="1">ATC CALL CENTER</option>
+    <option value="2">ATC APP</option>
+    <option value="3">ATC BOT ALI</option>
+    <option value="4">ATC CHAT WEB</option>
+    <option value="5">ATC REDES SOCIALES</option>
+    <option value="6">CORREO ATC</option>
+    <option value="7">FACEBOOK MURO</option>
+    <option value="8">INB EMPLEADOS</option>
+    <option value="9">ST N2 APP</option>
+    <option value="10">ST N2 CALL CENTER</option>
+    <option value="11">ST N2 CHAT WEB</option>
+    <option value="12">ST N2 FB MURO</option>
+    <option value="13">ST N2 IG MURO</option>
+    <option value="14">ST N2 RS</option>
+    <option value="15">FRONT PRESENCIAL</option>
+    <option value="16">COBRANZA CALL</option>
+    <option value="17">AGENDAMIENTO CALL</option>
+  </select>
 
-          <input type="hidden" name="IdMedio" id="hidden_medio" value="1">
-          <input type="hidden" name="MedioDeAtencion" id="hidden_medio_texto" value="Teléfono">
-        </div>
+  <!-- IMPORTANTE: estos se mantienen para que el JS y el SP funcionen -->
+  <input type="hidden" name="IdMedio" id="hidden_medio" value="1">
+  <input type="hidden" name="MedioDeAtencion" id="hidden_medio_texto" value="ATC CALL CENTER">
+
+</div>
+
 
         <!-- Gestor -->
         <div class="col-md-3">
