@@ -259,11 +259,20 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
                  class="form-control form-control-sm" placeholder="https://..." required>
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label small fw-bold text-muted">HORA INTERACCIÓN <span class="text-danger">*</span></label>
-          <input <?= $READONLY_ATTR ?> type="time" name="hora_interaccion" id="hora_interaccion"
-                 class="form-control form-control-sm" value="10:30" required>
-        </div>
+<!-- HORA INTERACCIÓN (oculto pero funcional) -->
+<div class="col-md-3 d-none">
+
+  <label class="form-label small fw-bold text-muted">HORA INTERACCIÓN</label>
+
+  <input <?= $READONLY_ATTR ?> 
+         type="time" 
+         name="hora_interaccion" 
+         id="hora_interaccion"
+         class="form-control form-control-sm"
+         value="10:30">
+
+</div>
+
 
 <div class="col-md-3">
   <label class="form-label small fw-bold text-muted">DURACIÓN INTERACCIÓN</label>
