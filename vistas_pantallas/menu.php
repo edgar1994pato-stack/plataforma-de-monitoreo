@@ -17,6 +17,13 @@
  */
 require_once __DIR__ . '/../config_ajustes/app.php';
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+
+
+
 /* =========================================================
  * 1) SEGURIDAD
  * ========================================================= */

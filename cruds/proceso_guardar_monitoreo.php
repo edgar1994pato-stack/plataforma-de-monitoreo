@@ -278,9 +278,17 @@ try {
   /* =========================================================
    * 9) ÉXITO
    * ========================================================= */
-  header('Location: ../index.php?monitoreo=ok');
-  exit;
+ if (!$idVersion) {
+    throw new Exception('No se pudo obtener el id_version del monitoreo.');
+}
 
+/* Flash en sesión */
+$_SESSION['flash_monitoreo_id'] = (int)$idVersion;
+
+/* Redirect seguro */
+header('Location: ' . BASE_URL . '/vistas_pantallas/menu.php');
+
+exit;
 } catch (Throwable $e) {
   http_response_code(500);
   echo "
