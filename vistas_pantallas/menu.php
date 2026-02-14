@@ -53,7 +53,12 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 /* ================= FLASH MONITOREO ================= */
 $flashMonitoreo = $_SESSION['flash_monitoreo_id'] ?? null;
 
-if ($flashMonitoreo):
+if (!empty($flashMonitoreo)) {
+
+    // Guardamos el valor antes de limpiar sesión
+    $numeroMonitoreo = (int)$flashMonitoreo;
+
+    // Limpiamos flash
     unset($_SESSION['flash_monitoreo_id']);
 ?>
     <div id="overlayMonitoreo" class="overlay-monitoreo">
@@ -67,22 +72,24 @@ if ($flashMonitoreo):
             </div>
 
             <div class="numero-monitoreo">
-                #<?= (int)$flashMonitoreo ?>
+                #<?= $numeroMonitoreo ?>
             </div>
         </div>
     </div>
 
     <script>
-    setTimeout(() => {
+    setTimeout(function () {
         const overlay = document.getElementById('overlayMonitoreo');
         if (overlay) {
             overlay.classList.add('fade-out');
-            setTimeout(() => overlay.remove(), 400);
+            setTimeout(function () {
+                overlay.remove();
+            }, 400);
         }
     }, 3000);
     </script>
 <?php
-endif;
+}
 /* =================================================== */
 
 
