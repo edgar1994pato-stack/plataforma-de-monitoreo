@@ -56,14 +56,35 @@ $flashMonitoreo = $_SESSION['flash_monitoreo_id'] ?? null;
 if ($flashMonitoreo):
     unset($_SESSION['flash_monitoreo_id']);
 ?>
-    <div class="alert shadow-sm"
-         style="background:#E0E621; color:#000000; border:0; border-radius:12px;">
-        <strong>✔ Monitoreo guardado correctamente</strong><br>
-        Número de monitoreo: <b>#<?= (int)$flashMonitoreo ?></b>
+    <div id="overlayMonitoreo" class="overlay-monitoreo">
+        <div class="card-monitoreo">
+            <div class="circle-check">
+                <div class="checkmark"></div>
+            </div>
+
+            <div class="titulo-monitoreo">
+                MONITOREO REGISTRADO
+            </div>
+
+            <div class="numero-monitoreo">
+                #<?= (int)$flashMonitoreo ?>
+            </div>
+        </div>
     </div>
+
+    <script>
+    setTimeout(() => {
+        const overlay = document.getElementById('overlayMonitoreo');
+        if (overlay) {
+            overlay.classList.add('fade-out');
+            setTimeout(() => overlay.remove(), 400);
+        }
+    }, 3000);
+    </script>
 <?php
 endif;
 /* =================================================== */
+
 
 /* =========================================================
  * 4) DATOS DE SESIÓN

@@ -494,3 +494,82 @@ body{
   background-color: #f8f9fa; /* look readonly */
   cursor: not-allowed;
 }
+
+
+
+.overlay-monitoreo {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+.card-monitoreo {
+    background: #E0E621;
+    padding: 60px 50px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+    animation: scaleIn 0.35s ease;
+}
+
+.circle-check {
+    width: 120px;
+    height: 120px;
+    border: 6px solid #000000;
+    border-radius: 50%;
+    margin: 0 auto 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FFFFFF;
+}
+
+.checkmark {
+    width: 40px;
+    height: 80px;
+    border-right: 6px solid #000;
+    border-bottom: 6px solid #000;
+    transform: rotate(45deg) scale(0);
+    animation: drawCheck 0.4s ease forwards;
+}
+
+.titulo-monitoreo {
+    font-weight: 600;
+    font-size: 16px;
+    color: #000;
+    letter-spacing: 1px;
+}
+
+.numero-monitoreo {
+    font-size: 50px;
+    font-weight: 800;
+    color: #000;
+    margin-top: 10px;
+}
+
+@keyframes drawCheck {
+    to { transform: rotate(45deg) scale(1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.7); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.fade-out {
+    animation: fadeOut 0.4s forwards;
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; }
+}
