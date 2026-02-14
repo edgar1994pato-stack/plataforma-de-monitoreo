@@ -42,6 +42,22 @@ $PAGE_ACTION_HTML = '
  * ========================================================= */
 require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
+
+/* ================= FLASH MONITOREO ================= */
+$flashMonitoreo = $_SESSION['flash_monitoreo_id'] ?? null;
+
+if ($flashMonitoreo):
+    unset($_SESSION['flash_monitoreo_id']);
+?>
+    <div class="alert shadow-sm"
+         style="background:#E0E621; color:#000000; border:0; border-radius:12px;">
+        <strong>✔ Monitoreo guardado correctamente</strong><br>
+        Número de monitoreo: <b>#<?= (int)$flashMonitoreo ?></b>
+    </div>
+<?php
+endif;
+/* =================================================== */
+
 /* =========================================================
  * 4) DATOS DE SESIÓN
  * ========================================================= */
