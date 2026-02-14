@@ -36,3 +36,19 @@ if (!isset($PAGE_ACTION_HTML))  $PAGE_ACTION_HTML = "";
 </div>
 
 <div class="container-fluid mt-4 px-4">
+
+
+
+
+<?php
+$flashMonitoreo = $_SESSION['flash_monitoreo_id'] ?? null;
+
+if ($flashMonitoreo):
+    unset($_SESSION['flash_monitoreo_id']);
+?>
+    <div class="alert shadow-sm"
+         style="background:#E0E621; color:#000000; border:0; border-radius:12px;">
+        <strong>✔ Monitoreo guardado correctamente</strong><br>
+        Número de monitoreo: <b>#<?= (int)$flashMonitoreo ?></b>
+    </div>
+<?php endif; ?>
