@@ -1,17 +1,14 @@
-
+/* =========================
+   ALFANET CORPORATIVO FORMAL
+   ========================= */
 
 :root{
   --primary:#E0E621;
-  --primary-dark:#c8cf1c;
-  --dark:#000000;
-  --soft:#111111;
+  --black:#000000;
+  --white:#FFFFFF;
 
-  --bg-overlay:rgba(0,0,0,0.75);
-
-  --radius:14px;
-  --shadow:0 6px 16px rgba(0,0,0,.25);
-  --shadow-lg:0 14px 35px rgba(0,0,0,.35);
-  --border-soft:1px solid rgba(255,255,255,.08);
+  --radius:12px;
+  --shadow:0 8px 25px rgba(0,0,0,.25);
 }
 
 html, body{
@@ -21,32 +18,32 @@ html, body{
 body{
   background: url('../img/fondo-alfanet.jpg') no-repeat center center fixed;
   background-size: cover;
-  min-height: 100vh;
   font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
-  color:#FFFFFF;
+  color: var(--white);
 }
 
+/* Overlay sobrio */
 body::before{
   content:"";
   position:fixed;
   inset:0;
-  background: var(--bg-overlay);
+  background: rgba(0,0,0,.85);
   z-index:-1;
 }
 
 /* =========================
-   PAGE HEADER
+   TITLES
 ========================= */
 
 .page-title{
-  margin:0;
   font-weight:900;
-  color:var(--primary);
+  color: var(--primary);
+  letter-spacing:.5px;
 }
 
 .page-subtitle{
-  color:#cccccc;
-  font-size:.875rem;
+  color: rgba(255,255,255,.65);
+  font-size:.85rem;
 }
 
 /* =========================
@@ -54,29 +51,23 @@ body::before{
 ========================= */
 
 .card-soft{
+  background: var(--white);
   border:none;
   border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  overflow:hidden;
-  background: rgba(255,255,255,0.96);
-  backdrop-filter: blur(6px);
-  color:#000;
+  box-shadow: var(--shadow);
+  color: var(--black);
   transition: all .25s ease;
 }
 
 .card-soft:hover{
-  transform: translateY(-3px);
-}
-
-.card-soft .card-header{
-  border-bottom: 1px solid rgba(0,0,0,.05);
-  font-weight:900;
+  transform: translateY(-4px);
 }
 
 .card-header-dark{
-  background:#000000;
-  color:#E0E621;
-  letter-spacing:.5px;
+  background: var(--black);
+  color: var(--primary);
+  font-weight:900;
+  letter-spacing:.6px;
 }
 
 .card-header-soft{
@@ -84,134 +75,87 @@ body::before{
 }
 
 /* =========================
-   STICKY BAR
-========================= */
-
-.sticky-bar{
-  position: sticky;
-  top: 0;
-  z-index: 1020;
-  background: rgba(0,0,0,0.85);
-  backdrop-filter: blur(8px);
-  padding-bottom: 10px;
-}
-
-/* =========================
    BUTTONS
 ========================= */
 
 .btn-primary{
-  background:#E0E621;
+  background: var(--primary);
   border:none;
-  color:#000;
+  color: var(--black);
   font-weight:800;
+  border-radius:8px;
 }
 
 .btn-primary:hover{
-  background:#c8cf1c;
-  color:#000;
+  background:#d2d91d;
+  color: var(--black);
 }
 
 .btn-outline-secondary{
-  border-color:#E0E621;
-  color:#E0E621;
+  border:1px solid var(--primary);
+  color: var(--primary);
+  background:transparent;
 }
 
 .btn-outline-secondary:hover{
-  background:#E0E621;
-  color:#000;
+  background: var(--primary);
+  color: var(--black);
 }
 
 /* =========================
    BADGES
 ========================= */
 
-.badge-soft{
-  background:#E0E621;
-  color:#000;
+.badge{
+  background: var(--primary);
+  color: var(--black);
   font-weight:800;
+  border-radius:20px;
+  padding:4px 10px;
 }
 
 /* =========================
-   ESTADOS PREGUNTAS
+   LIST GROUP
 ========================= */
 
-.pregunta-card{
+.list-group-item{
+  border:none;
+  border-left:3px solid transparent;
   transition: all .2s ease;
-  border-left: 6px solid transparent;
-  border-radius: var(--radius);
 }
 
-.estado-neutro{ background:#ffffff; }
-.estado-cumple{ background:#f6ffe3; border-left-color:#E0E621 !important; }
-.estado-falla { background:#fff0f0; border-left-color:#dc3545 !important; }
-.estado-na    { background:#f5f5f5; border-left-color:#6c757d !important; }
+.list-group-item.active{
+  background: #fdfed9;
+  border-left:4px solid var(--primary);
+  color: var(--black);
+}
 
 /* =========================
-   RESULTADO FLOTANTE
+   RESULTADO BOX
 ========================= */
 
 .resultado-box{
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
-  width: 190px;
-  z-index: 2000;
+  background: var(--white);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  background: #ffffff;
-  overflow: hidden;
+  box-shadow: var(--shadow);
+  color: var(--black);
 }
 
 .resultado-box .hdr{
-  padding: 10px 12px;
-  font-weight: 900;
-  font-size: .9rem;
-  background: #000000;
-  color:#E0E621;
-}
-
-.resultado-box .score{
-  font-size: 2.1rem;
-  font-weight: 900;
+  background: var(--black);
+  color: var(--primary);
+  font-weight:900;
 }
 
 /* =========================
-   QA MINI / CHIP
+   QA CHIP
 ========================= */
 
-.qa-mini,
 .qa-chip{
-  background:#ffffff;
-  border-radius: 14px;
-  box-shadow: var(--shadow);
-  color:#000;
-}
-
-/* =========================
-   LIST GROUP CORPORATIVO
-========================= */
-
-.list-group-item.seccion-calificada{
-  background-color:#fffbe0 !important;
-  border-left: 4px solid #E0E621 !important;
-  font-weight: 600;
-}
-
-.list-group-item.seccion-calificada.active{
-  background-color:#fff7b3 !important;
-  border-left: 6px solid #E0E621 !important;
-  font-weight: 700;
-}
-
-/* =========================
-   BLOQUEO TIEMPO
-========================= */
-
-.bloqueo-tiempo{
-  pointer-events:none;
-  background-color:#f5f5f5;
-  cursor:not-allowed;
+  background: var(--white);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  color: var(--black);
 }
 
 /* =========================
@@ -221,7 +165,7 @@ body::before{
 .overlay-monitoreo{
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.9);
+  background: rgba(0,0,0,.92);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -229,41 +173,40 @@ body::before{
 }
 
 .card-monitoreo{
-  background:#E0E621;
-  padding:60px 50px;
-  border-radius:25px;
-  text-align:center;
-  box-shadow:0 25px 60px rgba(0,0,0,0.4);
+  background: var(--primary);
+  padding: 60px 50px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0,0,0,.4);
 }
 
 .circle-check{
   width:120px;
   height:120px;
-  border:6px solid #000000;
+  border:6px solid var(--black);
   border-radius:50%;
   margin:0 auto 25px;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:#FFFFFF;
+  background: var(--white);
 }
 
 .checkmark{
   width:40px;
   height:80px;
-  border-right:6px solid #000;
-  border-bottom:6px solid #000;
+  border-right:6px solid var(--black);
+  border-bottom:6px solid var(--black);
   transform:rotate(45deg);
 }
 
 .titulo-monitoreo{
   font-weight:700;
-  font-size:16px;
-  color:#000;
+  color: var(--black);
 }
 
 .numero-monitoreo{
   font-size:50px;
   font-weight:900;
-  color:#000;
+  color: var(--black);
 }
