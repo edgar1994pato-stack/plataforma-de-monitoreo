@@ -260,9 +260,9 @@ try {
 
   $stmt->execute();
 
-  $row = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
-  $idVersion = $row['id_version'] ?? null;
-
+ $row = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+$idVersion = $row['id_version'] ?? null;
+$idOrigen  = $row['id_origen'] ?? null;
   /* =========================================================
    * 8) (Opcional) actualizar duración en VERSION
    * ========================================================= */
@@ -283,7 +283,8 @@ try {
 }
 
 /* Flash en sesión */
-$_SESSION['flash_monitoreo_id'] = (int)$idVersion;
+  $_SESSION['flash_monitoreo_id'] = (int)$idOrigen;
+
 
 /* Redirect seguro */
 header('Location: ' . BASE_URL . '/vistas_pantallas/menu.php');
