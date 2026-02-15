@@ -253,3 +253,41 @@ body{
   font-weight:700;
   color:#000;
 }
+
+
+
+/* ===============================
+   INDICADOR PREMIUM DE SECCIÓN RESPONDIDA
+================================= */
+
+/* Mantener ocultos los números */
+.list-group-item .badge{
+  display:none !important;
+}
+
+/* Sección con respuestas */
+.list-group-item.seccion-calificada{
+  position:relative;
+  background: rgba(224,230,33,0.08) !important;
+  border-left: 3px solid #E0E621 !important;
+  font-weight:600;
+}
+
+/* Punto indicador elegante */
+.list-group-item.seccion-calificada::after{
+  content:"";
+  position:absolute;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#E0E621;
+}
+
+/* Sección activa */
+.list-group-item.active{
+  background: rgba(224,230,33,0.12) !important;
+  border-left:4px solid #E0E621 !important;
+}
