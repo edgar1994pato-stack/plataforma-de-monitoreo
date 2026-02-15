@@ -1,18 +1,14 @@
 /* =========================
-   ALFANET ENTERPRISE PREMIUM
+   ALFANET ENTERPRISE EDITION
    ========================= */
 
 :root{
   --primary:#E0E621;
   --black:#000000;
   --white:#FFFFFF;
-  --gray-50:#F7F7F7;
-  --gray-100:#EEEEEE;
-  --gray-600:#555555;
 
   --radius:12px;
-  --shadow-sm:0 4px 10px rgba(0,0,0,.06);
-  --shadow-md:0 8px 20px rgba(0,0,0,.08);
+  --shadow:0 6px 18px rgba(0,0,0,.15);
 }
 
 html, body{
@@ -20,9 +16,64 @@ html, body{
 }
 
 body{
-  background: var(--gray-50);
+  background: url('../img/fondo-alfanet.jpg') no-repeat center center fixed;
+  background-size: cover;
   font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
-  color: var(--black);
+  color: var(--white);
+}
+
+/* Overlay sobrio */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background: rgba(0,0,0,.85);
+  z-index:-1;
+}
+
+/* =========================
+   TOPBAR ENTERPRISE
+========================= */
+
+.topbar{
+  background: var(--black);
+  height:60px;
+  padding:0 30px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.btn-header{
+  background:transparent;
+  border:none;
+  color:var(--white);
+  font-weight:500;
+  padding:6px 14px;
+  border-radius:6px;
+  position:relative;
+  transition:all .2s ease;
+  cursor:pointer;
+}
+
+.btn-header::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-4px;
+  width:0%;
+  height:2px;
+  background:var(--primary);
+  transition:width .2s ease;
+}
+
+.btn-header:hover::after{
+  width:100%;
+}
+
+.btn-header-primary{
+  color:var(--primary);
 }
 
 /* =========================
@@ -30,17 +81,13 @@ body{
 ========================= */
 
 .page-title{
-  font-weight:600;
-  color: var(--black);
-  letter-spacing:.3px;
-}
-
-.page-title span{
+  font-weight:700;
   color: var(--primary);
+  letter-spacing:.5px;
 }
 
 .page-subtitle{
-  color: var(--gray-600);
+  color: rgba(255,255,255,.65);
   font-size:.85rem;
 }
 
@@ -50,51 +97,44 @@ body{
 
 .card-soft{
   background: var(--white);
+  border:none;
   border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
-  border:1px solid var(--gray-100);
+  box-shadow: var(--shadow);
   color: var(--black);
   transition: all .2s ease;
 }
 
 .card-soft:hover{
-  transform: translateY(-2px);
-  box-shadow: 0 12px 25px rgba(0,0,0,.06);
+  transform: translateY(-3px);
 }
 
 .card-header-dark{
-  background: var(--white);
-  color: var(--black);
-  font-weight:600;
-  border-bottom:1px solid var(--gray-100);
+  background: var(--black);
+  color: var(--primary);
+  font-weight:700;
+  letter-spacing:.5px;
 }
 
-.card-header-dark::after{
-  content:"";
-  display:block;
-  width:40px;
-  height:3px;
-  background:var(--primary);
-  margin-top:6px;
+.card-header-soft{
+  background:#FFFFFF;
+  border-bottom:1px solid rgba(0,0,0,.08);
 }
 
 /* =========================
-   BUTTONS
+   BUTTONS GENERALES
 ========================= */
 
 .btn-primary{
-  background: var(--black);
-  border:1px solid var(--black);
-  color: var(--white);
+  background: var(--primary);
+  border:none;
+  color: var(--black);
   font-weight:600;
   border-radius:8px;
   transition: all .2s ease;
 }
 
 .btn-primary:hover{
-  background: var(--primary);
-  border-color: var(--primary);
-  color: var(--black);
+  opacity:.9;
 }
 
 .btn-outline-secondary{
@@ -105,7 +145,7 @@ body{
 }
 
 .btn-outline-secondary:hover{
-  background: rgba(224,230,33,.15);
+  background: var(--primary);
   color: var(--black);
 }
 
@@ -114,9 +154,9 @@ body{
 ========================= */
 
 .badge{
-  background: rgba(224,230,33,.15);
+  background: var(--primary);
   color: var(--black);
-  font-weight:500;
+  font-weight:600;
   border-radius:20px;
   padding:4px 10px;
 }
@@ -126,14 +166,13 @@ body{
 ========================= */
 
 .list-group-item{
-  background: var(--white);
   border:none;
   border-left:3px solid transparent;
   transition: all .2s ease;
 }
 
 .list-group-item.active{
-  background: rgba(224,230,33,.08);
+  background: rgba(224,230,33,.15);
   border-left:4px solid var(--primary);
   color: var(--black);
 }
@@ -145,16 +184,14 @@ body{
 .resultado-box{
   background: var(--white);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  border:1px solid var(--gray-100);
+  box-shadow: var(--shadow);
   color: var(--black);
 }
 
 .resultado-box .hdr{
-  background: var(--white);
-  color: var(--black);
-  font-weight:600;
-  border-bottom:1px solid var(--gray-100);
+  background: var(--black);
+  color: var(--primary);
+  font-weight:700;
   padding:10px 15px;
 }
 
@@ -164,9 +201,8 @@ body{
 
 .qa-chip{
   background: var(--white);
-  border-left:3px solid var(--primary);
-  border-radius:8px;
-  box-shadow: var(--shadow-sm);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.1);
   color: var(--black);
   padding:8px 12px;
 }
@@ -178,7 +214,7 @@ body{
 .overlay-monitoreo{
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.75);
+  background: rgba(0,0,0,.92);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -186,19 +222,19 @@ body{
 }
 
 .card-monitoreo{
-  background: var(--white);
-  padding: 50px 40px;
-  border-radius: 18px;
+  background: var(--primary);
+  padding: 60px 50px;
+  border-radius: 20px;
   text-align: center;
-  box-shadow: 0 25px 60px rgba(0,0,0,.15);
+  box-shadow: 0 20px 50px rgba(0,0,0,.3);
 }
 
 .circle-check{
-  width:100px;
-  height:100px;
-  border:4px solid var(--primary);
+  width:120px;
+  height:120px;
+  border:5px solid var(--black);
   border-radius:50%;
-  margin:0 auto 20px;
+  margin:0 auto 25px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -206,10 +242,10 @@ body{
 }
 
 .checkmark{
-  width:35px;
-  height:70px;
-  border-right:4px solid var(--primary);
-  border-bottom:4px solid var(--primary);
+  width:40px;
+  height:80px;
+  border-right:5px solid var(--black);
+  border-bottom:5px solid var(--black);
   transform:rotate(45deg);
 }
 
@@ -219,7 +255,9 @@ body{
 }
 
 .numero-monitoreo{
-  font-size:42px;
-  font-weight:700;
+  font-size:50px;
+  font-weight:800;
   color: var(--black);
 }
+
+
