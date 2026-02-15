@@ -921,6 +921,62 @@ function recalcularScoreEnVivo(){
   }));
 
   const criticoFallado = items.some(x => x.tipo === 'CRITICO' && x.respuesta === 'NO');
+
+  let nota = 0;
+
+  /* 🔴 CRÍTICO FALLADO = 0 */
+  if(criticoFallado){
+    nota = 0;
+
+  /* 🔵 IMPULSOR SOLO SI ES SI */
+  }else if(items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'SI')){
+    nota = 100;
+
+  /* 🟢 CÁLCULO NORMAL */
+  }else{
+    let posibles = 0;
+    let obtenidos = 0;
+
+    items.forEach(x => {
+      if(
+        (x.tipo === 'CRITICO' || x.tipo === 'NORMAL') &&
+        x.respuesta !== 'NO_APLICA'
+      ){
+        posibles += x.peso;
+
+        if(x.respuesta === 'SI'){
+          obtenidos += x.peso;
+        }
+      }
+    });
+
+    if(posibles > 0){
+      nota = (obtenidos / posibles) * 100;
+    }else{
+      nota = 0;
+    }
+  }
+
+  const notaFmt = (Math.round(nota * 10) / 10).toFixed(1);
+  scoreEl.textContent = notaFmt;
+
+  chip.classList.remove('qa-chip-ok','qa-chip-bad','qa-chip-warn');
+
+  if(nota >= UMBRAL){
+    chip.classList.add('qa-chip-ok');
+    iconEl.textContent = '✅';
+    estadoEl.textContent = 'Aprobado';
+  }else{
+    chip.classList.add('qa-chip-bad');
+    iconEl.textContent = '⚠️';
+    estadoEl.textContent = 'Reprobado';
+  }
+
+  chip.title = `Nota: ${notaFmt}% | Umbral: ${UMBRAL}%`;
+}
+
+
+  const criticoFallado = items.some(x => x.tipo === 'CRITICO' && x.respuesta === 'NO');
   const tieneImpulsor  = items.some(x => x.tipo === 'IMPULSOR');
 
   let nota = 0;
