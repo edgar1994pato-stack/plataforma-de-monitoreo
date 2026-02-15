@@ -949,9 +949,15 @@ function recalcularScoreEnVivo(){
 
   if(criticoFallado){
     nota = 0;
-  }else if(tieneImpulsor){
+  }
+  // 🔴 CORRECCIÓN AQUÍ (SIN CAMBIAR TU LÓGICA)
+  else if(tieneImpulsor && !items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'NO')){
     nota = 100;
-  }else{
+  }
+  else if(tieneImpulsor && items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'NO')){
+    nota = 0;
+  }
+  else{
     let posibles = 0, obtenidos = 0;
     items.forEach(x => {
       if((x.tipo === 'CRITICO' || x.tipo === 'NORMAL') && x.respuesta !== 'NO_APLICA'){
