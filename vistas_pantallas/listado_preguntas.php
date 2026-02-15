@@ -31,7 +31,7 @@ force_password_change();
 
 function h($str) { return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8'); }
 
-
+$BASE_URL = BASE_URL;
 
 /* =========================================================
  * SESIÓN
