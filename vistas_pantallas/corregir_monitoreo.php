@@ -912,23 +912,46 @@ function recalcularScoreEnVivo(){
   }));
 
   const criticoFallado = items.some(x => x.tipo === 'CRITICO' && x.respuesta === 'NO');
-  const tieneImpulsor  = items.some(x => x.tipo === 'IMPULSOR');
+
+  // SOLO IMPULSOR VALIDO (SIN N/A)
+  const impulsorItems = items.filter(x => 
+    x.tipo === 'IMPULSOR' &&
+    x.respuesta !== 'NO_APLICA' &&
+    x.respuesta !== 'NA' &&
+    x.respuesta !== 'N/A'
+  );
 
   let nota = 0;
 
   if(criticoFallado){
     nota = 0;
-  }else if(tieneImpulsor){
-    nota = 100;
-  }else{
+  }
+  else if(impulsorItems.length > 0){
+
+    const impulsorNO = impulsorItems.some(x => x.respuesta === 'NO');
+    const impulsorSI = impulsorItems.some(x => x.respuesta === 'SI');
+
+    if(impulsorNO){
+      nota = 0;
+    }else if(impulsorSI){
+      nota = 100;
+    }
+
+  }
+  else{
+    // 🔵 CALCULO NORMAL (incluye cuando impulsor es N/A)
     let posibles = 0, obtenidos = 0;
+
     items.forEach(x => {
       if((x.tipo === 'CRITICO' || x.tipo === 'NORMAL') && x.respuesta !== 'NO_APLICA'){
         posibles += x.peso;
         if(x.respuesta === 'SI') obtenidos += x.peso;
       }
     });
-    if(posibles > 0) nota = (obtenidos / posibles) * 100;
+
+    if(posibles > 0){
+      nota = (obtenidos / posibles) * 100;
+    }
   }
 
   const notaFmt = (Math.round(nota * 10) / 10).toFixed(1);
@@ -948,6 +971,7 @@ function recalcularScoreEnVivo(){
 
   chip.title = `Nota: ${notaFmt}% | Umbral: ${UMBRAL}%`;
 }
+
 
 document.addEventListener('change', (e) => {
   if (SOLO_LECTURA) return;
