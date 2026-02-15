@@ -462,6 +462,47 @@ const elSeccion = document.getElementById('id_seccion');
 const elGestionSelect = document.getElementById('gestion_select');
 const elGestion       = document.getElementById('gestion');
 
+
+const elAspecto   = document.getElementById('aspecto');
+const elDireccion = document.getElementById('direccion');
+
+elGestion.readOnly = true;
+
+function generarGestionAutomatica() {
+
+  const aspecto   = (elAspecto?.value || '').trim();
+  const direccion = (elDireccion?.value || '').trim();
+
+  if (!aspecto || !direccion) {
+    elGestion.value = '';
+    return;
+  }
+
+  const mapaAspecto = {
+    'IMPULSOR DE SATISFACCIÓN': 'IMP',
+    'ERROR CRITICO': 'PEC',
+    'ERROR NO CRITICO': 'ENC'
+  };
+
+  const mapaDireccion = {
+    'USUARIO FINAL': 'UF',
+    'CUMPLIMIENTO': 'CUM',
+    'NEGOCIO': 'NEG'
+  };
+
+  const prefijo = mapaAspecto[aspecto] || '';
+  const sufijo  = mapaDireccion[direccion] || '';
+
+  elGestion.value = (prefijo && sufijo) ? `${prefijo} - ${sufijo}` : '';
+}
+
+elAspecto?.addEventListener('change', generarGestionAutomatica);
+elDireccion?.addEventListener('change', generarGestionAutomatica);
+
+generarGestionAutomatica();
+
+
+
 function resetSelect(sel, placeholder='Seleccione...') {
   sel.innerHTML = '';
   const opt = document.createElement('option');
@@ -540,7 +581,7 @@ if (elArea && !elArea.disabled) {
 if (elCola) {
   elCola.addEventListener('change', async () => {
     await cargarGestiones(elCola.value || '');
-    elGestion.value = '';
+    generarGestionAutomatica(); // en vez de limpiar
   });
 }
 
