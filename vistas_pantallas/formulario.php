@@ -943,35 +943,50 @@ function recalcularScoreEnVivo(){
   }));
 
   const criticoFallado = items.some(x => x.tipo === 'CRITICO' && x.respuesta === 'NO');
-  const tieneImpulsor  = items.some(x => x.tipo === 'IMPULSOR');
+
+  // 🔴 FIX: evitar que N/A active el impulsor
+  const tieneImpulsor  = items.some(x => 
+    x.tipo === 'IMPULSOR' &&
+    x.respuesta !== 'NO_APLICA' &&
+    x.respuesta !== 'NA' &&
+    x.respuesta !== 'N/A'
+  );
 
   let nota = 0;
 
   if(criticoFallado){
     nota = 0;
   }
-  // 🔴 CORRECCIÓN DEL BUG (IMPULSOR)
   else if(tieneImpulsor){
 
-    const impulsorNO = items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'NO');
-    const impulsorSI = items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'SI');
+    const impulsorNO = items.some(x => 
+      x.tipo === 'IMPULSOR' && 
+      x.respuesta === 'NO'
+    );
+
+    const impulsorSI = items.some(x => 
+      x.tipo === 'IMPULSOR' && 
+      x.respuesta === 'SI'
+    );
 
     if(impulsorNO){
       nota = 0;
     }else if(impulsorSI){
       nota = 100;
     }else{
-      nota = 0; // N/A o sin respuesta válida
+      nota = 0;
     }
   }
   else{
     let posibles = 0, obtenidos = 0;
+
     items.forEach(x => {
       if((x.tipo === 'CRITICO' || x.tipo === 'NORMAL') && x.respuesta !== 'NO_APLICA'){
         posibles += x.peso;
         if(x.respuesta === 'SI') obtenidos += x.peso;
       }
     });
+
     if(posibles > 0) nota = (obtenidos / posibles) * 100;
   }
 
