@@ -950,12 +950,19 @@ function recalcularScoreEnVivo(){
   if(criticoFallado){
     nota = 0;
   }
-  // 🔴 CORRECCIÓN AQUÍ (SIN CAMBIAR TU LÓGICA)
-  else if(tieneImpulsor && !items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'NO')){
-    nota = 100;
-  }
-  else if(tieneImpulsor && items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'NO')){
-    nota = 0;
+  // 🔴 CORRECCIÓN DEL BUG (IMPULSOR)
+  else if(tieneImpulsor){
+
+    const impulsorNO = items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'NO');
+    const impulsorSI = items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'SI');
+
+    if(impulsorNO){
+      nota = 0;
+    }else if(impulsorSI){
+      nota = 100;
+    }else{
+      nota = 0; // N/A o sin respuesta válida
+    }
   }
   else{
     let posibles = 0, obtenidos = 0;
@@ -985,6 +992,7 @@ function recalcularScoreEnVivo(){
 
   chip.title = `Nota: ${notaFmt}% | Umbral: ${UMBRAL}%`;
 }
+
 
 /* submit */
 document.getElementById('formAuditoria').addEventListener('submit', (e) => {
