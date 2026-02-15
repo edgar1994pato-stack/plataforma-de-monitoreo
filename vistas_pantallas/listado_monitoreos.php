@@ -302,6 +302,8 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
       <table class="table table-sm table-hover align-middle mb-0">
         <thead class="table-light">
           <tr class="small text-muted">
+            <th style="width:110px;">Monitoreo</th>
+
             <th style="width:170px;">Interacción</th>
             <th style="width:170px;">Fecha</th>
             <th>Agente</th>
@@ -316,7 +318,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         <tbody>
         <?php if (count($rows) === 0): ?>
           <tr>
-            <td colspan="8" class="text-center text-muted py-4">
+            <td colspan="9" class="text-center text-muted py-4">
               <i class="bi bi-inbox fs-3 opacity-25"></i>
               <div class="mt-2">No hay monitoreos para los filtros seleccionados.</div>
             </td>
@@ -343,11 +345,16 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
               $urlModificar = $BASE_URL . "/vistas_pantallas/corregir_monitoreo.php?id=" . $idAccion;
             ?>
             <tr>
-              <td class="fw-bold"><?= h($ref) ?></td>
-              <td><?= h($r['fecha_registro'] ?? '') ?></td>
-              <td><?= h($r['nombre_agente'] ?? '-') ?></td>
-              <td><?= h($r['nombre_cola'] ?? '-') ?></td>
-              <td><?= h($r['auditor'] ?? '-') ?></td>
+<td class="fw-bold text-primary">
+  #<?= (int)($r['id_version'] ?? 0) ?>
+</td>
+
+<td class="fw-bold"><?= h($ref) ?></td>
+<td><?= h($r['fecha_registro'] ?? '') ?></td>
+<td><?= h($r['nombre_agente'] ?? '-') ?></td>
+<td><?= h($r['nombre_cola'] ?? '-') ?></td>
+<td><?= h($r['auditor'] ?? '-') ?></td>
+
 
               <td>
                 <span class="badge <?= $badgeNota ?>"><?= number_format($nota, 1) ?>%</span>
