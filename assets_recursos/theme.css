@@ -1,5 +1,5 @@
 /* =========================
-   ALFANET CORPORATIVO FORMAL
+   ALFANET ENTERPRISE EDITION
    ========================= */
 
 :root{
@@ -8,7 +8,7 @@
   --white:#FFFFFF;
 
   --radius:12px;
-  --shadow:0 8px 25px rgba(0,0,0,.25);
+  --shadow:0 6px 18px rgba(0,0,0,.15);
 }
 
 html, body{
@@ -32,11 +32,56 @@ body::before{
 }
 
 /* =========================
+   TOPBAR ENTERPRISE
+========================= */
+
+.topbar{
+  background: var(--black);
+  height:60px;
+  padding:0 30px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.btn-header{
+  background:transparent;
+  border:none;
+  color:var(--white);
+  font-weight:500;
+  padding:6px 14px;
+  border-radius:6px;
+  position:relative;
+  transition:all .2s ease;
+  cursor:pointer;
+}
+
+.btn-header::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-4px;
+  width:0%;
+  height:2px;
+  background:var(--primary);
+  transition:width .2s ease;
+}
+
+.btn-header:hover::after{
+  width:100%;
+}
+
+.btn-header-primary{
+  color:var(--primary);
+}
+
+/* =========================
    TITLES
 ========================= */
 
 .page-title{
-  font-weight:900;
+  font-weight:700;
   color: var(--primary);
   letter-spacing:.5px;
 }
@@ -56,45 +101,47 @@ body::before{
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   color: var(--black);
-  transition: all .25s ease;
+  transition: all .2s ease;
 }
 
 .card-soft:hover{
-  transform: translateY(-4px);
+  transform: translateY(-3px);
 }
 
 .card-header-dark{
   background: var(--black);
   color: var(--primary);
-  font-weight:900;
-  letter-spacing:.6px;
+  font-weight:700;
+  letter-spacing:.5px;
 }
 
 .card-header-soft{
-  background:#f8f8f8;
+  background:#FFFFFF;
+  border-bottom:1px solid rgba(0,0,0,.08);
 }
 
 /* =========================
-   BUTTONS
+   BUTTONS GENERALES
 ========================= */
 
 .btn-primary{
   background: var(--primary);
   border:none;
   color: var(--black);
-  font-weight:800;
+  font-weight:600;
   border-radius:8px;
+  transition: all .2s ease;
 }
 
 .btn-primary:hover{
-  background:#d2d91d;
-  color: var(--black);
+  opacity:.9;
 }
 
 .btn-outline-secondary{
   border:1px solid var(--primary);
   color: var(--primary);
   background:transparent;
+  border-radius:8px;
 }
 
 .btn-outline-secondary:hover{
@@ -109,7 +156,7 @@ body::before{
 .badge{
   background: var(--primary);
   color: var(--black);
-  font-weight:800;
+  font-weight:600;
   border-radius:20px;
   padding:4px 10px;
 }
@@ -125,7 +172,7 @@ body::before{
 }
 
 .list-group-item.active{
-  background: #fdfed9;
+  background: rgba(224,230,33,.15);
   border-left:4px solid var(--primary);
   color: var(--black);
 }
@@ -144,7 +191,8 @@ body::before{
 .resultado-box .hdr{
   background: var(--black);
   color: var(--primary);
-  font-weight:900;
+  font-weight:700;
+  padding:10px 15px;
 }
 
 /* =========================
@@ -154,8 +202,9 @@ body::before{
 .qa-chip{
   background: var(--white);
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,.1);
   color: var(--black);
+  padding:8px 12px;
 }
 
 /* =========================
@@ -177,13 +226,13 @@ body::before{
   padding: 60px 50px;
   border-radius: 20px;
   text-align: center;
-  box-shadow: 0 25px 60px rgba(0,0,0,.4);
+  box-shadow: 0 20px 50px rgba(0,0,0,.3);
 }
 
 .circle-check{
   width:120px;
   height:120px;
-  border:6px solid var(--black);
+  border:5px solid var(--black);
   border-radius:50%;
   margin:0 auto 25px;
   display:flex;
@@ -195,18 +244,18 @@ body::before{
 .checkmark{
   width:40px;
   height:80px;
-  border-right:6px solid var(--black);
-  border-bottom:6px solid var(--black);
+  border-right:5px solid var(--black);
+  border-bottom:5px solid var(--black);
   transform:rotate(45deg);
 }
 
 .titulo-monitoreo{
-  font-weight:700;
+  font-weight:600;
   color: var(--black);
 }
 
 .numero-monitoreo{
   font-size:50px;
-  font-weight:900;
+  font-weight:800;
   color: var(--black);
 }
