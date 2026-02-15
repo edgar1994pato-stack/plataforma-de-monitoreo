@@ -103,7 +103,8 @@ $primerDiaMes = date('Y-m-01');
 $ultimoDiaMes = date('Y-m-t');
 
 $fechaInicio = trim((string)($_GET['fi'] ?? $primerDiaMes));
-$fechaFin    = trim((string)($_GET['ff'] ?? $ultimoDiaMes));
+$fechaFin = trim((string)($_GET['ff'] ?? $hoy));
+
 
 $idAreaGet   = isset($_GET['area']) ? (int)$_GET['area'] : 0;
 $idColaGet   = isset($_GET['cola']) ? (int)$_GET['cola'] : 0;
