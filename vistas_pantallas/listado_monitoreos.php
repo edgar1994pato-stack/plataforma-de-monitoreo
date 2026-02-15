@@ -108,6 +108,8 @@ $fechaFin    = trim((string)($_GET['ff'] ?? $ultimoDiaMes));
 $idAreaGet   = isset($_GET['area']) ? (int)$_GET['area'] : 0;
 $idColaGet   = isset($_GET['cola']) ? (int)$_GET['cola'] : 0;
 $idAgenteGet = isset($_GET['agente']) ? (int)$_GET['agente'] : 0;
+$idMonitoreoGet = isset($_GET['mon']) ? (int)$_GET['mon'] : 0; // 🔹 NUEVO
+
 
 /* sv: 0 = solo vigente, 1 = incluye sin vigente */
 $incluirSinVigente = isset($_GET['sv']) ? (int)$_GET['sv'] : 0;
@@ -131,6 +133,8 @@ if ($esRolVeTodo) {
 $idColaParam   = ($idColaGet > 0) ? $idColaGet : null;
 $idAgenteParam = ($idAgenteGet > 0) ? $idAgenteGet : null;
 $svParam       = ($incluirSinVigente === 1) ? 1 : 0;
+$idMonitoreoParam = ($idMonitoreoGet > 0) ? $idMonitoreoGet : null; // 🔹 NUEVO
+
 
 /* =========================================================
  * 10) CARGA DE ÁREAS (SELECT)
@@ -157,17 +161,20 @@ $errorListado = '';
 
 try {
     // SP: dbo.PR_LISTAR_MONITOREOS(@FechaInicio,@FechaFin,@IdArea,@IdCola,@IdAgente,@IncluirSinVigente)
-    $sql  = "EXEC dbo.PR_LISTAR_MONITOREOS ?, ?, ?, ?, ?, ?";
+    $sql  = "EXEC dbo.PR_LISTAR_MONITOREOS ?, ?, ?, ?, ?, ?, ?";
+
     $stmt = $conexion->prepare($sql);
 
-    $stmt->execute([
-        $fechaInicio,
-        $fechaFin,
-        $idAreaParam,
-        $idColaParam,
-        $idAgenteParam,
-        $svParam
-    ]);
+$stmt->execute([
+    $fechaInicio,
+    $fechaFin,
+    $idAreaParam,
+    $idColaParam,
+    $idAgenteParam,
+    $svParam,
+    $idMonitoreoParam
+]);
+
 
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -195,6 +202,16 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
   <div class="card-body">
     <form method="GET" action="<?= h($BASE_URL) ?>/vistas_pantallas/listado_monitoreos.php" class="row g-2 align-items-end">
+         
+    <div class="col-12 col-md-3">
+    <label class="form-label small fw-bold text-muted">N° MONITOREO</label>
+    <input type="number"
+           class="form-control form-control-sm"
+           name="mon"
+           value="<?= $idMonitoreoGet > 0 ? h($idMonitoreoGet) : '' ?>"
+           placeholder="Ej: 1025">
+  </div>
+
 
       <div class="col-12 col-md-3">
         <label class="form-label small fw-bold text-muted">FECHA INICIO</label>
