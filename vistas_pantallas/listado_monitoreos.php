@@ -347,7 +347,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
             ?>
             <tr>
 <td class="fw-bold text-primary">
-  #<?= (int)($r['id_version'] ?? 0) ?>
+  #<?= (int)($r['id_origen'] ?? 0) ?>
 </td>
 
 <td class="fw-bold"><?= h($ref) ?></td>
