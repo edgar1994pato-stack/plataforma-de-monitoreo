@@ -695,20 +695,31 @@ durHMS?.addEventListener('change', syncDuracionInteraccion);
 syncDuracionInteraccion();
 
 /* ⏱ inicio/fin */
+
+/* 🔹 Función para generar fecha ISO LOCAL (no UTC) */
+function toLocalISO(dt){
+  const pad = n => String(n).padStart(2,'0');
+  return dt.getFullYear() + '-' + pad(dt.getMonth()+1) + '-' + pad(dt.getDate())
+    + 'T' + pad(dt.getHours()) + ':' + pad(dt.getMinutes()) + ':' + pad(dt.getSeconds());
+}
+
 const KEY_TS_INICIO = 'monitoreo_ts_inicio_iso';
 let tsInicioISO = sessionStorage.getItem(KEY_TS_INICIO);
+
 if(!tsInicioISO){
-  tsInicioISO = new Date().toISOString();
+  tsInicioISO = toLocalISO(new Date());   // ✅ ahora LOCAL
   sessionStorage.setItem(KEY_TS_INICIO, tsInicioISO);
 }
+
 const tsInicio = new Date(tsInicioISO);
 
-document.getElementById('ts_inicio').value = tsInicio.toISOString();
+document.getElementById('ts_inicio').value = tsInicioISO;  // ✅ LOCAL
 document.getElementById('hora_inicio').value = hhmm(tsInicio);
 
 function setHoraFinYDuracion() {
   const tsFin = new Date();
-  document.getElementById('ts_fin').value = tsFin.toISOString();
+
+  document.getElementById('ts_fin').value = toLocalISO(tsFin);  // ✅ LOCAL
   document.getElementById('hora_fin').value = hhmm(tsFin);
 
   const diffMs = tsFin - tsInicio;
@@ -716,6 +727,7 @@ function setHoraFinYDuracion() {
   document.getElementById('duracion_segundos').value = diffSeg;
   document.getElementById('duracion_min').value = Math.floor(diffSeg / 60);
 }
+
 
 /* contador observaciones */
 
@@ -937,18 +949,41 @@ function recalcularScoreEnVivo(){
 
   if(criticoFallado){
     nota = 0;
-  }else if(tieneImpulsor){
-    nota = 100;
-  }else{
-    let posibles = 0, obtenidos = 0;
-    items.forEach(x => {
-      if((x.tipo === 'CRITICO' || x.tipo === 'NORMAL') && x.respuesta !== 'NO_APLICA'){
-        posibles += x.peso;
-        if(x.respuesta === 'SI') obtenidos += x.peso;
+ let nota = 0;
+
+/* 🔴 CRÍTICO FALLADO = 0 AUTOMÁTICO */
+if(criticoFallado){
+  nota = 0;
+
+/* 🔵 IMPULSOR SOLO SI RESPUESTA = SI */
+}else if(items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'SI')){
+  nota = 100;
+
+/* 🟢 CÁLCULO NORMAL */
+}else{
+  let posibles = 0;
+  let obtenidos = 0;
+
+  items.forEach(x => {
+    if(
+      (x.tipo === 'CRITICO' || x.tipo === 'NORMAL') &&
+      x.respuesta !== 'NO_APLICA'
+    ){
+      posibles += x.peso;
+
+      if(x.respuesta === 'SI'){
+        obtenidos += x.peso;
       }
-    });
-    if(posibles > 0) nota = (obtenidos / posibles) * 100;
+    }
+  });
+
+  if(posibles > 0){
+    nota = (obtenidos / posibles) * 100;
+  }else{
+    nota = 0;
   }
+}
+
 
   const notaFmt = (Math.round(nota * 10) / 10).toFixed(1);
   scoreEl.textContent = notaFmt;
