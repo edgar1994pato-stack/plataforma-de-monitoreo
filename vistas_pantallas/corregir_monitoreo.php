@@ -340,20 +340,11 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
                  class="form-control form-control-sm" value="<?= h($fechaInter) ?>" required>
         </div>
 
-<!-- HORA INTERACCIÓN (oculto pero funcional) -->
-<div class="col-md-3 d-none">
-
-  <label class="form-label small fw-bold text-muted">HORA INTERACCIÓN</label>
-
-  <input <?= $READONLY_ATTR ?> 
-         type="time" 
-         name="hora_interaccion" 
-         id="hora_interaccion"
-         class="form-control form-control-sm"
-         value="10:30">
-
-</div>
-
+        <div class="col-md-3">
+          <label class="form-label small fw-bold text-muted">HORA INTERACCIÓN <span class="text-danger">*</span></label>
+          <input <?= $READONLY_ATTR ?> type="time" name="hora_interaccion" id="hora_interaccion"
+                 class="form-control form-control-sm" value="<?= h($horaInter) ?>" required>
+        </div>
 
         <div class="col-md-3">
           <label class="form-label small fw-bold text-muted">DURACIÓN INTERACCIÓN</label>
@@ -919,62 +910,6 @@ function recalcularScoreEnVivo(){
     tipo: (r.dataset.tipo || 'NORMAL').toUpperCase(),
     peso: parseFloat(r.dataset.peso || '0') || 0
   }));
-
-  const criticoFallado = items.some(x => x.tipo === 'CRITICO' && x.respuesta === 'NO');
-
-  let nota = 0;
-
-  /* 🔴 CRÍTICO FALLADO = 0 */
-  if(criticoFallado){
-    nota = 0;
-
-  /* 🔵 IMPULSOR SOLO SI ES SI */
-  }else if(items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'SI')){
-    nota = 100;
-
-  /* 🟢 CÁLCULO NORMAL */
-  }else{
-    let posibles = 0;
-    let obtenidos = 0;
-
-    items.forEach(x => {
-      if(
-        (x.tipo === 'CRITICO' || x.tipo === 'NORMAL') &&
-        x.respuesta !== 'NO_APLICA'
-      ){
-        posibles += x.peso;
-
-        if(x.respuesta === 'SI'){
-          obtenidos += x.peso;
-        }
-      }
-    });
-
-    if(posibles > 0){
-      nota = (obtenidos / posibles) * 100;
-    }else{
-      nota = 0;
-    }
-  }
-
-  const notaFmt = (Math.round(nota * 10) / 10).toFixed(1);
-  scoreEl.textContent = notaFmt;
-
-  chip.classList.remove('qa-chip-ok','qa-chip-bad','qa-chip-warn');
-
-  if(nota >= UMBRAL){
-    chip.classList.add('qa-chip-ok');
-    iconEl.textContent = '✅';
-    estadoEl.textContent = 'Aprobado';
-  }else{
-    chip.classList.add('qa-chip-bad');
-    iconEl.textContent = '⚠️';
-    estadoEl.textContent = 'Reprobado';
-  }
-
-  chip.title = `Nota: ${notaFmt}% | Umbral: ${UMBRAL}%`;
-}
-
 
   const criticoFallado = items.some(x => x.tipo === 'CRITICO' && x.respuesta === 'NO');
   const tieneImpulsor  = items.some(x => x.tipo === 'IMPULSOR');
