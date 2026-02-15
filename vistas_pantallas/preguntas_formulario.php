@@ -390,14 +390,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         <div class="col-md-6">
           <label class="form-label small fw-bold text-muted">GESTIÓN <span class="text-danger">*</span></label>
 
-          <select class="form-select form-select-sm" id="gestion_select">
-            <option value="">Seleccione...</option>
-            <?php foreach ($gestiones as $g): ?>
-              <?php $val = (string)($g['gestion'] ?? ''); $sel = ($form['gestion'] === $val) ? 'selected' : ''; ?>
-              <option value="<?= h($val) ?>" <?= $sel ?>><?= h($val) ?></option>
-            <?php endforeach; ?>
-            <option value="__OTRA__">Otra...</option>
-          </select>
+         
 
           <input type="text" class="form-control form-control-sm mt-2"
                  name="gestion" id="gestion"
@@ -459,7 +452,7 @@ const elArea    = document.getElementById('id_area');
 const elCola    = document.getElementById('id_cola');
 const elSeccion = document.getElementById('id_seccion');
 
-const elGestionSelect = document.getElementById('gestion_select');
+
 const elGestion       = document.getElementById('gestion');
 
 
@@ -537,7 +530,7 @@ async function cargarColasYSecciones(idArea) {
   if (!idArea) {
     resetSelect(elCola);
     resetSelect(elSeccion);
-    resetSelect(elGestionSelect);
+   
     elGestion.value = '';
     return;
   }
@@ -545,7 +538,7 @@ async function cargarColasYSecciones(idArea) {
   await loadOptions(`${BASE_URL}/cruds/servidor_filtros.php?tipo=colas&id_area=${encodeURIComponent(idArea)}`, elCola, 'id_cola', 'nombre_cola');
   await loadOptions(`${BASE_URL}/cruds/servidor_filtros.php?tipo=secciones&id_area=${encodeURIComponent(idArea)}`, elSeccion, 'id_seccion', 'nombre_seccion');
 
-  resetSelect(elGestionSelect);
+  
   const opt = document.createElement('option');
   opt.value = '__OTRA__';
   opt.textContent = 'Otra...';
@@ -554,23 +547,7 @@ async function cargarColasYSecciones(idArea) {
   elGestion.value = '';
 }
 
-async function cargarGestiones(idCola) {
-  resetSelect(elGestionSelect);
-  if (!idCola) {
-    const opt = document.createElement('option');
-    opt.value = '__OTRA__';
-    opt.textContent = 'Otra...';
-    elGestionSelect.appendChild(opt);
-    return;
-  }
 
-  await loadOptions(`${BASE_URL}/cruds/servidor_filtros.php?tipo=gestiones&id_cola=${encodeURIComponent(idCola)}`, elGestionSelect, 'gestion', 'gestion');
-
-  const opt = document.createElement('option');
-  opt.value = '__OTRA__';
-  opt.textContent = 'Otra...';
-  elGestionSelect.appendChild(opt);
-}
 
 if (elArea && !elArea.disabled) {
   elArea.addEventListener('change', async () => {
@@ -579,9 +556,8 @@ if (elArea && !elArea.disabled) {
 }
 
 if (elCola) {
-  elCola.addEventListener('change', async () => {
-    await cargarGestiones(elCola.value || '');
-    generarGestionAutomatica(); // en vez de limpiar
+  elCola.addEventListener('change', () => {
+    generarGestionAutomatica();
   });
 }
 
