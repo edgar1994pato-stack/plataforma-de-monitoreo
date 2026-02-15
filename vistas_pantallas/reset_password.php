@@ -47,7 +47,7 @@ $PAGE_ACTION_HTML = "";
  * 2) VALIDACIÓN BÁSICA DEL TOKEN
  * ========================================================= */
 if ($token === '' || strlen($token) < 20) {
-    require_once '../includes_partes_fijas/diseno_arriba.php';
+    require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
     ?>
     <div class="alert alert-danger small">
       <i class="bi bi-exclamation-triangle me-1"></i>
@@ -58,7 +58,8 @@ if ($token === '' || strlen($token) < 20) {
       Volver
     </a>
     <?php
-    require_once '../includes_partes_fijas/diseno_abajo.php';
+    require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
     exit;
 }
 
@@ -80,7 +81,7 @@ try {
     $stmt->closeCursor();
 
     if (!$user) {
-        require_once '../includes_partes_fijas/diseno_arriba.php';
+        require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         ?>
         <div class="alert alert-danger small">
           <i class="bi bi-exclamation-triangle me-1"></i>
@@ -91,26 +92,28 @@ try {
           Solicitar nuevo enlace
         </a>
         <?php
-        require_once '../includes_partes_fijas/diseno_abajo.php';
+        require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
         exit;
     }
 
 } catch (Throwable $e) {
-    require_once '../includes_partes_fijas/diseno_arriba.php';
+    require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
     ?>
     <div class="alert alert-danger small">
       <i class="bi bi-exclamation-triangle me-1"></i>
       Error al validar el enlace. Intente nuevamente.
     </div>
     <?php
-    require_once '../includes_partes_fijas/diseno_abajo.php';
+    require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
     exit;
 }
 
 /* =========================================================
  * 4) MOSTRAR FORMULARIO (TOKEN VÁLIDO)
  * ========================================================= */
-require_once '../includes_partes_fijas/diseno_arriba.php';
+require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 ?>
 
 <div class="row justify-content-center">
@@ -192,5 +195,6 @@ require_once '../includes_partes_fijas/diseno_arriba.php';
 </div>
 
 <?php
-require_once '../includes_partes_fijas/diseno_abajo.php';
+require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
 ?>

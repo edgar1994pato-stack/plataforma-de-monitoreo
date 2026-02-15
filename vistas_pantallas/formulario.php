@@ -1095,26 +1095,7 @@ document.getElementById('btnReset').addEventListener('click', () => {
 <?php
 $PAGE_SCRIPTS = ob_get_clean();
 
-echo '
-<style>
-/* 🔕 Ocultar contadores del menú lateral de secciones */
-.list-group-item > .badge {
-  display: none !important;
-}
 
-/* 🟦 Sección con preguntas calificadas */
-.list-group-item.seccion-calificada {
-  background-color: #e7f1ff !important;
-  border-left: 4px solid #0d6efd;
-  font-weight: 600;
-}
-
-/* 🟨 Sección activa y calificada */
-.list-group-item.seccion-calificada.active {
-  background-color: #cfe2ff !important;
-}
-</style>
-';
 
 
 require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';

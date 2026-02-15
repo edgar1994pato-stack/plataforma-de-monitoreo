@@ -45,7 +45,7 @@ $PAGE_ACTION_HTML = "";
  *  - Este archivo está en /vistas_pantallas
  *  - diseno_arriba.php está en /includes_partes_fijas
  */
-require_once '../includes_partes_fijas/diseno_arriba.php';
+require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 ?>
 
 <!-- =======================================================
@@ -148,5 +148,6 @@ require_once '../includes_partes_fijas/diseno_arriba.php';
 /**
  * Incluir pie de página visual
  */
-require_once '../includes_partes_fijas/diseno_abajo.php';
+require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
 ?>

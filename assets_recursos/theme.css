@@ -259,3 +259,24 @@ body::before{
   font-weight:800;
   color: var(--black);
 }
+
+
+/* =========================
+   SECCIONES CALIFICADAS
+========================= */
+
+.list-group-item > .badge {
+  display: none !important;
+}
+
+.list-group-item.seccion-calificada {
+  background-color: rgba(224,230,33,.15);
+  border-left: 4px solid #E0E621;
+  font-weight: 600;
+  color: #000000;
+}
+
+.list-group-item.seccion-calificada.active {
+  background-color: #E0E621;
+  color: #000000;
+}

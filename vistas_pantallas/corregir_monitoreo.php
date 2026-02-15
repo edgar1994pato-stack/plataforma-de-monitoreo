@@ -1068,14 +1068,7 @@ cargarCuestionario();
 <?php
 $PAGE_SCRIPTS = ob_get_clean();
 
-echo '
-<style>
-/* 🔕 Ocultar contadores del menú lateral de secciones */
-.list-group-item > .badge {
-  display: none !important;
-}
-</style>
-';
+
 
 require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
 
