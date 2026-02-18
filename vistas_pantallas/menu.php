@@ -216,28 +216,25 @@ $textoScope = can_see_all_areas()
     <?php endif; ?>
 
     <!-- TARJETA: PERFIL -->
-    <div class="col-md-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-person-circle fs-1 text-secondary"></i>
-                <h5 class="mt-3 fw-bold">Mi perfil</h5>
-                <p class="text-muted small mb-2">
-                    Usuario: <?= htmlspecialchars($nombreCompleto) ?><br>
-                    <?= htmlspecialchars($textoScope) ?><br>
-                    <?php if (is_readonly()): ?>
-                        <span class="badge bg-secondary mt-1">Modo lectura</span>
-                    <?php endif; ?>
-                </p>
-
-                <a href="<?= BASE_URL ?>/vistas_pantallas/cambiar_password.php"
-                   class="btn btn-outline-secondary btn-sm fw-bold">
-                    Cambiar contraseña
-                </a>
-            </div>
+    <?php if (can_create()): ?>
+<!-- TARJETA: MÓDULO DE AGENTES -->
+<div class="col-md-4">
+    <div class="card shadow-sm h-100 border-info">
+        <div class="card-body text-center">
+            <i class="bi bi-people-fill fs-1 text-info"></i>
+            <h5 class="mt-3 fw-bold">Módulo de Agentes</h5>
+            <p class="text-muted small">
+                Registrar, activar o desactivar agentes del sistema.
+            </p>
+            <a href="<?= BASE_URL ?>/vistas_pantallas/listado_agentes.php"
+               class="btn btn-info btn-sm fw-bold text-white">
+                Administrar
+            </a>
         </div>
     </div>
-
 </div>
+<?php endif; ?>
+
 
 <!-- =============== FIN CONTENIDO =============== -->
 
