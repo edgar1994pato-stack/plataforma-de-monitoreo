@@ -340,7 +340,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
                  class="form-control form-control-sm" value="<?= h($fechaInter) ?>" required>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-3 d-none">
           <label class="form-label small fw-bold text-muted">HORA INTERACCIÓN <span class="text-danger">*</span></label>
           <input <?= $READONLY_ATTR ?> type="time" name="hora_interaccion" id="hora_interaccion"
                  class="form-control form-control-sm" value="<?= h($horaInter) ?>" required>
