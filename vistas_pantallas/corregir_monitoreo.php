@@ -393,7 +393,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
                  class="form-control form-control-sm" value="<?= h((string)$version['link_evidencia']) ?>" required>
         </div>
 
-              <div class="col-md-3">
+              <div class="col-md-3 d-none">
   <label class="form-label small fw-bold text-muted">
     COLA <span class="text-danger">*</span>
   </label>
