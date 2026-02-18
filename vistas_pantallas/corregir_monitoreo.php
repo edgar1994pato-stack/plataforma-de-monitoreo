@@ -346,7 +346,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
                  class="form-control form-control-sm" value="<?= h($horaInter) ?>" required>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-3 d-none">
           <label class="form-label small fw-bold text-muted">DURACIÓN DE MONITOREO</label>
           <input <?= $READONLY_ATTR ?> type="time" id="duracion_interaccion_hms"
                  class="form-control form-control-sm" step="1"
