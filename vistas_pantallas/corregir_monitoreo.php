@@ -393,7 +393,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
                  class="form-control form-control-sm" value="<?= h((string)$version['link_evidencia']) ?>" required>
         </div>
 
-              <div class="col-md-3 d-none">
+<div class="col-md-3 d-none">
   <label class="form-label small fw-bold text-muted">
     COLA <span class="text-danger">*</span>
   </label>
@@ -699,6 +699,38 @@ function loadingHTML(msg='Cargando...') {
 
 const selTipoMon = document.getElementById('sel_tipo_monitoreo');
 const hiddenTipoMon = document.getElementById('hidden_tipo_monitoreo');
+
+
+const inputFecha = document.getElementById('fecha_interaccion');
+
+function controlarFechaPorTipo() {
+  const tipo = selTipoMon.value;
+
+  if (tipo === 'PRESENCIAL' || tipo === 'FANTASMA') {
+
+    // Obtener fecha actual
+    const hoy = new Date();
+    const yyyy = hoy.getFullYear();
+    const mm = String(hoy.getMonth() + 1).padStart(2,'0');
+    const dd = String(hoy.getDate()).padStart(2,'0');
+
+    inputFecha.value = `${yyyy}-${mm}-${dd}`;
+
+    // Bloquear edición
+    inputFecha.readOnly = true;
+
+  } else {
+    inputFecha.readOnly = false;
+  }
+}
+
+selTipoMon?.addEventListener('change', controlarFechaPorTipo);
+
+// Ejecutar una vez al cargar (por si ya viene seleccionado)
+controlarFechaPorTipo();
+
+
+
 function syncTipoMonitoreo() {
   if (!selTipoMon || !hiddenTipoMon) return;
   hiddenTipoMon.value = selTipoMon.value || '';
