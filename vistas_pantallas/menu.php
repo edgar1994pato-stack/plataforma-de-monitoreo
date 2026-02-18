@@ -221,9 +221,9 @@ $textoScope = can_see_all_areas()
     <div class="card card-soft h-100">
         <div class="card-body text-center">
             <i class="bi bi-people-fill fs-1" style="color: var(--primary);"></i>
-            <h5 class="mt-3 fw-bold">Módulo de Agentes</h5>
+            <h5 class="mt-3 fw-bold">Gestión de Agentes</h5>
             <p class="text-muted small">
-                Registrar, activar o desactivar agentes del sistema.
+                Crear, activar o desactivar agentes del sistema.
             </p>
             <a href="<?= BASE_URL ?>/vistas_pantallas/listado_agentes.php"
                class="btn btn-primary btn-sm fw-bold">
