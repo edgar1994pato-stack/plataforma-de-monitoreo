@@ -275,7 +275,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
 
 <div class="col-md-3">
-  <label class="form-label small fw-bold text-muted">DURACIÓN INTERACCIÓN</label>
+  <label class="form-label small fw-bold text-muted">DURACIÓN DE MONITOREO</label>
 
   <input type="time"
          id="duracion_interaccion_hms"

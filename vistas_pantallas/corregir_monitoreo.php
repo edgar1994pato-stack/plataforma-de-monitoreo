@@ -347,7 +347,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         </div>
 
         <div class="col-md-3">
-          <label class="form-label small fw-bold text-muted">DURACIÓN INTERACCIÓN</label>
+          <label class="form-label small fw-bold text-muted">DURACIÓN DE MONITOREO</label>
           <input <?= $READONLY_ATTR ?> type="time" id="duracion_interaccion_hms"
                  class="form-control form-control-sm" step="1"
                  value="<?= h(sprintf('%02d:%02d:%02d', (int)($durInterSeg/3600), (int)(($durInterSeg%3600)/60), (int)($durInterSeg%60))) ?>">
