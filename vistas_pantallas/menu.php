@@ -215,19 +215,18 @@ $textoScope = can_see_all_areas()
     </div>
     <?php endif; ?>
 
-    <!-- TARJETA: PERFIL -->
-    <?php if (can_create()): ?>
-<!-- TARJETA: MÓDULO DE AGENTES -->
+    <!-- TARJETA: USUARIOS -->
+  <?php if (can_create()): ?>
 <div class="col-md-4">
-    <div class="card shadow-sm h-100 border-info">
+    <div class="card card-soft h-100">
         <div class="card-body text-center">
-            <i class="bi bi-people-fill fs-1 text-info"></i>
+            <i class="bi bi-people-fill fs-1" style="color: var(--primary);"></i>
             <h5 class="mt-3 fw-bold">Módulo de Agentes</h5>
             <p class="text-muted small">
                 Registrar, activar o desactivar agentes del sistema.
             </p>
             <a href="<?= BASE_URL ?>/vistas_pantallas/listado_agentes.php"
-               class="btn btn-info btn-sm fw-bold text-white">
+               class="btn btn-primary btn-sm fw-bold">
                 Administrar
             </a>
         </div>
