@@ -1,17 +1,17 @@
 /* =========================
-   PALETA CORPORATIVA
+   VARIABLES CORPORATIVAS
 ========================= */
 
 :root{
   --primary:#E0E621;          
   --black:#000000;
-  --white:rgba(255,255,255,0.92);
-  --bg-light:rgba(255,255,255,0.85);
+  --white:#FFFFFF;
+  --bg-light:#f4f5f7;
   --text-dark:#1c1c1c;
-  --border-soft:rgba(255,255,255,0.15);
+  --border-soft:#e6e6e6;
 
   --radius:12px;
-  --shadow-soft:0 10px 30px rgba(0,0,0,.35);
+  --shadow-soft:0 6px 20px rgba(0,0,0,.06);
 }
 
 /* =========================
@@ -20,27 +20,30 @@
 
 html, body{
   height:100%;
+  margin:0;
 }
 
 body{
-  background-image: url('img/fondo-alfanet.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-
   font-family:"Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   color:var(--text-dark);
+
+  /* Fondo */
+  background-image:url('img/fondo-alfanet.jpg');
+  background-size:cover;
+  background-position:center top;
+  background-attachment:fixed;
+  background-repeat:no-repeat;
+  position:relative;
 }
 
-/* Capa oscura elegante */
+/* Overlay elegante (más claro para que se vea el logo) */
 body::before{
   content:"";
   position:fixed;
   inset:0;
   background:linear-gradient(
-      rgba(0,0,0,.65),
-      rgba(0,0,0,.75)
+      rgba(0,0,0,.35),
+      rgba(0,0,0,.45)
   );
   z-index:-1;
 }
@@ -51,7 +54,7 @@ body::before{
 
 .page-title{
   font-weight:600;
-  color:#fff;
+  color:var(--white);
   letter-spacing:.3px;
 }
 
@@ -61,16 +64,16 @@ body::before{
 }
 
 /* =========================
-   CARDS (Glass effect)
+   CARDS
 ========================= */
 
 .card-soft{
-  background:var(--white);
-  backdrop-filter:blur(6px);
-  border:1px solid var(--border-soft);
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(4px);
+  border:none;
   border-radius:var(--radius);
-  box-shadow:var(--shadow-soft);
-  transition:all .2s ease;
+  box-shadow:0 10px 30px rgba(0,0,0,.15);
+  transition:all .25s ease;
 }
 
 .card-soft:hover{
@@ -82,11 +85,10 @@ body::before{
   color:var(--primary);
   font-weight:600;
   border-radius:var(--radius) var(--radius) 0 0;
-  border-bottom:1px solid rgba(255,255,255,.05);
 }
 
 .card-header-soft{
-  background:transparent;
+  background:var(--white);
   border-bottom:1px solid var(--border-soft);
 }
 
@@ -97,7 +99,7 @@ body::before{
 .btn-primary{
   background:var(--primary);
   border:none;
-  color:#000;
+  color:var(--black);
   font-weight:600;
   border-radius:8px;
   padding:8px 22px;
@@ -111,21 +113,21 @@ body::before{
 
 .btn-outline-secondary{
   border:1px solid var(--border-soft);
-  color:#fff;
+  color:#444;
   background:transparent;
   border-radius:8px;
 }
 
 .btn-outline-secondary:hover{
-  background:rgba(255,255,255,0.1);
+  background:#f1f1f1;
 }
 
 /* =========================
-   BADGES
+   BADGES SUPERIORES
 ========================= */
 
 .badge-soft{
-  background:rgba(224,230,33,.2);
+  background:rgba(224,230,33,.15);
   color:#000;
   font-weight:500;
   padding:5px 12px;
@@ -133,26 +135,26 @@ body::before{
 }
 
 /* =========================
-   LIST GROUP
+   LIST GROUP (Menú lateral)
 ========================= */
 
 .list-group-item{
   border:none;
   border-left:3px solid transparent;
-  background:rgba(255,255,255,0.08);
+  background:rgba(255,255,255,.95);
   font-weight:500;
-  color:#fff;
+  color:#333;
   transition:all .2s ease;
 }
 
 .list-group-item:hover{
-  background:rgba(224,230,33,0.15);
+  background:#f2f2f2;
 }
 
 .list-group-item.active{
   background:rgba(224,230,33,.15);
   border-left:4px solid var(--primary);
-  color:#fff;
+  color:#000;
 }
 
 /* Ocultar contadores */
@@ -165,10 +167,9 @@ body::before{
 ========================= */
 
 .resultado-box{
-  background:var(--white);
+  background:rgba(255,255,255,.96);
   border-radius:var(--radius);
-  box-shadow:var(--shadow-soft);
-  border:1px solid var(--border-soft);
+  box-shadow:0 10px 30px rgba(0,0,0,.15);
 }
 
 .resultado-box .hdr{
@@ -187,20 +188,11 @@ body::before{
   border-radius:10px;
   padding:8px 14px;
   border:1px solid var(--border-soft);
-  box-shadow:0 3px 10px rgba(0,0,0,.2);
 }
 
-.qa-chip-ok{
-  border-left:4px solid #2e7d32;
-}
-
-.qa-chip-bad{
-  border-left:4px solid #c62828;
-}
-
-.qa-chip-warn{
-  border-left:4px solid #f9a825;
-}
+.qa-chip-ok{ border-left:4px solid #2e7d32; }
+.qa-chip-bad{ border-left:4px solid #c62828; }
+.qa-chip-warn{ border-left:4px solid #f9a825; }
 
 /* =========================
    FORM INPUTS
@@ -211,7 +203,7 @@ body::before{
   border:1px solid var(--border-soft);
   border-radius:8px;
   font-size:.9rem;
-  background:rgba(255,255,255,0.95);
+  background:rgba(255,255,255,.95);
 }
 
 .form-control:focus,
@@ -239,7 +231,7 @@ body::before{
   padding:60px 50px;
   border-radius:20px;
   text-align:center;
-  box-shadow:0 25px 60px rgba(0,0,0,.3);
+  box-shadow:0 25px 60px rgba(0,0,0,.2);
 }
 
 .circle-check{
@@ -274,29 +266,6 @@ body::before{
 }
 
 /* =========================
-   INDICADOR SECCIÓN RESPONDIDA
-========================= */
-
-.list-group-item.seccion-calificada{
-  position:relative;
-  background:rgba(224,230,33,0.15) !important;
-  border-left:3px solid var(--primary) !important;
-  font-weight:600;
-}
-
-.list-group-item.seccion-calificada::after{
-  content:"";
-  position:absolute;
-  right:14px;
-  top:50%;
-  transform:translateY(-50%);
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:var(--primary);
-}
-
-/* =========================
    BADGES ESTADO OPERATIVO
 ========================= */
 
@@ -310,16 +279,16 @@ body::before{
 
 .badge-activo{
   background:rgba(224,230,33,.2);
-  color:#000;
+  color:var(--black);
   border:1px solid rgba(224,230,33,.4);
 }
 
 .badge-vacaciones{
   background:var(--primary);
-  color:#000;
+  color:var(--black);
 }
 
 .badge-inactivo{
   background:#1c1c1c;
-  color:#fff;
+  color:var(--white);
 }
