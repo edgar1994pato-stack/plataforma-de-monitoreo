@@ -18,15 +18,39 @@ if ($idAgente <= 0) {
 
 $soloLectura = is_readonly();
 $idUsuarioSesion = (int)($_SESSION['id_usuario'] ?? 0);
+$errorAccion = '';
 
 /* =============================
-   CAMBIAR ESTADO (POST)
+   CAMBIAR ESTADO
 ============================= */
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$soloLectura) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' 
+    && isset($_POST['cambiar_estado']) 
+    && !$soloLectura) {
 
     try {
         $stmt = $conexion->prepare("EXEC dbo.PR_CAMBIAR_ESTADO_AGENTE ?, ?");
         $stmt->execute([$idAgente, $idUsuarioSesion]);
+
+        header("Location: $BASE_URL/vistas_pantallas/gestionar_agente.php?id=$idAgente");
+        exit;
+
+    } catch(Throwable $e) {
+        $errorAccion = $e->getMessage();
+    }
+}
+
+/* =============================
+   CERRAR AUSENCIA
+============================= */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' 
+    && isset($_POST['cerrar_ausencia']) 
+    && !$soloLectura) {
+
+    $idAusencia = (int)$_POST['id_ausencia'];
+
+    try {
+        $stmt = $conexion->prepare("EXEC dbo.PR_CERRAR_AUSENCIA_AGENTE ?, ?");
+        $stmt->execute([$idAusencia, $idUsuarioSesion]);
 
         header("Location: $BASE_URL/vistas_pantallas/gestionar_agente.php?id=$idAgente");
         exit;
@@ -90,7 +114,9 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
     <?php if(!$soloLectura): ?>
       <form method="POST">
-        <button type="submit" class="btn btn-primary btn-sm">
+        <button type="submit" 
+                name="cambiar_estado"
+                class="btn btn-primary btn-sm">
           <?= $detalle['estado'] == 1 ? 'Desactivar Agente' : 'Activar Agente' ?>
         </button>
       </form>
@@ -100,7 +126,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 </div>
 
 <!-- =============================
-     AUSENCIA ACTIVA
+     DISPONIBILIDAD
 ============================= -->
 <div class="card card-soft mb-4">
   <div class="card-header card-header-dark py-2 small">
@@ -115,14 +141,29 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
       <p>Hasta: <?= h($ausenciaActiva['fecha_fin']) ?></p>
       <p>Observación: <?= h($ausenciaActiva['observacion']) ?></p>
 
+      <?php if(!$soloLectura): ?>
+        <form method="POST" class="mt-3">
+            <input type="hidden" 
+                   name="id_ausencia" 
+                   value="<?= (int)$ausenciaActiva['id_ausencia'] ?>">
+            <button type="submit" 
+                    name="cerrar_ausencia"
+                    class="btn btn-primary btn-sm">
+                Cerrar ausencia
+            </button>
+        </form>
+      <?php endif; ?>
+
     <?php else: ?>
       <p>Sin ausencia activa.</p>
-      <?php if(!$soloLectura): ?>
+
+      <?php if(!$soloLectura && $detalle['estado'] == 1): ?>
         <a href="<?= h($BASE_URL) ?>/vistas_pantallas/registrar_ausencia.php?id=<?= $idAgente ?>"
            class="btn btn-soft btn-sm">
            Registrar ausencia
         </a>
       <?php endif; ?>
+
     <?php endif; ?>
 
   </div>
