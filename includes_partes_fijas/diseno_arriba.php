@@ -16,49 +16,27 @@ if (!isset($PAGE_ACTION_HTML))  $PAGE_ACTION_HTML = "";
 </head>
 <body>
 
-<div class="dashboard-wrapper">
-
-  <!-- SIDEBAR -->
-  <aside class="app-sidebar">
-    <div class="sidebar-brand">
-      ALFANET
-    </div>
-
-    <nav class="sidebar-menu">
-      <a href="<?= htmlspecialchars($BASE_URL) ?>/vistas_pantallas/menu.php" class="sidebar-link">
-        <i class="bi bi-speedometer2 me-2"></i> Dashboard
-      </a>
-      <a href="#" class="sidebar-link">
-        <i class="bi bi-clipboard-check me-2"></i> Monitoreos
-      </a>
-      <a href="#" class="sidebar-link">
-        <i class="bi bi-bar-chart me-2"></i> Reportes
-      </a>
-    </nav>
-  </aside>
-
-  <!-- MAIN AREA -->
-  <div class="app-main">
-
-    <!-- TOPBAR -->
-    <div class="app-topbar">
-      <div class="container-fluid px-4">
-        <div class="d-flex justify-content-between align-items-center py-3">
-          <div>
-            <div class="app-title"><?= htmlspecialchars($PAGE_TITLE) ?></div>
-            <?php if (!empty($PAGE_SUBTITLE)): ?>
-              <div class="app-subtitle"><?= htmlspecialchars($PAGE_SUBTITLE) ?></div>
-            <?php endif; ?>
-          </div>
-
-          <?php if (!empty($PAGE_ACTION_HTML)): ?>
-            <div class="d-flex gap-2 align-items-center">
-              <?= $PAGE_ACTION_HTML ?>
-            </div>
-          <?php endif; ?>
-        </div>
+<div class="app-topbar">
+  <div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center py-3">
+      <div>
+        <div class="app-title"><?= htmlspecialchars($PAGE_TITLE) ?></div>
+        <?php if (!empty($PAGE_SUBTITLE)): ?>
+          <div class="app-subtitle"><?= htmlspecialchars($PAGE_SUBTITLE) ?></div>
+        <?php endif; ?>
       </div>
-    </div>
 
-    <!-- CONTENT -->
-    <div class="container-fluid mt-4 px-4">
+      <?php if (!empty($PAGE_ACTION_HTML)): ?>
+        <div class="d-flex gap-2 align-items-center">
+          <?= $PAGE_ACTION_HTML ?>
+        </div>
+      <?php endif; ?>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mt-4 px-4">
+
+
+
+
