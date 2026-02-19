@@ -34,11 +34,9 @@ if ($estadoGet === 'ACTIVOS') {
 }
 
 /* Área backend */
-if ($veTodo) {
-    $idAreaParam = $idAreaGet > 0 ? $idAreaGet : null;
-} else {
-    $idAreaParam = $idAreaSesion > 0 ? $idAreaSesion : null;
-}
+$idAreaParam = $veTodo
+    ? ($idAreaGet > 0 ? $idAreaGet : null)
+    : ($idAreaSesion > 0 ? $idAreaSesion : null);
 
 $idColaParam = $idColaGet > 0 ? $idColaGet : null;
 
@@ -64,8 +62,7 @@ $rows = [];
 $errorListado = '';
 
 try {
-    $sql = "EXEC dbo.PR_LISTAR_AGENTES ?, ?, ?";
-    $stmt = $conexion->prepare($sql);
+    $stmt = $conexion->prepare("EXEC dbo.PR_LISTAR_AGENTES ?, ?, ?");
     $stmt->execute([$idAreaParam, $idColaParam, $estadoParam]);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch(Throwable $e){
@@ -81,17 +78,24 @@ $PAGE_SUBTITLE = "";
 require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 ?>
 
+<!-- ===================== NAVEGACIÓN ===================== -->
+<div class="mb-3 d-flex justify-content-between">
+  <a href="<?= h($BASE_URL) ?>/vistas_pantallas/menu.php"
+     class="btn btn-outline-secondary btn-sm shadow-sm">
+     <i class="bi bi-house-door"></i> Menú principal
+  </a>
+</div>
+
 <!-- ===================== FILTROS ===================== -->
 <div class="card card-soft mb-3">
   <div class="card-header card-header-dark py-2 small d-flex justify-content-between align-items-center">
-    <div><i class="bi bi-funnel me-2"></i>Filtros</div>
+    <div><i class="bi bi-funnel me-2"></i> Filtros</div>
     <div class="small opacity-75">Resultados: <b><?= count($rows) ?></b></div>
   </div>
 
   <div class="card-body">
     <form method="GET" class="row g-2 align-items-end">
 
-      <!-- Área -->
       <div class="col-md-3">
         <label class="form-label small fw-bold text-muted">ÁREA</label>
         <select class="form-select form-select-sm" name="area" <?= $veTodo ? '' : 'disabled' ?>>
@@ -108,7 +112,6 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         <?php endif; ?>
       </div>
 
-      <!-- Estado -->
       <div class="col-md-3">
         <label class="form-label small fw-bold text-muted">ESTADO</label>
         <select class="form-select form-select-sm" name="estado">
@@ -118,7 +121,6 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         </select>
       </div>
 
-      <!-- Botones -->
       <div class="col-md-3 d-flex gap-2">
         <button type="submit" class="btn btn-primary btn-sm w-100 shadow-sm">
           <i class="bi bi-search"></i> Buscar
@@ -152,7 +154,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 <!-- ===================== TABLA ===================== -->
 <div class="card card-soft mb-5">
   <div class="card-header card-header-dark py-2 small">
-    <i class="bi bi-table me-2"></i>Listado de agentes
+    <i class="bi bi-table me-2"></i> Listado de agentes
   </div>
 
   <div class="card-body p-0">
@@ -164,8 +166,8 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
             <th>Área</th>
             <th>Cola</th>
             <th>Supervisor</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>Estado Operativo</th>
+            <th class="text-center">Acciones</th>
           </tr>
         </thead>
 
@@ -183,23 +185,46 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
             <td><?= h($r['nombre_area']) ?></td>
             <td><?= h($r['nombre_cola']) ?></td>
             <td><?= h($r['nombre_supervisor']) ?></td>
+
             <td>
-              <?php if($r['estado'] == 1): ?>
-                <span class="badge bg-success">ACTIVO</span>
+              <?php
+                $estadoOp = strtoupper($r['estado_operativo'] ?? 'ACTIVO');
+
+                if ($estadoOp === 'ACTIVO'):
+              ?>
+                <span class="badge-estado badge-activo">ACTIVO</span>
+
+              <?php elseif ($estadoOp === 'EN VACACIONES'): ?>
+                <span class="badge-estado badge-vacaciones">EN VACACIONES</span>
+
               <?php else: ?>
-                <span class="badge bg-secondary">INACTIVO</span>
+                <span class="badge-estado badge-inactivo">INACTIVO</span>
               <?php endif; ?>
             </td>
-            <td>
-              <a href="<?= h($BASE_URL) ?>/vistas_pantallas/agente_formulario.php?id=<?= (int)$r['id_agente_int'] ?>"
-                 class="btn btn-outline-primary btn-sm">
-                 Editar
-              </a>
+
+            <td class="text-center">
+              <div class="d-flex justify-content-center gap-2">
+
+                <a href="<?= h($BASE_URL) ?>/vistas_pantallas/agente_formulario.php?id=<?= (int)$r['id_agente_int'] ?>"
+                   class="btn btn-outline-secondary btn-sm">
+                   Editar
+                </a>
+
+                <?php if(!$soloLectura && $r['estado'] == 1): ?>
+                  <a href="<?= h($BASE_URL) ?>/vistas_pantallas/registrar_ausencia.php?id=<?= (int)$r['id_agente_int'] ?>"
+                     class="btn btn-outline-secondary btn-sm">
+                     Vacaciones
+                  </a>
+                <?php endif; ?>
+
+              </div>
             </td>
+
           </tr>
           <?php endforeach; ?>
         <?php endif; ?>
         </tbody>
+
       </table>
     </div>
   </div>

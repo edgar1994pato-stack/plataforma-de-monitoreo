@@ -291,3 +291,36 @@ body{
   background: rgba(224,230,33,0.12) !important;
   border-left:4px solid #E0E621 !important;
 }
+
+
+
+
+
+
+/* =========================
+   BADGES ESTADO OPERATIVO
+========================= */
+
+.badge-estado{
+  padding:6px 14px;
+  font-size:.75rem;
+  font-weight:600;
+  border-radius:20px;
+  letter-spacing:.3px;
+}
+
+.badge-activo{
+  background:rgba(224,230,33,.15);
+  color:var(--black);
+  border:1px solid rgba(224,230,33,.35);
+}
+
+.badge-vacaciones{
+  background:var(--primary);
+  color:var(--black);
+}
+
+.badge-inactivo{
+  background:#1c1c1c;
+  color:var(--white);
+}
