@@ -23,7 +23,6 @@ $soloLectura = is_readonly();
    FILTROS GET
 ============================= */
 $idAreaGet  = isset($_GET['area']) ? (int)$_GET['area'] : 0;
-$idColaGet  = isset($_GET['cola']) ? (int)$_GET['cola'] : 0;
 $estadoGet  = strtoupper(trim($_GET['estado'] ?? 'ACTIVOS'));
 
 $estadoParam = null;
@@ -38,18 +37,25 @@ $idAreaParam = $veTodo
     ? ($idAreaGet > 0 ? $idAreaGet : null)
     : ($idAreaSesion > 0 ? $idAreaSesion : null);
 
-$idColaParam = $idColaGet > 0 ? $idColaGet : null;
-
 /* =============================
    CARGAR ÁREAS
 ============================= */
 $areas = [];
 try {
     if ($veTodo) {
-        $st = $conexion->query("SELECT id_area, nombre_area FROM dbo.AREAS WHERE estado=1 ORDER BY nombre_area");
+        $st = $conexion->query("
+            SELECT id_area, nombre_area
+            FROM dbo.AREAS
+            WHERE estado = 1
+            ORDER BY nombre_area
+        ");
         $areas = $st->fetchAll(PDO::FETCH_ASSOC);
     } else {
-        $st = $conexion->prepare("SELECT id_area, nombre_area FROM dbo.AREAS WHERE id_area=?");
+        $st = $conexion->prepare("
+            SELECT id_area, nombre_area
+            FROM dbo.AREAS
+            WHERE id_area = ?
+        ");
         $st->execute([$idAreaSesion]);
         $areas = $st->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -62,8 +68,8 @@ $rows = [];
 $errorListado = '';
 
 try {
-    $stmt = $conexion->prepare("EXEC dbo.PR_LISTAR_AGENTES ?, ?, ?");
-    $stmt->execute([$idAreaParam, $idColaParam, $estadoParam]);
+    $stmt = $conexion->prepare("EXEC dbo.PR_LISTAR_AGENTES ?, NULL, ?");
+    $stmt->execute([$idAreaParam, $estadoParam]);
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch(Throwable $e){
     $errorListado = $e->getMessage();
@@ -99,7 +105,6 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
 </div>
 
-
 <!-- ===================== FILTROS ===================== -->
 <div class="card card-soft mb-3">
   <div class="card-header card-header-dark py-2 small d-flex justify-content-between align-items-center">
@@ -110,7 +115,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   <div class="card-body">
     <form method="GET" class="row g-2 align-items-end">
 
-      <div class="col-md-4">
+      <div class="col-md-6">
         <label class="form-label small fw-bold text-muted">ÁREA</label>
         <select class="form-select form-select-sm" name="area" <?= $veTodo ? '' : 'disabled' ?>>
           <option value="0">Todas</option>
@@ -126,24 +131,13 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         <?php endif; ?>
       </div>
 
-      <div class="col-md-4">
+      <div class="col-md-6">
         <label class="form-label small fw-bold text-muted">ESTADO</label>
         <select class="form-select form-select-sm" name="estado">
           <option value="TODOS" <?= $estadoGet === 'TODOS' ? 'selected' : '' ?>>TODOS</option>
           <option value="ACTIVOS" <?= $estadoGet === 'ACTIVOS' ? 'selected' : '' ?>>ACTIVOS</option>
           <option value="INACTIVOS" <?= $estadoGet === 'INACTIVOS' ? 'selected' : '' ?>>INACTIVOS</option>
         </select>
-      </div>
-
-      <div class="col-md-4 d-flex gap-2">
-        <button type="submit" class="btn btn-primary btn-sm w-100 shadow-sm">
-          <i class="bi bi-search"></i> Buscar
-        </button>
-
-        <a class="btn btn-soft btn-sm w-100 shadow-sm"
-           href="<?= h($BASE_URL) ?>/vistas_pantallas/listado_agentes.php">
-           <i class="bi bi-x-circle"></i> Limpiar
-        </a>
       </div>
 
     </form>
@@ -165,12 +159,11 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   <div class="card-body p-0">
     <div class="table-responsive">
       <table class="table table-sm table-hover align-middle mb-0">
+
         <thead>
           <tr class="small text-muted">
             <th>Nombre</th>
             <th>Área</th>
-            <th>Cola</th>
-            <th>Supervisor</th>
             <th>Estado</th>
             <th class="text-center">Acciones</th>
           </tr>
@@ -189,7 +182,6 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
             <td><?= h($r['nombre_agente']) ?></td>
             <td><?= h($r['nombre_area']) ?></td>
 
-
             <td>
               <?php
                 $estadoOp = strtoupper($r['estado_operativo'] ?? 'ACTIVO');
@@ -197,28 +189,20 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
                 if ($estadoOp === 'ACTIVO'):
               ?>
                 <span class="badge-estado badge-activo">ACTIVO</span>
-
               <?php elseif ($estadoOp === 'EN VACACIONES'): ?>
                 <span class="badge-estado badge-vacaciones">EN VACACIONES</span>
-
               <?php else: ?>
                 <span class="badge-estado badge-inactivo">INACTIVO</span>
               <?php endif; ?>
             </td>
 
             <td class="text-center">
-              <div class="d-flex justify-content-center gap-2">
-
- 
-
-                <?php if(!$soloLectura): ?>
-                  <a href="<?= h($BASE_URL) ?>/vistas_pantallas/gestionar_agente.php?id=<?= (int)$r['id_agente_int'] ?>"
-                     class="btn btn-primary btn-sm">
-                     Gestionar
-                  </a>
-                <?php endif; ?>
-
-              </div>
+              <?php if(!$soloLectura): ?>
+                <a href="<?= h($BASE_URL) ?>/vistas_pantallas/gestionar_agente.php?id=<?= (int)$r['id_agente_int'] ?>"
+                   class="btn btn-primary btn-sm">
+                   Gestionar
+                </a>
+              <?php endif; ?>
             </td>
 
           </tr>
