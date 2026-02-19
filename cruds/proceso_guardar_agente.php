@@ -8,7 +8,12 @@ force_password_change();
 
 $BASE_URL = BASE_URL;
 
+/* =============================
+   VALIDACIONES INICIALES
+============================= */
+
 if (is_readonly()) {
+  $_SESSION['flash_error'] = "Modo solo lectura.";
   header("Location: $BASE_URL/vistas_pantallas/listado_agentes.php");
   exit;
 }
@@ -22,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
    CONFIG SP
 ============================= */
 $SP_CREAR  = 'sp_Adm_CrearAgente';
-$SP_EDITAR = 'PR_EDITAR_AGENTE'; // Ajustar si tu SP de edición tiene otro nombre
+$SP_EDITAR = 'PR_EDITAR_AGENTE';
 
 /* =============================
    RECIBIR DATOS
@@ -44,43 +49,55 @@ $idAreaSesion  = (int)($_SESSION['id_area'] ?? 0);
    VALIDACIONES BACKEND
 ============================= */
 
-// Nombre obligatorio y solo letras + espacios
-if (
-    strlen($nombre) < 3 ||
-    !preg_match('/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/u', $nombre)
-) {
-    die("Nombre inválido.");
+function redirError($msg, $BASE_URL, $idAgente = 0) {
+    $_SESSION['flash_error'] = $msg;
+    $url = $BASE_URL . "/vistas_pantallas/agente_formulario.php";
+    if ($idAgente > 0) {
+        $url .= "?id=" . (int)$idAgente;
+    }
+    header("Location: $url");
+    exit;
+}
+
+// Nombre obligatorio
+if (strlen($nombre) < 3 ||
+    !preg_match('/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/u', $nombre)) {
+    redirError("Nombre inválido. Solo letras y mínimo 3 caracteres.", $BASE_URL, $idAgente);
 }
 
 // Área obligatoria
 if ($idArea <= 0) {
-    die("Debe seleccionar un área válida.");
+    redirError("Debe seleccionar un área válida.", $BASE_URL, $idAgente);
 }
 
 // Sucursal obligatoria
 if ($idSucursal <= 0) {
-    die("Debe seleccionar una sucursal válida.");
+    redirError("Debe seleccionar una sucursal válida.", $BASE_URL, $idAgente);
 }
 
-// Validar email si se ingresa
+// Email corporativo
 if ($email !== '') {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) ||
-        !preg_match('/@alfanet\.net\.ec$/', $email)) {
-        die("El correo debe ser corporativo @alfanet.net.ec");
+        !preg_match('/@alfanet\.net\.ec$/i', $email)) {
+        redirError("El correo debe ser corporativo @alfanet.net.ec", $BASE_URL, $idAgente);
     }
 }
 
-// Validar celular Ecuador si se ingresa
+// Celular Ecuador
 if ($celular !== '') {
     if (!preg_match('/^09[0-9]{8}$/', $celular)) {
-        die("El celular debe tener 10 dígitos y empezar con 09.");
+        redirError("El celular debe tener 10 dígitos y empezar con 09.", $BASE_URL, $idAgente);
     }
 }
 
-/* Forzar área si no puede ver todo */
+// Forzar área si no puede ver todo
 if (!$veTodo && $idAreaSesion > 0) {
     $idArea = $idAreaSesion;
 }
+
+/* =============================
+   GUARDAR EN BD
+============================= */
 
 try {
 
@@ -100,8 +117,10 @@ try {
             $idArea,
             $idSucursal,
             $estado,
-            null // si tu SP requiere usuario sesión puedes agregarlo aquí
+            null
         ]);
+
+        $_SESSION['flash_success'] = "Agente actualizado correctamente.";
 
     } else {
 
@@ -112,20 +131,25 @@ try {
 
         $stmt = $conexion->prepare("EXEC dbo.$SP_CREAR ?, ?, ?, ?, ?, ?, ?, ?");
         $stmt->execute([
-            null,              // codigo_personal (no usado)
+            null,
             $nombre,
             $email ?: null,
             $celular ?: null,
             $idArea,
-            null,              // id_cola
+            null,
             $idSucursal,
-            null               // id_supervisor
+            null
         ]);
+
+        $_SESSION['flash_success'] = "Agente creado correctamente.";
     }
 
     header("Location: $BASE_URL/vistas_pantallas/listado_agentes.php");
     exit;
 
 } catch (Throwable $e) {
-    die("Error al guardar agente: " . $e->getMessage());
+
+    $_SESSION['flash_error'] = "Error al guardar agente.";
+    header("Location: $BASE_URL/vistas_pantallas/agente_formulario.php");
+    exit;
 }
