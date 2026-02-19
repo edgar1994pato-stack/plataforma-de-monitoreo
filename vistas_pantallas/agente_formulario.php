@@ -48,25 +48,45 @@ if (!$esEdicion && !$puedeCrear) {
 }
 
 /* =============================
-   CARGAR ÁREAS
+   CARGAR ÁREAS Y SUCURSALES
 ============================= */
 $areas = [];
 $sucursales = [];
 
 try {
+
+  // ÁREAS
   if ($veTodo) {
-    $st = $conexion->query("SELECT id_area, nombre_area FROM dbo.AREAS WHERE estado=1 ORDER BY nombre_area");
+    $st = $conexion->query("
+      SELECT id_area, nombre_area
+      FROM dbo.AREAS
+      WHERE estado = 1
+      ORDER BY nombre_area
+    ");
   } else {
-    $st = $conexion->prepare("SELECT id_area, nombre_area FROM dbo.AREAS WHERE id_area=?");
+    $st = $conexion->prepare("
+      SELECT id_area, nombre_area
+      FROM dbo.AREAS
+      WHERE id_area = ?
+    ");
     $st->execute([$idAreaSesion]);
   }
-  $areas = $st->fetchAll(PDO::FETCH_ASSOC);
-} catch(Throwable $e){}
 
-try {
-  $st = $conexion->query("SELECT id_sucursal, nombre_sucursal FROM dbo.SUCURSALES WHERE estado=1 ORDER BY nombre_sucursal");
+  $areas = $st->fetchAll(PDO::FETCH_ASSOC);
+
+  // SUCURSALES (CORREGIDO → activo)
+  $st = $conexion->query("
+    SELECT id_sucursal, nombre_sucursal
+    FROM dbo.SUCURSALES
+    WHERE activo = 1
+    ORDER BY nombre_sucursal
+  ");
+
   $sucursales = $st->fetchAll(PDO::FETCH_ASSOC);
-} catch(Throwable $e){}
+
+} catch (Throwable $e) {
+  die("Error cargando datos: " . $e->getMessage());
+}
 
 /* =============================
    DATOS AGENTE
@@ -130,37 +150,30 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
       <!-- Nombre -->
       <div class="col-md-6">
         <label class="form-label small fw-bold text-muted">NOMBRE DEL AGENTE *</label>
-        <input type="text"
-               name="nombre_agente"
+        <input type="text" name="nombre_agente"
                class="form-control form-control-sm"
-               maxlength="150"
-               required
+               maxlength="150" required
                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,}$"
-               title="Solo letras y espacios (mínimo 3 caracteres)"
                value="<?= h($agente['nombre_agente']) ?>">
       </div>
 
       <!-- Email -->
       <div class="col-md-6">
         <label class="form-label small fw-bold text-muted">EMAIL</label>
-        <input type="email"
-               name="email"
+        <input type="email" name="email"
                class="form-control form-control-sm"
                maxlength="255"
                pattern="^[a-zA-Z0-9._%+-]+@alfanet\.net\.ec$"
-               title="Debe ser correo corporativo @alfanet.net.ec"
                value="<?= h($agente['email']) ?>">
       </div>
 
       <!-- Celular -->
       <div class="col-md-6">
         <label class="form-label small fw-bold text-muted">CELULAR</label>
-        <input type="text"
-               name="celular"
+        <input type="text" name="celular"
                class="form-control form-control-sm"
                maxlength="10"
                pattern="^09[0-9]{8}$"
-               title="Debe tener 10 dígitos y empezar con 09"
                value="<?= h($agente['celular']) ?>">
       </div>
 
@@ -176,9 +189,6 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
             </option>
           <?php endforeach; ?>
         </select>
-        <?php if(!$veTodo): ?>
-          <input type="hidden" name="id_area" value="<?= (int)$agente['id_area'] ?>">
-        <?php endif; ?>
       </div>
 
       <!-- Sucursal -->
@@ -195,20 +205,9 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         </select>
       </div>
 
-      <!-- Estado solo en edición -->
-      <?php if($esEdicion): ?>
-      <div class="col-md-6">
-        <label class="form-label small fw-bold text-muted">ESTADO</label>
-        <select name="estado" class="form-select form-select-sm">
-          <option value="1" <?= (int)$agente['estado'] === 1 ? 'selected' : '' ?>>ACTIVO</option>
-          <option value="0" <?= (int)$agente['estado'] === 0 ? 'selected' : '' ?>>INACTIVO</option>
-        </select>
-      </div>
-      <?php endif; ?>
-
       <div class="col-12 d-flex gap-2">
         <button type="submit" class="btn btn-primary btn-sm shadow-sm">
-          <i class="bi bi-save"></i> Guardar
+          Guardar
         </button>
         <a href="<?= h($BASE_URL) ?>/vistas_pantallas/listado_agentes.php" class="btn btn-soft btn-sm shadow-sm">
           Cancelar
