@@ -179,7 +179,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         <tbody>
         <?php if(count($rows) === 0): ?>
           <tr>
-            <td colspan="6" class="text-center text-muted py-4">
+            <td colspan="4" class="text-center text-muted py-4">
               No hay registros.
             </td>
           </tr>
@@ -188,8 +188,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
           <tr>
             <td><?= h($r['nombre_agente']) ?></td>
             <td><?= h($r['nombre_area']) ?></td>
-            <td><?= h($r['nombre_cola']) ?></td>
-            <td><?= h($r['nombre_supervisor']) ?></td>
+
 
             <td>
               <?php
