@@ -19,28 +19,30 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 /* =============================
-   CONFIG SP (ajusta si tu SP tiene otro nombre)
+   CONFIG SP
 ============================= */
-$SP_CREAR  = 'PR_CREAR_AGENTE';       // <-- si tu SP de crear tiene otro nombre, cámbialo aquí
-$SP_EDITAR = 'PR_EDITAR_AGENTE';      // <-- si tu SP de editar tiene otro nombre, cámbialo aquí
+$SP_CREAR  = 'sp_Adm_CrearAgente';
+$SP_EDITAR = 'PR_EDITAR_AGENTE'; // Ajusta si tu SP de editar tiene otro nombre
 
 /* =============================
    RECIBIR DATOS
 ============================= */
-$idAgente = (int)($_POST['id_agente'] ?? 0);
-$esEdicion = $idAgente > 0;
+$idAgente   = (int)($_POST['id_agente'] ?? 0);
+$esEdicion  = $idAgente > 0;
 
-$nombre = trim($_POST['nombre_agente'] ?? '');
-$idArea = (int)($_POST['id_area'] ?? 0);
-$idCola = (int)($_POST['id_cola'] ?? 0);
-$idSupervisor = (int)($_POST['id_supervisor_usuario'] ?? 0);
-$estado = isset($_POST['estado']) ? (int)$_POST['estado'] : 1;
+$codigo     = trim($_POST['codigo_personal'] ?? '');
+$nombre     = trim($_POST['nombre_agente'] ?? '');
+$email      = trim($_POST['email'] ?? '');
+$celular    = trim($_POST['celular'] ?? '');
+$idArea     = (int)($_POST['id_area'] ?? 0);
+$estado     = isset($_POST['estado']) ? (int)$_POST['estado'] : 1;
 
-$idUsuarioSesion = (int)($_SESSION['id_usuario'] ?? 0);
-$veTodo = can_see_all_areas();
-$idAreaSesion = (int)($_SESSION['id_area'] ?? 0);
+$veTodo        = can_see_all_areas();
+$idAreaSesion  = (int)($_SESSION['id_area'] ?? 0);
 
-/* Reglas mínimas backend */
+/* =============================
+   VALIDACIONES MÍNIMAS
+============================= */
 if ($nombre === '' || $idArea <= 0) {
   header("Location: $BASE_URL/vistas_pantallas/agente_formulario.php" . ($esEdicion ? "?id=$idAgente" : ""));
   exit;
@@ -52,23 +54,24 @@ if (!$veTodo && $idAreaSesion > 0) {
 }
 
 try {
+
   if ($esEdicion) {
 
-    // Permisos edición (si tienes función)
     if (function_exists('can_edit') && !can_edit()) {
       header("Location: $BASE_URL/vistas_pantallas/listado_agentes.php");
       exit;
     }
 
+    // Ajusta parámetros según tu SP de edición real
     $stmt = $conexion->prepare("EXEC dbo.$SP_EDITAR ?, ?, ?, ?, ?, ?, ?");
     $stmt->execute([
       $idAgente,
+      $codigo ?: null,
       $nombre,
+      $email ?: null,
+      $celular ?: null,
       $idArea,
-      ($idCola > 0 ? $idCola : null),
-      ($idSupervisor > 0 ? $idSupervisor : null),
-      $estado,
-      $idUsuarioSesion
+      $estado
     ]);
 
   } else {
@@ -78,14 +81,16 @@ try {
       exit;
     }
 
-    $stmt = $conexion->prepare("EXEC dbo.$SP_CREAR ?, ?, ?, ?, ?, ?");
+    $stmt = $conexion->prepare("EXEC dbo.$SP_CREAR ?, ?, ?, ?, ?, ?, ?, ?");
     $stmt->execute([
+      $codigo ?: null,
       $nombre,
+      $email ?: null,
+      $celular ?: null,
       $idArea,
-      ($idCola > 0 ? $idCola : null),
-      ($idSupervisor > 0 ? $idSupervisor : null),
-      $estado,
-      $idUsuarioSesion
+      null,  // id_cola
+      null,  // id_sucursal
+      null   // id_supervisor
     ]);
   }
 
@@ -93,6 +98,5 @@ try {
   exit;
 
 } catch (Throwable $e) {
-  // Si ya manejas flashes, aquí lo conectas. Por ahora, mostramos el error para depurar.
   die("Error al guardar agente: " . $e->getMessage());
 }
