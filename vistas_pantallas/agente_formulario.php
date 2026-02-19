@@ -74,7 +74,7 @@ try {
 
   $areas = $st->fetchAll(PDO::FETCH_ASSOC);
 
-  // SUCURSALES (CORREGIDO → activo)
+  // SUCURSALES
   $st = $conexion->query("
     SELECT id_sucursal, nombre_sucursal
     FROM dbo.SUCURSALES
@@ -85,7 +85,7 @@ try {
   $sucursales = $st->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (Throwable $e) {
-  die("Error cargando datos: " . $e->getMessage());
+  $_SESSION['flash_error'] = "Error cargando datos.";
 }
 
 /* =============================
@@ -117,7 +117,7 @@ if ($esEdicion) {
     $agente = array_merge($agente, $row);
 
   } catch(Throwable $e){
-    $error = $e->getMessage();
+    $_SESSION['flash_error'] = "Error cargando agente.";
   }
 }
 
@@ -133,8 +133,16 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   </a>
 </div>
 
-<?php if($error !== ''): ?>
-  <div class="alert alert-danger"><?= h($error) ?></div>
+<?php if (!empty($_SESSION['flash_error'])): ?>
+  <div class="alert alert-danger shadow-sm">
+    <?= h($_SESSION['flash_error']); unset($_SESSION['flash_error']); ?>
+  </div>
+<?php endif; ?>
+
+<?php if (!empty($_SESSION['flash_success'])): ?>
+  <div class="alert alert-success shadow-sm">
+    <?= h($_SESSION['flash_success']); unset($_SESSION['flash_success']); ?>
+  </div>
 <?php endif; ?>
 
 <div class="card card-soft mb-5">
@@ -189,6 +197,9 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
             </option>
           <?php endforeach; ?>
         </select>
+        <?php if(!$veTodo): ?>
+          <input type="hidden" name="id_area" value="<?= (int)$agente['id_area'] ?>">
+        <?php endif; ?>
       </div>
 
       <!-- Sucursal -->
