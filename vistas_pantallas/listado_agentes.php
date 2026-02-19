@@ -81,7 +81,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 <!-- ===================== NAVEGACIÓN ===================== -->
 <div class="mb-3 d-flex justify-content-between">
   <a href="<?= h($BASE_URL) ?>/vistas_pantallas/menu.php"
-     class="btn btn-outline-secondary btn-sm shadow-sm">
+     class="btn btn-soft btn-sm shadow-sm">
      <i class="bi bi-house-door"></i> Menú principal
   </a>
 </div>
@@ -96,7 +96,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   <div class="card-body">
     <form method="GET" class="row g-2 align-items-end">
 
-      <div class="col-md-3">
+      <div class="col-md-4">
         <label class="form-label small fw-bold text-muted">ÁREA</label>
         <select class="form-select form-select-sm" name="area" <?= $veTodo ? '' : 'disabled' ?>>
           <option value="0">Todas</option>
@@ -112,7 +112,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         <?php endif; ?>
       </div>
 
-      <div class="col-md-3">
+      <div class="col-md-4">
         <label class="form-label small fw-bold text-muted">ESTADO</label>
         <select class="form-select form-select-sm" name="estado">
           <option value="TODOS" <?= $estadoGet === 'TODOS' ? 'selected' : '' ?>>TODOS</option>
@@ -121,24 +121,15 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         </select>
       </div>
 
-      <div class="col-md-3 d-flex gap-2">
+      <div class="col-md-4 d-flex gap-2">
         <button type="submit" class="btn btn-primary btn-sm w-100 shadow-sm">
           <i class="bi bi-search"></i> Buscar
         </button>
 
-        <a class="btn btn-outline-secondary btn-sm w-100 shadow-sm"
+        <a class="btn btn-soft btn-sm w-100 shadow-sm"
            href="<?= h($BASE_URL) ?>/vistas_pantallas/listado_agentes.php">
            <i class="bi bi-x-circle"></i> Limpiar
         </a>
-      </div>
-
-      <div class="col-md-3">
-        <?php if($puedeCrear && !$soloLectura): ?>
-          <a class="btn btn-primary btn-sm w-100 shadow-sm fw-bold"
-             href="<?= h($BASE_URL) ?>/vistas_pantallas/agente_formulario.php">
-             <i class="bi bi-plus-circle"></i> Crear agente
-          </a>
-        <?php endif; ?>
       </div>
 
     </form>
@@ -160,13 +151,13 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   <div class="card-body p-0">
     <div class="table-responsive">
       <table class="table table-sm table-hover align-middle mb-0">
-        <thead class="table-light">
+        <thead>
           <tr class="small text-muted">
             <th>Nombre</th>
             <th>Área</th>
             <th>Cola</th>
             <th>Supervisor</th>
-            <th>Estado Operativo</th>
+            <th>Estado</th>
             <th class="text-center">Acciones</th>
           </tr>
         </thead>
@@ -206,14 +197,14 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
               <div class="d-flex justify-content-center gap-2">
 
                 <a href="<?= h($BASE_URL) ?>/vistas_pantallas/agente_formulario.php?id=<?= (int)$r['id_agente_int'] ?>"
-                   class="btn btn-outline-secondary btn-sm">
+                   class="btn btn-soft btn-sm">
                    Editar
                 </a>
 
-                <?php if(!$soloLectura && $r['estado'] == 1): ?>
-                  <a href="<?= h($BASE_URL) ?>/vistas_pantallas/registrar_ausencia.php?id=<?= (int)$r['id_agente_int'] ?>"
-                     class="btn btn-outline-secondary btn-sm">
-                     Vacaciones
+                <?php if(!$soloLectura): ?>
+                  <a href="<?= h($BASE_URL) ?>/vistas_pantallas/gestionar_agente.php?id=<?= (int)$r['id_agente_int'] ?>"
+                     class="btn btn-primary btn-sm">
+                     Gestionar
                   </a>
                 <?php endif; ?>
 
