@@ -210,10 +210,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
             <td class="text-center">
               <div class="d-flex justify-content-center gap-2">
 
-                <a href="<?= h($BASE_URL) ?>/vistas_pantallas/agente_formulario.php?id=<?= (int)$r['id_agente_int'] ?>"
-                   class="btn btn-soft btn-sm">
-                   Editar
-                </a>
+ 
 
                 <?php if(!$soloLectura): ?>
                   <a href="<?= h($BASE_URL) ?>/vistas_pantallas/gestionar_agente.php?id=<?= (int)$r['id_agente_int'] ?>"
