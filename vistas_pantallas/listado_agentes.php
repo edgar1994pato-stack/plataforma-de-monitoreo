@@ -6,7 +6,9 @@ require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
 require_login();
 force_password_change();
 
-function h($str){ return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8'); }
+function h($str){
+    return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8');
+}
 
 $BASE_URL = BASE_URL;
 
@@ -23,13 +25,19 @@ $soloLectura = is_readonly();
    FILTROS GET
 ============================= */
 $idAreaGet  = isset($_GET['area']) ? (int)$_GET['area'] : 0;
-$estadoGet  = strtoupper(trim($_GET['estado'] ?? 'ACTIVOS'));
+$estadoGet  = strtoupper(trim($_GET['estado'] ?? 'ACTIVOS')); // Default ACTIVO
 
-$estadoParam = null;
+// Mapeo al SP nuevo
 if ($estadoGet === 'ACTIVOS') {
     $estadoParam = 1;
+} elseif ($estadoGet === 'AUSENTES') {
+    $estadoParam = 2;
 } elseif ($estadoGet === 'INACTIVOS') {
     $estadoParam = 0;
+} elseif ($estadoGet === 'TODOS') {
+    $estadoParam = null;
+} else {
+    $estadoParam = 1; // Seguridad: siempre activos por defecto
 }
 
 /* Área backend */
@@ -41,6 +49,7 @@ $idAreaParam = $veTodo
    CARGAR ÁREAS
 ============================= */
 $areas = [];
+
 try {
     if ($veTodo) {
         $st = $conexion->query("
@@ -79,7 +88,7 @@ try {
    HEADER
 ============================= */
 $PAGE_TITLE = "👥 Módulo de Agentes";
-$PAGE_SUBTITLE = "";
+$PAGE_SUBTITLE = "Gestión y visualización de agentes por estado operativo.";
 
 require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 ?>
@@ -117,7 +126,9 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
       <div class="col-md-6">
         <label class="form-label small fw-bold text-muted">ÁREA</label>
-        <select class="form-select form-select-sm" name="area" <?= $veTodo ? '' : 'disabled' ?>>
+        <select class="form-select form-select-sm" name="area"
+                onchange="this.form.submit()"
+                <?= $veTodo ? '' : 'disabled' ?>>
           <option value="0">Todas</option>
           <?php foreach($areas as $a): ?>
             <option value="<?= (int)$a['id_area'] ?>"
@@ -126,6 +137,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
             </option>
           <?php endforeach; ?>
         </select>
+
         <?php if(!$veTodo): ?>
           <input type="hidden" name="area" value="<?= $idAreaSesion ?>">
         <?php endif; ?>
@@ -133,10 +145,15 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
       <div class="col-md-6">
         <label class="form-label small fw-bold text-muted">ESTADO</label>
-        <select class="form-select form-select-sm" name="estado">
-          <option value="TODOS" <?= $estadoGet === 'TODOS' ? 'selected' : '' ?>>TODOS</option>
+        <select class="form-select form-select-sm"
+                name="estado"
+                onchange="this.form.submit()">
+
           <option value="ACTIVOS" <?= $estadoGet === 'ACTIVOS' ? 'selected' : '' ?>>ACTIVOS</option>
+          <option value="AUSENTES" <?= $estadoGet === 'AUSENTES' ? 'selected' : '' ?>>AUSENTES</option>
           <option value="INACTIVOS" <?= $estadoGet === 'INACTIVOS' ? 'selected' : '' ?>>INACTIVOS</option>
+          <option value="TODOS" <?= $estadoGet === 'TODOS' ? 'selected' : '' ?>>TODOS</option>
+
         </select>
       </div>
 
@@ -184,22 +201,25 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
             <td>
               <?php
-                $estadoOp = strtoupper($r['estado_operativo'] ?? 'ACTIVO');
+              $estadoOp = strtoupper($r['estado_operativo'] ?? 'ACTIVO');
 
-                if ($estadoOp === 'ACTIVO'):
-              ?>
-                <span class="badge-estado badge-activo">ACTIVO</span>
-              <?php elseif ($estadoOp === 'EN VACACIONES'): ?>
-                <span class="badge-estado badge-vacaciones">EN VACACIONES</span>
+              if ($estadoOp === 'ACTIVO'): ?>
+                  <span class="badge-estado badge-activo">ACTIVO</span>
+
+              <?php elseif ($estadoOp === 'INACTIVO'): ?>
+                  <span class="badge-estado badge-inactivo">INACTIVO</span>
+
               <?php else: ?>
-                <span class="badge-estado badge-inactivo">INACTIVO</span>
+                  <span class="badge-estado badge-vacaciones">
+                      <?= h($r['estado_operativo']) ?>
+                  </span>
               <?php endif; ?>
             </td>
 
             <td class="text-center">
               <?php if(!$soloLectura): ?>
                 <a href="<?= h($BASE_URL) ?>/vistas_pantallas/gestionar_agente.php?id=<?= (int)$r['id_agente_int'] ?>"
-                   class="btn btn-primary btn-sm">
+                   class="btn btn-primary btn-sm shadow-sm">
                    Gestionar
                 </a>
               <?php endif; ?>
