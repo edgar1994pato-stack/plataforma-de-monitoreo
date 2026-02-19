@@ -1,21 +1,21 @@
 /* =========================
- 
-   ========================= */
+   PALETA CORPORATIVA
+========================= */
 
 :root{
-  --primary:#E0E621;          /* Amarillo corporativo */
+  --primary:#E0E621;          
   --black:#000000;
-  --white:#FFFFFF;
-  --bg-light:#f4f5f7;
+  --white:rgba(255,255,255,0.92);
+  --bg-light:rgba(255,255,255,0.85);
   --text-dark:#1c1c1c;
-  --border-soft:#e6e6e6;
+  --border-soft:rgba(255,255,255,0.15);
 
   --radius:12px;
-  --shadow-soft:0 6px 20px rgba(0,0,0,.06);
+  --shadow-soft:0 10px 30px rgba(0,0,0,.35);
 }
 
 /* =========================
-   BASE
+   BASE + FONDO CORPORATIVO
 ========================= */
 
 html, body{
@@ -23,9 +23,26 @@ html, body{
 }
 
 body{
-  background:var(--bg-light);
+  background-image: url('img/fondo-alfanet.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+
   font-family:"Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   color:var(--text-dark);
+}
+
+/* Capa oscura elegante */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:linear-gradient(
+      rgba(0,0,0,.65),
+      rgba(0,0,0,.75)
+  );
+  z-index:-1;
 }
 
 /* =========================
@@ -34,29 +51,30 @@ body{
 
 .page-title{
   font-weight:600;
-  color:var(--black);
+  color:#fff;
   letter-spacing:.3px;
 }
 
 .page-subtitle{
-  color:#666;
+  color:#ddd;
   font-size:.85rem;
 }
 
 /* =========================
-   CARDS
+   CARDS (Glass effect)
 ========================= */
 
 .card-soft{
   background:var(--white);
-  border:none;
+  backdrop-filter:blur(6px);
+  border:1px solid var(--border-soft);
   border-radius:var(--radius);
   box-shadow:var(--shadow-soft);
   transition:all .2s ease;
 }
 
 .card-soft:hover{
-  transform:translateY(-2px);
+  transform:translateY(-3px);
 }
 
 .card-header-dark{
@@ -68,7 +86,7 @@ body{
 }
 
 .card-header-soft{
-  background:var(--white);
+  background:transparent;
   border-bottom:1px solid var(--border-soft);
 }
 
@@ -79,7 +97,7 @@ body{
 .btn-primary{
   background:var(--primary);
   border:none;
-  color:var(--black);
+  color:#000;
   font-weight:600;
   border-radius:8px;
   padding:8px 22px;
@@ -93,21 +111,21 @@ body{
 
 .btn-outline-secondary{
   border:1px solid var(--border-soft);
-  color:#444;
+  color:#fff;
   background:transparent;
   border-radius:8px;
 }
 
 .btn-outline-secondary:hover{
-  background:#f1f1f1;
+  background:rgba(255,255,255,0.1);
 }
 
 /* =========================
-   BADGES SUPERIORES
+   BADGES
 ========================= */
 
 .badge-soft{
-  background:rgba(224,230,33,.15);
+  background:rgba(224,230,33,.2);
   color:#000;
   font-weight:500;
   padding:5px 12px;
@@ -115,29 +133,29 @@ body{
 }
 
 /* =========================
-   LIST GROUP (Menú lateral)
+   LIST GROUP
 ========================= */
 
 .list-group-item{
   border:none;
   border-left:3px solid transparent;
-  background:#fafafa;
+  background:rgba(255,255,255,0.08);
   font-weight:500;
-  color:#333;
+  color:#fff;
   transition:all .2s ease;
 }
 
 .list-group-item:hover{
-  background:#f2f2f2;
+  background:rgba(224,230,33,0.15);
 }
 
 .list-group-item.active{
-  background:rgba(224,230,33,.10);
+  background:rgba(224,230,33,.15);
   border-left:4px solid var(--primary);
-  color:#000;
+  color:#fff;
 }
 
-/* 🔒 Ocultar contadores azules */
+/* Ocultar contadores */
 .list-group-item .badge{
   display:none !important;
 }
@@ -161,7 +179,7 @@ body{
 }
 
 /* =========================
-   QA CHIP (Score)
+   QA CHIP
 ========================= */
 
 .qa-chip{
@@ -169,7 +187,7 @@ body{
   border-radius:10px;
   padding:8px 14px;
   border:1px solid var(--border-soft);
-  box-shadow:0 3px 10px rgba(0,0,0,.05);
+  box-shadow:0 3px 10px rgba(0,0,0,.2);
 }
 
 .qa-chip-ok{
@@ -193,12 +211,13 @@ body{
   border:1px solid var(--border-soft);
   border-radius:8px;
   font-size:.9rem;
+  background:rgba(255,255,255,0.95);
 }
 
 .form-control:focus,
 .form-select:focus{
   border-color:var(--primary);
-  box-shadow:0 0 0 2px rgba(224,230,33,.15);
+  box-shadow:0 0 0 2px rgba(224,230,33,.25);
 }
 
 /* =========================
@@ -220,7 +239,7 @@ body{
   padding:60px 50px;
   border-radius:20px;
   text-align:center;
-  box-shadow:0 25px 60px rgba(0,0,0,.2);
+  box-shadow:0 25px 60px rgba(0,0,0,.3);
 }
 
 .circle-check{
@@ -254,26 +273,17 @@ body{
   color:#000;
 }
 
+/* =========================
+   INDICADOR SECCIÓN RESPONDIDA
+========================= */
 
-
-/* ===============================
-   INDICADOR PREMIUM DE SECCIÓN RESPONDIDA
-================================= */
-
-/* Mantener ocultos los números */
-.list-group-item .badge{
-  display:none !important;
-}
-
-/* Sección con respuestas */
 .list-group-item.seccion-calificada{
   position:relative;
-  background: rgba(224,230,33,0.08) !important;
-  border-left: 3px solid #E0E621 !important;
+  background:rgba(224,230,33,0.15) !important;
+  border-left:3px solid var(--primary) !important;
   font-weight:600;
 }
 
-/* Punto indicador elegante */
 .list-group-item.seccion-calificada::after{
   content:"";
   position:absolute;
@@ -283,19 +293,8 @@ body{
   width:8px;
   height:8px;
   border-radius:50%;
-  background:#E0E621;
+  background:var(--primary);
 }
-
-/* Sección activa */
-.list-group-item.active{
-  background: rgba(224,230,33,0.12) !important;
-  border-left:4px solid #E0E621 !important;
-}
-
-
-
-
-
 
 /* =========================
    BADGES ESTADO OPERATIVO
@@ -310,17 +309,17 @@ body{
 }
 
 .badge-activo{
-  background:rgba(224,230,33,.15);
-  color:var(--black);
-  border:1px solid rgba(224,230,33,.35);
+  background:rgba(224,230,33,.2);
+  color:#000;
+  border:1px solid rgba(224,230,33,.4);
 }
 
 .badge-vacaciones{
   background:var(--primary);
-  color:var(--black);
+  color:#000;
 }
 
 .badge-inactivo{
   background:#1c1c1c;
-  color:var(--white);
+  color:#fff;
 }
