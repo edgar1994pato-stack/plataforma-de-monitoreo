@@ -55,7 +55,6 @@ $sucursales = [];
 
 try {
 
-  // ÁREAS
   if ($veTodo) {
     $st = $conexion->query("
       SELECT id_area, nombre_area
@@ -74,7 +73,6 @@ try {
 
   $areas = $st->fetchAll(PDO::FETCH_ASSOC);
 
-  // SUCURSALES
   $st = $conexion->query("
     SELECT id_sucursal, nombre_sucursal
     FROM dbo.SUCURSALES
@@ -85,7 +83,8 @@ try {
   $sucursales = $st->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (Throwable $e) {
-  $_SESSION['flash_error'] = "Error cargando datos.";
+  $areas = [];
+  $sucursales = [];
 }
 
 /* =============================
@@ -101,24 +100,17 @@ $agente = [
   'estado' => 1
 ];
 
-$error = '';
-
 if ($esEdicion) {
   try {
     $stmt = $conexion->prepare("EXEC dbo.$SP_OBTENER ?");
     $stmt->execute([$idAgente]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$row) {
-      header("Location: $BASE_URL/vistas_pantallas/listado_agentes.php");
-      exit;
+    if ($row) {
+      $agente = array_merge($agente, $row);
     }
 
-    $agente = array_merge($agente, $row);
-
-  } catch(Throwable $e){
-    $_SESSION['flash_error'] = "Error cargando agente.";
-  }
+  } catch(Throwable $e){}
 }
 
 $PAGE_TITLE = $esEdicion ? "✏️ Editar Agente" : "➕ Nuevo Agente";
@@ -133,62 +125,65 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   </a>
 </div>
 
-<?php if (!empty($_SESSION['flash_error'])): ?>
-  <div class="alert alert-danger shadow-sm">
-    <?= h($_SESSION['flash_error']); unset($_SESSION['flash_error']); ?>
-  </div>
-<?php endif; ?>
-
-<?php if (!empty($_SESSION['flash_success'])): ?>
-  <div class="alert alert-success shadow-sm">
-    <?= h($_SESSION['flash_success']); unset($_SESSION['flash_success']); ?>
-  </div>
-<?php endif; ?>
-
 <div class="card card-soft mb-5">
   <div class="card-header card-header-dark py-2 small">
     <?= $esEdicion ? 'Información del agente' : 'Registrar nuevo agente' ?>
   </div>
 
   <div class="card-body">
-    <form method="POST" action="<?= h($BASE_URL) ?>/cruds/proceso_guardar_agente.php" class="row g-3">
+    <form id="formAgente" method="POST"
+          action="<?= h($BASE_URL) ?>/cruds/proceso_guardar_agente.php"
+          class="row g-3">
 
-      <input type="hidden" name="id_agente" value="<?= (int)$agente['id_agente_int'] ?>">
+      <input type="hidden" name="id_agente"
+             value="<?= (int)$agente['id_agente_int'] ?>">
 
       <!-- Nombre -->
       <div class="col-md-6">
-        <label class="form-label small fw-bold text-muted">NOMBRE DEL AGENTE *</label>
-        <input type="text" name="nombre_agente"
+        <label class="form-label small fw-bold text-muted">
+          NOMBRE DEL AGENTE *
+        </label>
+        <input type="text"
+               name="nombre_agente"
                class="form-control form-control-sm"
-               maxlength="150" required
-               pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,}$"
+               maxlength="150"
+               required
                value="<?= h($agente['nombre_agente']) ?>">
       </div>
 
       <!-- Email -->
       <div class="col-md-6">
-        <label class="form-label small fw-bold text-muted">EMAIL</label>
-        <input type="email" name="email"
+        <label class="form-label small fw-bold text-muted">
+          EMAIL
+        </label>
+        <input type="email"
+               name="email"
                class="form-control form-control-sm"
                maxlength="255"
-               pattern="^[a-zA-Z0-9._%+-]+@alfanet\.net\.ec$"
                value="<?= h($agente['email']) ?>">
       </div>
 
       <!-- Celular -->
       <div class="col-md-6">
-        <label class="form-label small fw-bold text-muted">CELULAR</label>
-        <input type="text" name="celular"
+        <label class="form-label small fw-bold text-muted">
+          CELULAR
+        </label>
+        <input type="text"
+               name="celular"
                class="form-control form-control-sm"
                maxlength="10"
-               pattern="^09[0-9]{8}$"
                value="<?= h($agente['celular']) ?>">
       </div>
 
       <!-- Área -->
       <div class="col-md-6">
-        <label class="form-label small fw-bold text-muted">ÁREA *</label>
-        <select name="id_area" class="form-select form-select-sm" required <?= $veTodo ? '' : 'disabled' ?>>
+        <label class="form-label small fw-bold text-muted">
+          ÁREA *
+        </label>
+        <select name="id_area"
+                class="form-select form-select-sm"
+                required
+                <?= $veTodo ? '' : 'disabled' ?>>
           <option value="0">Seleccione...</option>
           <?php foreach($areas as $a): ?>
             <option value="<?= (int)$a['id_area'] ?>"
@@ -198,14 +193,19 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
           <?php endforeach; ?>
         </select>
         <?php if(!$veTodo): ?>
-          <input type="hidden" name="id_area" value="<?= (int)$agente['id_area'] ?>">
+          <input type="hidden" name="id_area"
+                 value="<?= (int)$agente['id_area'] ?>">
         <?php endif; ?>
       </div>
 
       <!-- Sucursal -->
       <div class="col-md-6">
-        <label class="form-label small fw-bold text-muted">SUCURSAL *</label>
-        <select name="id_sucursal" class="form-select form-select-sm" required>
+        <label class="form-label small fw-bold text-muted">
+          SUCURSAL *
+        </label>
+        <select name="id_sucursal"
+                class="form-select form-select-sm"
+                required>
           <option value="0">Seleccione...</option>
           <?php foreach($sucursales as $s): ?>
             <option value="<?= (int)$s['id_sucursal'] ?>"
@@ -217,10 +217,13 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
       </div>
 
       <div class="col-12 d-flex gap-2">
-        <button type="submit" class="btn btn-primary btn-sm shadow-sm">
+        <button type="submit"
+                class="btn btn-primary btn-sm shadow-sm">
           Guardar
         </button>
-        <a href="<?= h($BASE_URL) ?>/vistas_pantallas/listado_agentes.php" class="btn btn-soft btn-sm shadow-sm">
+
+        <a href="<?= h($BASE_URL) ?>/vistas_pantallas/listado_agentes.php"
+           class="btn btn-soft btn-sm shadow-sm">
           Cancelar
         </a>
       </div>
@@ -229,4 +232,59 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   </div>
 </div>
 
-<?php require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php'; ?>
+<?php ob_start(); ?>
+<script>
+document.getElementById('formAgente').addEventListener('submit', function(e){
+
+  const nombre   = document.querySelector('input[name="nombre_agente"]');
+  const email    = document.querySelector('input[name="email"]');
+  const celular  = document.querySelector('input[name="celular"]');
+  const area     = document.querySelector('select[name="id_area"]');
+  const sucursal = document.querySelector('select[name="id_sucursal"]');
+
+  if(nombre.value.trim().length < 3){
+    alert('❌ El nombre debe tener mínimo 3 caracteres.');
+    e.preventDefault();
+    nombre.focus();
+    return;
+  }
+
+  if(area.value === "0"){
+    alert('❌ Debe seleccionar un área.');
+    e.preventDefault();
+    area.focus();
+    return;
+  }
+
+  if(sucursal.value === "0"){
+    alert('❌ Debe seleccionar una sucursal.');
+    e.preventDefault();
+    sucursal.focus();
+    return;
+  }
+
+  if(email.value.trim() !== ''){
+    const regexEmail = /^[a-zA-Z0-9._%+-]+@alfanet\.net\.ec$/;
+    if(!regexEmail.test(email.value.trim())){
+      alert('❌ El correo debe ser corporativo @alfanet.net.ec');
+      e.preventDefault();
+      email.focus();
+      return;
+    }
+  }
+
+  if(celular.value.trim() !== ''){
+    if(!/^09\d{8}$/.test(celular.value.trim())){
+      alert('❌ El celular debe tener 10 dígitos y empezar con 09.');
+      e.preventDefault();
+      celular.focus();
+      return;
+    }
+  }
+
+});
+</script>
+<?php
+$PAGE_SCRIPTS = ob_get_clean();
+require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
+?>
