@@ -81,17 +81,27 @@ if ($tipo === 'agentes') {
     if ($id_area <= 0) json_ok([]);
 
     $sql = "
-        SELECT id_agente_int, nombre_agente
-        FROM dbo.AGENTES
-        WHERE id_area = ?
-          AND ISNULL(estado,1) = 1
-        ORDER BY nombre_agente
+        SELECT A.id_agente_int, A.nombre_agente
+        FROM dbo.AGENTES A
+        WHERE A.id_area = ?
+          AND ISNULL(A.estado,1) = 1
+          AND NOT EXISTS (
+                SELECT 1
+                FROM dbo.AGENTE_AUSENCIAS X
+                WHERE X.id_agente = A.id_agente_int
+                  AND X.estado = 1
+                  AND CAST(GETDATE() AS DATE) 
+                      BETWEEN X.fecha_inicio AND X.fecha_fin
+          )
+        ORDER BY A.nombre_agente
     ";
+
     $stmt = $conexion->prepare($sql);
     $stmt->execute([$id_area]);
 
     json_ok($stmt->fetchAll(PDO::FETCH_ASSOC));
 }
+
 
 /* ===========================
    2) FILTRAR COLAS (por área)
