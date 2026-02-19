@@ -79,12 +79,26 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 ?>
 
 <!-- ===================== NAVEGACIÓN ===================== -->
-<div class="mb-3 d-flex justify-content-between">
-  <a href="<?= h($BASE_URL) ?>/vistas_pantallas/menu.php"
-     class="btn btn-soft btn-sm shadow-sm">
-     <i class="bi bi-house-door"></i> Menú principal
-  </a>
+<div class="mb-3 d-flex justify-content-between align-items-center">
+
+  <div>
+    <a href="<?= h($BASE_URL) ?>/vistas_pantallas/menu.php"
+       class="btn btn-soft btn-sm shadow-sm">
+       <i class="bi bi-house-door"></i> Menú principal
+    </a>
+  </div>
+
+  <div>
+    <?php if($puedeCrear && !$soloLectura): ?>
+      <a href="<?= h($BASE_URL) ?>/vistas_pantallas/agente_formulario.php"
+         class="btn btn-primary btn-sm shadow-sm">
+         <i class="bi bi-plus-circle"></i> Nuevo agente
+      </a>
+    <?php endif; ?>
+  </div>
+
 </div>
+
 
 <!-- ===================== FILTROS ===================== -->
 <div class="card card-soft mb-3">
