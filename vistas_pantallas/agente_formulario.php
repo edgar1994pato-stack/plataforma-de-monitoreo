@@ -51,6 +51,8 @@ if (!$esEdicion && !$puedeCrear) {
    CARGAR ÁREAS
 ============================= */
 $areas = [];
+$sucursales = [];
+
 try {
   if ($veTodo) {
     $st = $conexion->query("SELECT id_area, nombre_area FROM dbo.AREAS WHERE estado=1 ORDER BY nombre_area");
@@ -61,16 +63,21 @@ try {
   $areas = $st->fetchAll(PDO::FETCH_ASSOC);
 } catch(Throwable $e){}
 
+try {
+  $st = $conexion->query("SELECT id_sucursal, nombre_sucursal FROM dbo.SUCURSALES WHERE estado=1 ORDER BY nombre_sucursal");
+  $sucursales = $st->fetchAll(PDO::FETCH_ASSOC);
+} catch(Throwable $e){}
+
 /* =============================
    DATOS AGENTE
 ============================= */
 $agente = [
   'id_agente_int' => $idAgente,
-  'codigo_personal' => '',
   'nombre_agente' => '',
   'email' => '',
   'celular' => '',
   'id_area' => ($veTodo ? 0 : $idAreaSesion),
+  'id_sucursal' => 0,
   'estado' => 1
 ];
 
@@ -120,32 +127,41 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
       <input type="hidden" name="id_agente" value="<?= (int)$agente['id_agente_int'] ?>">
 
-      <!-- Código Personal -->
-      <div class="col-md-6">
-        <label class="form-label small fw-bold text-muted">CÓDIGO PERSONAL</label>
-        <input type="text" name="codigo_personal" class="form-control form-control-sm"
-               maxlength="100" value="<?= h($agente['codigo_personal']) ?>">
-      </div>
-
       <!-- Nombre -->
       <div class="col-md-6">
         <label class="form-label small fw-bold text-muted">NOMBRE DEL AGENTE *</label>
-        <input type="text" name="nombre_agente" class="form-control form-control-sm"
-               maxlength="150" required value="<?= h($agente['nombre_agente']) ?>">
+        <input type="text"
+               name="nombre_agente"
+               class="form-control form-control-sm"
+               maxlength="150"
+               required
+               pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,}$"
+               title="Solo letras y espacios (mínimo 3 caracteres)"
+               value="<?= h($agente['nombre_agente']) ?>">
       </div>
 
       <!-- Email -->
       <div class="col-md-6">
         <label class="form-label small fw-bold text-muted">EMAIL</label>
-        <input type="email" name="email" class="form-control form-control-sm"
-               maxlength="255" value="<?= h($agente['email']) ?>">
+        <input type="email"
+               name="email"
+               class="form-control form-control-sm"
+               maxlength="255"
+               pattern="^[a-zA-Z0-9._%+-]+@alfanet\.net\.ec$"
+               title="Debe ser correo corporativo @alfanet.net.ec"
+               value="<?= h($agente['email']) ?>">
       </div>
 
       <!-- Celular -->
       <div class="col-md-6">
         <label class="form-label small fw-bold text-muted">CELULAR</label>
-        <input type="text" name="celular" class="form-control form-control-sm"
-               maxlength="50" value="<?= h($agente['celular']) ?>">
+        <input type="text"
+               name="celular"
+               class="form-control form-control-sm"
+               maxlength="10"
+               pattern="^09[0-9]{8}$"
+               title="Debe tener 10 dígitos y empezar con 09"
+               value="<?= h($agente['celular']) ?>">
       </div>
 
       <!-- Área -->
@@ -165,7 +181,21 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         <?php endif; ?>
       </div>
 
-      <!-- Estado (solo visible en edición) -->
+      <!-- Sucursal -->
+      <div class="col-md-6">
+        <label class="form-label small fw-bold text-muted">SUCURSAL *</label>
+        <select name="id_sucursal" class="form-select form-select-sm" required>
+          <option value="0">Seleccione...</option>
+          <?php foreach($sucursales as $s): ?>
+            <option value="<?= (int)$s['id_sucursal'] ?>"
+              <?= (int)$agente['id_sucursal'] === (int)$s['id_sucursal'] ? 'selected' : '' ?>>
+              <?= h($s['nombre_sucursal']) ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
+      <!-- Estado solo en edición -->
       <?php if($esEdicion): ?>
       <div class="col-md-6">
         <label class="form-label small fw-bold text-muted">ESTADO</label>
