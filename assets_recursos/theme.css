@@ -1,72 +1,61 @@
 /* =========================
-   PALETA CORPORATIVA
-========================= */
+   ALFANET SaaS CORPORATE THEME
+   ========================= */
 
 :root{
-  --primary:#E0E621;          
+  --primary:#E0E621;
   --black:#000000;
-  --white:rgba(255,255,255,0.92);
-  --bg-light:rgba(255,255,255,0.85);
+  --white:#FFFFFF;
+  --bg-saas:#F4F6F8;
   --text-dark:#1c1c1c;
-  --border-soft:rgba(255,255,255,0.15);
+  --border-soft:#E5E7EB;
 
   --radius:12px;
-  --shadow-soft:0 10px 30px rgba(0,0,0,.35);
+  --shadow-soft:0 2px 6px rgba(0,0,0,.05);
+  --shadow-medium:0 4px 12px rgba(0,0,0,.08);
 }
 
 /* =========================
-   BASE + FONDO CORPORATIVO
-========================= */
+   BASE
+   ========================= */
 
 html, body{
   height:100%;
 }
 
 body{
-  background-image: url('img/fondo-alfanet.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-
+  background:var(--bg-saas);
   font-family:"Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   color:var(--text-dark);
 }
 
-/* Capa oscura elegante */
+/* Elimina overlay anterior */
 body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:linear-gradient(
-      rgba(0,0,0,.65),
-      rgba(0,0,0,.75)
-  );
-  z-index:-1;
+  display:none !important;
 }
 
 /* =========================
    TITULOS
-========================= */
+   ========================= */
 
 .page-title{
   font-weight:600;
-  color:#fff;
+  color:var(--black);
   letter-spacing:.3px;
 }
 
 .page-subtitle{
-  color:#ddd;
+  color:#6B7280;
   font-size:.85rem;
 }
 
 /* =========================
-   CARDS (Glass effect)
-========================= */
+   CARDS
+   ========================= */
 
-.card-soft{
+.card-soft,
+.resultado-box{
   background:var(--white);
-  backdrop-filter:blur(6px);
   border:1px solid var(--border-soft);
   border-radius:var(--radius);
   box-shadow:var(--shadow-soft);
@@ -74,7 +63,7 @@ body::before{
 }
 
 .card-soft:hover{
-  transform:translateY(-3px);
+  box-shadow:var(--shadow-medium);
 }
 
 .card-header-dark{
@@ -82,22 +71,22 @@ body::before{
   color:var(--primary);
   font-weight:600;
   border-radius:var(--radius) var(--radius) 0 0;
-  border-bottom:1px solid rgba(255,255,255,.05);
+  border-bottom:1px solid var(--border-soft);
 }
 
 .card-header-soft{
-  background:transparent;
+  background:#F9FAFB;
   border-bottom:1px solid var(--border-soft);
 }
 
 /* =========================
    BUTTONS
-========================= */
+   ========================= */
 
 .btn-primary{
   background:var(--primary);
   border:none;
-  color:#000;
+  color:var(--black);
   font-weight:600;
   border-radius:8px;
   padding:8px 22px;
@@ -105,71 +94,90 @@ body::before{
 }
 
 .btn-primary:hover{
-  background:#d6dc1c;
-  transform:translateY(-1px);
+  background:#cfd91c;
 }
 
 .btn-outline-secondary{
   border:1px solid var(--border-soft);
-  color:#fff;
-  background:transparent;
+  color:var(--black);
+  background:var(--white);
   border-radius:8px;
 }
 
 .btn-outline-secondary:hover{
-  background:rgba(255,255,255,0.1);
+  background:#F3F4F6;
 }
 
 /* =========================
    BADGES
-========================= */
+   ========================= */
 
 .badge-soft{
-  background:rgba(224,230,33,.2);
-  color:#000;
+  background:rgba(224,230,33,.15);
+  color:var(--black);
   font-weight:500;
   padding:5px 12px;
   border-radius:20px;
 }
 
 /* =========================
-   LIST GROUP
-========================= */
+   MENÚ LATERAL OSCURO ELEGANTE
+   ========================= */
 
-.list-group-item{
+.sidebar,
+.menu-lateral,
+.list-group{
+  background:linear-gradient(
+    180deg,
+    #0f0f0f 0%,
+    #000000 100%
+  );
+  border-radius:12px;
+  padding:8px 0;
+}
+
+/* Items menú lateral */
+.sidebar .list-group-item,
+.menu-lateral .list-group-item{
+  background:transparent;
   border:none;
-  border-left:3px solid transparent;
-  background:rgba(255,255,255,0.08);
+  color:#e5e5e5;
+  padding:12px 18px;
   font-weight:500;
-  color:#fff;
-  transition:all .2s ease;
+  position:relative;
 }
 
-.list-group-item:hover{
-  background:rgba(224,230,33,0.15);
+/* Hover */
+.sidebar .list-group-item:hover,
+.menu-lateral .list-group-item:hover{
+  background:rgba(224,230,33,.08);
+  color:#ffffff;
 }
 
-.list-group-item.active{
-  background:rgba(224,230,33,.15);
-  border-left:4px solid var(--primary);
-  color:#fff;
+/* Activo */
+.sidebar .list-group-item.active,
+.menu-lateral .list-group-item.active{
+  background:rgba(224,230,33,.12);
+  color:#ffffff;
+  font-weight:600;
 }
 
-/* Ocultar contadores */
-.list-group-item .badge{
-  display:none !important;
+/* Línea amarilla activa */
+.sidebar .list-group-item.active::before,
+.menu-lateral .list-group-item.active::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  height:100%;
+  width:4px;
+  background:#E0E621;
+  border-radius:0 4px 4px 0;
 }
 
 /* =========================
-   RESULTADO BOX
-========================= */
-
-.resultado-box{
-  background:var(--white);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow-soft);
-  border:1px solid var(--border-soft);
-}
+   RESULTADO BOX HEADER
+   ========================= */
 
 .resultado-box .hdr{
   background:var(--black);
@@ -180,54 +188,46 @@ body::before{
 
 /* =========================
    QA CHIP
-========================= */
+   ========================= */
 
 .qa-chip{
   background:var(--white);
   border-radius:10px;
   padding:8px 14px;
   border:1px solid var(--border-soft);
-  box-shadow:0 3px 10px rgba(0,0,0,.2);
+  box-shadow:var(--shadow-soft);
 }
 
-.qa-chip-ok{
-  border-left:4px solid #2e7d32;
-}
-
-.qa-chip-bad{
-  border-left:4px solid #c62828;
-}
-
-.qa-chip-warn{
-  border-left:4px solid #f9a825;
-}
+.qa-chip-ok{ border-left:4px solid #2e7d32; }
+.qa-chip-bad{ border-left:4px solid #c62828; }
+.qa-chip-warn{ border-left:4px solid #f9a825; }
 
 /* =========================
    FORM INPUTS
-========================= */
+   ========================= */
 
 .form-control,
 .form-select{
   border:1px solid var(--border-soft);
   border-radius:8px;
   font-size:.9rem;
-  background:rgba(255,255,255,0.95);
+  background:var(--white);
 }
 
 .form-control:focus,
 .form-select:focus{
   border-color:var(--primary);
-  box-shadow:0 0 0 2px rgba(224,230,33,.25);
+  box-shadow:0 0 0 2px rgba(224,230,33,.15);
 }
 
 /* =========================
    OVERLAY MONITOREO
-========================= */
+   ========================= */
 
 .overlay-monitoreo{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.85);
+  background:rgba(0,0,0,.6);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -236,27 +236,27 @@ body::before{
 
 .card-monitoreo{
   background:var(--white);
-  padding:60px 50px;
+  padding:50px 40px;
   border-radius:20px;
   text-align:center;
-  box-shadow:0 25px 60px rgba(0,0,0,.3);
+  box-shadow:var(--shadow-medium);
 }
 
 .circle-check{
-  width:120px;
-  height:120px;
+  width:100px;
+  height:100px;
   border:4px solid var(--primary);
   border-radius:50%;
-  margin:0 auto 25px;
+  margin:0 auto 20px;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:#fafafa;
+  background:#fff;
 }
 
 .checkmark{
-  width:40px;
-  height:80px;
+  width:35px;
+  height:70px;
   border-right:4px solid var(--primary);
   border-bottom:4px solid var(--primary);
   transform:rotate(45deg);
@@ -264,59 +264,34 @@ body::before{
 
 .titulo-monitoreo{
   font-weight:600;
-  color:#000;
+  color:var(--black);
 }
 
 .numero-monitoreo{
-  font-size:48px;
+  font-size:42px;
   font-weight:700;
-  color:#000;
-}
-
-/* =========================
-   INDICADOR SECCIÓN RESPONDIDA
-========================= */
-
-.list-group-item.seccion-calificada{
-  position:relative;
-  background:rgba(224,230,33,0.15) !important;
-  border-left:3px solid var(--primary) !important;
-  font-weight:600;
-}
-
-.list-group-item.seccion-calificada::after{
-  content:"";
-  position:absolute;
-  right:14px;
-  top:50%;
-  transform:translateY(-50%);
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:var(--primary);
+  color:var(--black);
 }
 
 /* =========================
    BADGES ESTADO OPERATIVO
-========================= */
+   ========================= */
 
 .badge-estado{
   padding:6px 14px;
   font-size:.75rem;
   font-weight:600;
   border-radius:20px;
-  letter-spacing:.3px;
 }
 
 .badge-activo{
   background:rgba(224,230,33,.2);
-  color:#000;
-  border:1px solid rgba(224,230,33,.4);
+  color:var(--black);
 }
 
 .badge-vacaciones{
   background:var(--primary);
-  color:#000;
+  color:var(--black);
 }
 
 .badge-inactivo{
