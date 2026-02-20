@@ -21,8 +21,8 @@ $error = $_SESSION['login_error'] ?? '';
 unset($_SESSION['login_error']);
 
 // Variables de diseño
-$PAGE_TITLE       = "🔐 Iniciar Sesión";
-$PAGE_SUBTITLE    = "Plataforma de Monitoreo · Alfanet";
+$PAGE_TITLE       = "";
+$PAGE_SUBTITLE    = "";
 $PAGE_ACTION_HTML = "";
 
 // Header
