@@ -1,9 +1,9 @@
 /* =========================
-   ALFANET CORPORATE THEME
+ 
    ========================= */
 
 :root{
-  --primary:#E0E621;
+  --primary:#E0E621;          /* Amarillo corporativo */
   --black:#000000;
   --white:#FFFFFF;
   --bg-light:#f4f5f7;
@@ -64,6 +64,7 @@ body{
   color:var(--primary);
   font-weight:600;
   border-radius:var(--radius) var(--radius) 0 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
 }
 
 .card-header-soft{
@@ -114,11 +115,10 @@ body{
 }
 
 /* =========================
-   MENÚ LATERAL
+   LIST GROUP (Menú lateral)
 ========================= */
 
 .list-group-item{
-  position:relative;
   border:none;
   border-left:3px solid transparent;
   background:#fafafa;
@@ -135,43 +135,11 @@ body{
   background:rgba(224,230,33,.10);
   border-left:4px solid var(--primary);
   color:#000;
-  font-weight:600;
 }
 
-/* =========================
-   OCULTAR NUMEROS
-========================= */
-
+/* 🔒 Ocultar contadores azules */
 .list-group-item .badge{
   display:none !important;
-}
-
-/* =========================
-   SECCIÓN RESPONDIDA
-========================= */
-
-.list-group-item.seccion-calificada{
-  font-weight:600;
-}
-
-/* Punto elegante a la derecha */
-.list-group-item.seccion-calificada::after{
-  content:"";
-  position:absolute;
-  right:14px;
-  top:50%;
-  transform:translateY(-50%);
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:#E0E621;
-  box-shadow:0 0 6px rgba(224,230,33,.5);
-}
-
-/* Si está activa Y respondida */
-.list-group-item.active.seccion-calificada::after{
-  background:#E0E621;
-  box-shadow:0 0 8px rgba(224,230,33,.6);
 }
 
 /* =========================
@@ -193,7 +161,7 @@ body{
 }
 
 /* =========================
-   QA CHIP
+   QA CHIP (Score)
 ========================= */
 
 .qa-chip{
@@ -204,9 +172,17 @@ body{
   box-shadow:0 3px 10px rgba(0,0,0,.05);
 }
 
-.qa-chip-ok{ border-left:4px solid #2e7d32; }
-.qa-chip-bad{ border-left:4px solid #c62828; }
-.qa-chip-warn{ border-left:4px solid #f9a825; }
+.qa-chip-ok{
+  border-left:4px solid #2e7d32;
+}
+
+.qa-chip-bad{
+  border-left:4px solid #c62828;
+}
+
+.qa-chip-warn{
+  border-left:4px solid #f9a825;
+}
 
 /* =========================
    FORM INPUTS
@@ -277,6 +253,49 @@ body{
   font-weight:700;
   color:#000;
 }
+
+
+
+/* ===============================
+   INDICADOR PREMIUM DE SECCIÓN RESPONDIDA
+================================= */
+
+/* Mantener ocultos los números */
+.list-group-item .badge{
+  display:none !important;
+}
+
+/* Sección con respuestas */
+.list-group-item.seccion-calificada{
+  position:relative;
+  background: rgba(224,230,33,0.08) !important;
+  border-left: 3px solid #E0E621 !important;
+  font-weight:600;
+}
+
+/* Punto indicador elegante */
+.list-group-item.seccion-calificada::after{
+  content:"";
+  position:absolute;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#E0E621;
+}
+
+/* Sección activa */
+.list-group-item.active{
+  background: rgba(224,230,33,0.12) !important;
+  border-left:4px solid #E0E621 !important;
+}
+
+
+
+
+
 
 /* =========================
    BADGES ESTADO OPERATIVO
