@@ -419,7 +419,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
           <textarea class="form-control form-control-sm"
                     name="descripcion" id="descripcion"
                     rows="3"
-                    maxlength="1000"
+                    maxlength="100000"
                     placeholder="Criterios, ejemplos, condiciones..."><?= h($form['descripcion']) ?></textarea>
         </div>
 
