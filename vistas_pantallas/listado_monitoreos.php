@@ -80,7 +80,7 @@ if ($nombreUsuarioSesion === '') {
  * 7) HEADER (DISEÑO)
  * ========================================================= */
 $PAGE_TITLE    = "📄 Listado de Monitoreos";
-$PAGE_SUBTITLE = "Sesión: <b>" . h($nombreUsuarioSesion) . "</b>";
+$PAGE_SUBTITLE = "";
 
 $PAGE_ACTION_HTML = '
   <div class="d-flex align-items-center gap-2 flex-wrap">

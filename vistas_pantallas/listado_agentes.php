@@ -87,8 +87,8 @@ try {
 /* =============================
    HEADER
 ============================= */
-$PAGE_TITLE = "👥 Módulo de Agentes";
-$PAGE_SUBTITLE = "Gestión y visualización de agentes por estado operativo.";
+$PAGE_TITLE = "";
+$PAGE_SUBTITLE = "";
 
 require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 ?>
