@@ -109,7 +109,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
           <div class="text-center mt-3">
             <span class="help-mini">
-              Si no puede acceder, comuníquese con el administrador.
+              
             </span>
           </div>
 
