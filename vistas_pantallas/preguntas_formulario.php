@@ -318,7 +318,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
         <!-- Cola -->
         <div class="col-md-4">
-          <label class="form-label small fw-bold text-muted">COLA <span class="text-danger">*</span></label>
+          <label class="form-label small fw-bold text-muted">PLANTILLA <span class="text-danger">*</span></label>
           <select class="form-select form-select-sm" name="id_cola" id="id_cola" required>
             <option value="">Seleccione...</option>
             <?php foreach ($colas as $c): ?>
