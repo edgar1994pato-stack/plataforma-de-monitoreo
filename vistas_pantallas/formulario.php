@@ -919,6 +919,7 @@ document.addEventListener('click', (e) => {
 
   aplicarReglaImpulsorVsCritico();
   recalcularScoreEnVivo();
+  actualizarSeccionesCalificadas(); // 👈 ESTA ES LA LÍNEA QUE FALTABA
 });
 
 /* impulsor vs critico */

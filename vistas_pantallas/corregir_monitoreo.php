@@ -1042,6 +1042,7 @@ document.addEventListener('click', (e) => {
   aplicarReglaImpulsorVsCritico();
   recalcularScoreEnVivo();
   marcarSeccionesConEvaluadas(); // ✅ ACTUALIZA EL MENÚ DE SECCIONES
+   actualizarSeccionesCalificadas(); // 👈 ESTA ES LA LÍNEA QUE FALTABA
 });
 
 document.getElementById('formCorreccion').addEventListener('submit', (e) => {
