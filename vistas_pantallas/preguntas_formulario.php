@@ -383,7 +383,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
                  name="peso" id="peso"
                  min="0.01" max="100" step="0.01"
                  value="<?= h($form['peso']) ?>" required>
-          <div class="help-mini">Obligatorio. Se guarda en <b>PONDERACION.PESO</b>.</div>
+          <div class="help-mini"> <b></b>.</div>
         </div>
 
         <!-- Gestión -->
@@ -398,7 +398,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
                  value="<?= h($form['gestion']) ?>"
                  placeholder="Escriba la gestión..." required>
 
-          <div class="help-mini">Obligatorio. Se guarda en <b>PONDERACION.GESTION</b>.</div>
+          <div class="help-mini"> <b></b>.</div>
         </div>
 
         <!-- Pregunta -->
@@ -539,12 +539,7 @@ async function cargarColasYSecciones(idArea) {
   await loadOptions(`${BASE_URL}/cruds/servidor_filtros.php?tipo=secciones&id_area=${encodeURIComponent(idArea)}`, elSeccion, 'id_seccion', 'nombre_seccion');
 
   
-  const opt = document.createElement('option');
-  opt.value = '__OTRA__';
-  opt.textContent = 'Otra...';
-  elGestionSelect.appendChild(opt);
 
-  elGestion.value = '';
 }
 
 
@@ -561,19 +556,7 @@ if (elCola) {
   });
 }
 
-if (elGestionSelect && elGestion) {
-  elGestionSelect.addEventListener('change', () => {
-    const v = (elGestionSelect.value || '').trim();
-    if (!v) return;
 
-    if (v === '__OTRA__') {
-      elGestion.focus();
-      elGestion.select();
-      return;
-    }
-    elGestion.value = v;
-  });
-}
 
 document.getElementById('frmPregunta')?.addEventListener('submit', (e) => {
   const preg = (document.getElementById('pregunta')?.value || '').trim();

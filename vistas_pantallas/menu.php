@@ -34,7 +34,7 @@ force_password_change();
 /* =========================================================
  * 2) VARIABLES DE DISEÑO
  * ========================================================= */
-$PAGE_TITLE    = "📊 Menú Principal";
+$PAGE_TITLE    = "";
 $PAGE_SUBTITLE = "";
 
 /* Acción superior */
