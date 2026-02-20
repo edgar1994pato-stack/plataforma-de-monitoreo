@@ -91,7 +91,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
                 <i class="bi bi-eye"></i>
               </button>
             </div>
-            <div class="help-mini">Puede mostrar/ocultar la contraseña.</div>
+            <div class="help-mini"></div>
           </div>
 
           <!-- OLVIDÉ CONTRASEÑA -->
