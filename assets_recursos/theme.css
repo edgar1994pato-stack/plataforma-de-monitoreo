@@ -1,18 +1,20 @@
 /* =========================
-   ALFANET SaaS CORPORATE THEME
+   ALFANET PREMIUM CORPORATE THEME
    ========================= */
 
 :root{
   --primary:#E0E621;
   --black:#000000;
+  --dark-900:#0f0f0f;
+  --dark-800:#1a1a1a;
   --white:#FFFFFF;
-  --bg-saas:#F4F6F8;
+  --bg-saas:#EEF1F4;
   --text-dark:#1c1c1c;
-  --border-soft:#E5E7EB;
+  --border-soft:#E3E6EA;
 
-  --radius:12px;
-  --shadow-soft:0 2px 6px rgba(0,0,0,.05);
-  --shadow-medium:0 4px 12px rgba(0,0,0,.08);
+  --radius:14px;
+  --shadow-soft:0 6px 18px rgba(0,0,0,.08);
+  --shadow-strong:0 15px 40px rgba(0,0,0,.18);
 }
 
 /* =========================
@@ -29,7 +31,6 @@ body{
   color:var(--text-dark);
 }
 
-/* Elimina overlay anterior */
 body::before{
   display:none !important;
 }
@@ -39,89 +40,50 @@ body::before{
    ========================= */
 
 .page-title{
-  font-weight:600;
-  color:var(--black);
-  letter-spacing:.3px;
+  font-weight:700;
+  color:#111;
+  letter-spacing:.5px;
 }
 
 .page-subtitle{
-  color:#6B7280;
+  color:#6b7280;
   font-size:.85rem;
 }
 
 /* =========================
-   CARDS
+   CARDS PREMIUM
    ========================= */
 
 .card-soft,
 .resultado-box{
   background:var(--white);
-  border:1px solid var(--border-soft);
+  border:none;
   border-radius:var(--radius);
   box-shadow:var(--shadow-soft);
-  transition:all .2s ease;
+  transition:all .25s ease;
 }
 
 .card-soft:hover{
-  box-shadow:var(--shadow-medium);
+  box-shadow:var(--shadow-strong);
+  transform:translateY(-2px);
 }
 
 .card-header-dark{
   background:var(--black);
   color:var(--primary);
   font-weight:600;
+  padding:14px 20px;
   border-radius:var(--radius) var(--radius) 0 0;
-  border-bottom:1px solid var(--border-soft);
 }
 
 .card-header-soft{
-  background:#F9FAFB;
+  background:#f8fafc;
   border-bottom:1px solid var(--border-soft);
-}
-
-/* =========================
-   BUTTONS
-   ========================= */
-
-.btn-primary{
-  background:var(--primary);
-  border:none;
-  color:var(--black);
   font-weight:600;
-  border-radius:8px;
-  padding:8px 22px;
-  transition:all .2s ease;
-}
-
-.btn-primary:hover{
-  background:#cfd91c;
-}
-
-.btn-outline-secondary{
-  border:1px solid var(--border-soft);
-  color:var(--black);
-  background:var(--white);
-  border-radius:8px;
-}
-
-.btn-outline-secondary:hover{
-  background:#F3F4F6;
 }
 
 /* =========================
-   BADGES
-   ========================= */
-
-.badge-soft{
-  background:rgba(224,230,33,.15);
-  color:var(--black);
-  font-weight:500;
-  padding:5px 12px;
-  border-radius:20px;
-}
-
-/* =========================
-   MENÚ LATERAL OSCURO ELEGANTE
+   MENÚ LATERAL PREMIUM
    ========================= */
 
 .sidebar,
@@ -129,78 +91,88 @@ body::before{
 .list-group{
   background:linear-gradient(
     180deg,
-    #0f0f0f 0%,
-    #000000 100%
+    var(--dark-900) 0%,
+    var(--black) 100%
   );
-  border-radius:12px;
-  padding:8px 0;
+  border-radius:18px;
+  padding:16px 0;
+  box-shadow:var(--shadow-strong);
 }
 
-/* Items menú lateral */
 .sidebar .list-group-item,
 .menu-lateral .list-group-item{
   background:transparent;
   border:none;
-  color:#e5e5e5;
-  padding:12px 18px;
+  color:#cfcfcf;
   font-weight:500;
+  padding:15px 24px;
+  letter-spacing:.3px;
   position:relative;
+  transition:all .25s ease;
 }
 
-/* Hover */
 .sidebar .list-group-item:hover,
 .menu-lateral .list-group-item:hover{
-  background:rgba(224,230,33,.08);
+  background:rgba(224,230,33,.07);
   color:#ffffff;
+  transform:translateX(5px);
 }
 
-/* Activo */
 .sidebar .list-group-item.active,
 .menu-lateral .list-group-item.active{
-  background:rgba(224,230,33,.12);
+  background:rgba(224,230,33,.15);
   color:#ffffff;
   font-weight:600;
 }
 
-/* Línea amarilla activa */
 .sidebar .list-group-item.active::before,
 .menu-lateral .list-group-item.active::before{
   content:"";
   position:absolute;
   left:0;
-  top:0;
-  height:100%;
+  top:10px;
+  bottom:10px;
   width:4px;
-  background:#E0E621;
-  border-radius:0 4px 4px 0;
+  background:var(--primary);
+  border-radius:4px;
+}
+
+/* Elimina badges feos */
+.sidebar .badge,
+.menu-lateral .badge{
+  display:none !important;
 }
 
 /* =========================
-   RESULTADO BOX HEADER
+   BOTONES PREMIUM
    ========================= */
 
-.resultado-box .hdr{
-  background:var(--black);
-  color:var(--primary);
+.btn-primary{
+  background:var(--primary);
+  border:none;
+  color:#000;
   font-weight:600;
-  padding:10px 15px;
-}
-
-/* =========================
-   QA CHIP
-   ========================= */
-
-.qa-chip{
-  background:var(--white);
   border-radius:10px;
-  padding:8px 14px;
-  border:1px solid var(--border-soft);
-  box-shadow:var(--shadow-soft);
+  padding:9px 24px;
+  transition:all .25s ease;
+  box-shadow:0 6px 15px rgba(224,230,33,.25);
 }
 
-.qa-chip-ok{ border-left:4px solid #2e7d32; }
-.qa-chip-bad{ border-left:4px solid #c62828; }
-.qa-chip-warn{ border-left:4px solid #f9a825; }
+.btn-primary:hover{
+  background:#d6dc1c;
+  transform:translateY(-2px);
+}
+
+.btn-outline-secondary{
+  border:1px solid #d1d5db;
+  color:#333;
+  background:#fff;
+  border-radius:10px;
+}
+
+.btn-outline-secondary:hover{
+  background:#f3f4f6;
+}
 
 /* =========================
    FORM INPUTS
@@ -209,16 +181,32 @@ body::before{
 .form-control,
 .form-select{
   border:1px solid var(--border-soft);
-  border-radius:8px;
-  font-size:.9rem;
-  background:var(--white);
+  border-radius:10px;
+  background:#fff;
+  padding:8px 12px;
 }
 
 .form-control:focus,
 .form-select:focus{
   border-color:var(--primary);
-  box-shadow:0 0 0 2px rgba(224,230,33,.15);
+  box-shadow:0 0 0 3px rgba(224,230,33,.15);
 }
+
+/* =========================
+   QA CHIP
+   ========================= */
+
+.qa-chip{
+  background:#fff;
+  border-radius:12px;
+  padding:10px 16px;
+  border:1px solid var(--border-soft);
+  box-shadow:0 4px 12px rgba(0,0,0,.06);
+}
+
+.qa-chip-ok{ border-left:4px solid #2e7d32; }
+.qa-chip-bad{ border-left:4px solid #c62828; }
+.qa-chip-warn{ border-left:4px solid #f9a825; }
 
 /* =========================
    OVERLAY MONITOREO
@@ -227,7 +215,7 @@ body::before{
 .overlay-monitoreo{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.6);
+  background:rgba(0,0,0,.75);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -235,66 +223,28 @@ body::before{
 }
 
 .card-monitoreo{
-  background:var(--white);
-  padding:50px 40px;
-  border-radius:20px;
+  background:#fff;
+  padding:60px 50px;
+  border-radius:22px;
   text-align:center;
-  box-shadow:var(--shadow-medium);
+  box-shadow:0 30px 70px rgba(0,0,0,.25);
 }
 
 .circle-check{
-  width:100px;
-  height:100px;
+  width:110px;
+  height:110px;
   border:4px solid var(--primary);
   border-radius:50%;
-  margin:0 auto 20px;
+  margin:0 auto 25px;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:#fff;
 }
 
 .checkmark{
   width:35px;
-  height:70px;
+  height:75px;
   border-right:4px solid var(--primary);
   border-bottom:4px solid var(--primary);
   transform:rotate(45deg);
-}
-
-.titulo-monitoreo{
-  font-weight:600;
-  color:var(--black);
-}
-
-.numero-monitoreo{
-  font-size:42px;
-  font-weight:700;
-  color:var(--black);
-}
-
-/* =========================
-   BADGES ESTADO OPERATIVO
-   ========================= */
-
-.badge-estado{
-  padding:6px 14px;
-  font-size:.75rem;
-  font-weight:600;
-  border-radius:20px;
-}
-
-.badge-activo{
-  background:rgba(224,230,33,.2);
-  color:var(--black);
-}
-
-.badge-vacaciones{
-  background:var(--primary);
-  color:var(--black);
-}
-
-.badge-inactivo{
-  background:#1c1c1c;
-  color:#fff;
 }
