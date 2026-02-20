@@ -12,9 +12,9 @@
   --text-dark:#1c1c1c;
   --border-soft:#E3E6EA;
 
-  --radius:14px;
+  --radius:16px;
   --shadow-soft:0 6px 18px rgba(0,0,0,.08);
-  --shadow-strong:0 15px 40px rgba(0,0,0,.18);
+  --shadow-strong:0 18px 45px rgba(0,0,0,.18);
 }
 
 /* =========================
@@ -94,30 +94,33 @@ body::before{
     var(--dark-900) 0%,
     var(--black) 100%
   );
-  border-radius:18px;
-  padding:16px 0;
+  border-radius:20px;
+  padding:20px 0;
   box-shadow:var(--shadow-strong);
 }
 
+/* Items menú */
 .sidebar .list-group-item,
 .menu-lateral .list-group-item{
   background:transparent;
   border:none;
-  color:#cfcfcf;
+  color:#d4d4d4;
+  padding:16px 26px;
   font-weight:500;
-  padding:15px 24px;
-  letter-spacing:.3px;
+  letter-spacing:.4px;
   position:relative;
   transition:all .25s ease;
 }
 
+/* Hover */
 .sidebar .list-group-item:hover,
 .menu-lateral .list-group-item:hover{
   background:rgba(224,230,33,.07);
   color:#ffffff;
-  transform:translateX(5px);
+  transform:translateX(4px);
 }
 
+/* Activo */
 .sidebar .list-group-item.active,
 .menu-lateral .list-group-item.active{
   background:rgba(224,230,33,.15);
@@ -125,22 +128,33 @@ body::before{
   font-weight:600;
 }
 
+/* Barra lateral amarilla */
 .sidebar .list-group-item.active::before,
 .menu-lateral .list-group-item.active::before{
   content:"";
   position:absolute;
   left:0;
-  top:10px;
-  bottom:10px;
+  top:12px;
+  bottom:12px;
   width:4px;
   background:var(--primary);
   border-radius:4px;
 }
 
-/* Elimina badges feos */
+/* =========================
+   ELIMINAR NUMEROS / CONTADORES
+   ========================= */
+
 .sidebar .badge,
-.menu-lateral .badge{
-  display:none !important;
+.menu-lateral .badge,
+.list-group-item .badge,
+.sidebar .rounded-pill,
+.menu-lateral .rounded-pill,
+.list-group-item span[class*="badge"],
+.list-group-item span[class*="count"],
+.list-group-item span[class*="numero"],
+.list-group-item span[class*="contador"]{
+    display:none !important;
 }
 
 /* =========================
@@ -152,10 +166,10 @@ body::before{
   border:none;
   color:#000;
   font-weight:600;
-  border-radius:10px;
-  padding:9px 24px;
+  border-radius:12px;
+  padding:10px 26px;
   transition:all .25s ease;
-  box-shadow:0 6px 15px rgba(224,230,33,.25);
+  box-shadow:0 6px 18px rgba(224,230,33,.25);
 }
 
 .btn-primary:hover{
@@ -167,7 +181,7 @@ body::before{
   border:1px solid #d1d5db;
   color:#333;
   background:#fff;
-  border-radius:10px;
+  border-radius:12px;
 }
 
 .btn-outline-secondary:hover{
@@ -181,7 +195,7 @@ body::before{
 .form-control,
 .form-select{
   border:1px solid var(--border-soft);
-  border-radius:10px;
+  border-radius:12px;
   background:#fff;
   padding:8px 12px;
 }
