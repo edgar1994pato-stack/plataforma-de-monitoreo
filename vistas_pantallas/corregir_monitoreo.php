@@ -207,7 +207,6 @@ $READONLY_ATTR = ($soloLectura || !$puedeCorregir) ? 'disabled' : '';
    8) HEADER / TOPBAR
    ============================================================ */
 $PAGE_TITLE    = "✏️ Corregir Monitoreo";
-$PAGE_SUBTITLE = "Origen: <b>".h($idOrigen)."</b> | Versión base: <b>#".h((int)$version['numero_version'])."</b> | Estado: <b>".h((string)($version['estado_final'] ?? ''))."</b>";
 
 $urlVolver = $BASE_URL . "/vistas_pantallas/listado_monitoreos.php";
 $urlPdf    = $BASE_URL . "/cruds/generar_pdf_monitoreo.php?id=" . $idVersionBase . "&t=" . time();
@@ -1042,7 +1041,7 @@ document.addEventListener('click', (e) => {
   aplicarReglaImpulsorVsCritico();
   recalcularScoreEnVivo();
   marcarSeccionesConEvaluadas(); // ✅ ACTUALIZA EL MENÚ DE SECCIONES
-   actualizarSeccionesCalificadas(); // 👈 ESTA ES LA LÍNEA QUE FALTABA
+   actualizarSeccionesCalificadas(); // 👈 para manterner las secciones 
 });
 
 document.getElementById('formCorreccion').addEventListener('submit', (e) => {
