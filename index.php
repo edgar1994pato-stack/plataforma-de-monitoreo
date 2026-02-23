@@ -40,5 +40,14 @@ if (!empty($_SESSION['id_usuario'])) {
     exit;
 }
 
-// GET sin sesión → login
-require_once BASE_PATH . '/vistas_pantallas/login.php';
+// GET sin sesión → permitir vistas públicas
+$view = strtolower((string)($_GET['view'] ?? 'login'));
+
+$permitidas = [
+  'login'              => '/vistas_pantallas/login.php',
+  'recuperar_password' => '/vistas_pantallas/recuperar_password.php',
+  'reset_password'     => '/vistas_pantallas/reset_password.php',
+];
+
+require_once BASE_PATH . ($permitidas[$view] ?? $permitidas['login']);
+exit;
