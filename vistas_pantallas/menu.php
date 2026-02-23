@@ -21,9 +21,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
-
-
 /* =========================================================
  * 1) SEGURIDAD
  * ========================================================= */
@@ -34,14 +31,14 @@ force_password_change();
 /* =========================================================
  * 2) VARIABLES DE DISEÑO
  * ========================================================= */
-$PAGE_TITLE    = "";
+$PAGE_TITLE = "";
 $PAGE_SUBTITLE = "";
 
 /* Acción superior */
 $PAGE_ACTION_HTML = '
-  <a class="btn btn-outline-danger btn-sm shadow-sm" href="'.BASE_URL.'/cruds/logout.php">
+<a class="btn btn-outline-danger btn-sm shadow-sm" href="'.BASE_URL.'/cruds/logout.php">
     <i class="bi bi-box-arrow-right"></i> Cerrar sesión
-  </a>
+</a>
 ';
 
 /* =========================================================
@@ -49,12 +46,10 @@ $PAGE_ACTION_HTML = '
  * ========================================================= */
 require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
-
 /* ================= FLASH MONITOREO ================= */
 $flashMonitoreo = $_SESSION['flash_monitoreo_id'] ?? null;
 
 if (!empty($flashMonitoreo)) {
-
     $numeroMonitoreo = (int)$flashMonitoreo;
     unset($_SESSION['flash_monitoreo_id']);
 ?>
@@ -68,7 +63,6 @@ if (!empty($flashMonitoreo)) {
     justify-content: center !important;
     z-index: 999999 !important;
 }
-
 #overlayMonitoreo .card-monitoreo {
     background: #E0E621;
     padding: 70px 60px;
@@ -77,7 +71,6 @@ if (!empty($flashMonitoreo)) {
     box-shadow: 0 30px 70px rgba(0,0,0,.4);
     animation: zoomIn .35s ease;
 }
-
 #overlayMonitoreo .circle-check {
     width: 130px;
     height: 130px;
@@ -88,7 +81,6 @@ if (!empty($flashMonitoreo)) {
     align-items: center;
     justify-content: center;
 }
-
 #overlayMonitoreo .checkmark {
     width: 50px;
     height: 90px;
@@ -97,24 +89,20 @@ if (!empty($flashMonitoreo)) {
     transform: rotate(45deg) scale(0);
     animation: drawCheck .4s ease forwards;
 }
-
 #overlayMonitoreo .titulo-monitoreo {
     font-weight: 700;
     font-size: 18px;
     color: #000;
 }
-
 #overlayMonitoreo .numero-monitoreo {
     font-size: 60px;
     font-weight: 900;
     color: #000;
     margin-top: 10px;
 }
-
 @keyframes drawCheck {
     to { transform: rotate(45deg) scale(1); }
 }
-
 @keyframes zoomIn {
     from { transform: scale(.6); opacity:0; }
     to { transform: scale(1); opacity:1; }
@@ -141,82 +129,79 @@ setTimeout(function(){
     }
 },4000);
 </script>
+<?php } ?>
+
 <?php
-}
-
-
 /* =========================================================
  * 4) DATOS DE SESIÓN
  * ========================================================= */
 $nombreCompleto = (string)($_SESSION['nombre_completo'] ?? '');
-$idArea         = (int)($_SESSION['id_area'] ?? 0);
-
+$idArea = (int)($_SESSION['id_area'] ?? 0);
 $textoScope = can_see_all_areas()
     ? "Acceso: todas las áreas"
     : "Acceso: solo tu área (ID: {$idArea})";
 ?>
 
 <!-- ================= CONTENIDO ================= -->
-
 <div class="row g-4">
 
-    <?php if (can_create()): ?>
-    <!-- TARJETA: NUEVO MONITOREO -->
-    <div class="col-md-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-clipboard-check fs-1 text-primary"></i>
-                <h5 class="mt-3 fw-bold">Nuevo Monitoreo</h5>
-                <p class="text-muted small">
-                    Registrar un nuevo monitoreo.
-                </p>
-                <a href="<?= BASE_URL ?>/vistas_pantallas/formulario.php"
-                   class="btn btn-primary btn-sm fw-bold">
-                    Ingresar
-                </a>
-            </div>
+<?php if (can_create()): ?>
+<!-- TARJETA: NUEVO MONITOREO -->
+<div class="col-md-4">
+    <div class="card shadow-sm h-100">
+        <div class="card-body text-center">
+            <i class="bi bi-clipboard-check fs-1 text-primary"></i>
+            <h5 class="mt-3 fw-bold">Nuevo Monitoreo</h5>
+            <p class="text-muted small">
+                Registrar un nuevo monitoreo.
+            </p>
+            <a href="<?= BASE_URL ?>/vistas_pantallas/formulario.php"
+               class="btn btn-primary btn-sm fw-bold">
+                Ingresar
+            </a>
         </div>
     </div>
-    <?php endif; ?>
+</div>
+<?php endif; ?>
 
-    <!-- TARJETA: LISTADO DE MONITOREOS -->
-    <div class="col-md-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-list-check fs-1 text-success"></i>
-                <h5 class="mt-3 fw-bold">Listado de Monitoreos</h5>
-                <p class="text-muted small">
-                    Consultar y revisar monitoreos registrados.
-                </p>
-                <a href="<?= BASE_URL ?>/vistas_pantallas/listado_monitoreos.php"
-                   class="btn btn-success btn-sm fw-bold">
-                    Ver listado
-                </a>
-            </div>
+<!-- TARJETA: LISTADO DE MONITOREOS -->
+<div class="col-md-4">
+    <div class="card shadow-sm h-100">
+        <div class="card-body text-center">
+            <i class="bi bi-list-check fs-1 text-success"></i>
+            <h5 class="mt-3 fw-bold">Listado de Monitoreos</h5>
+            <p class="text-muted small">
+                Consultar y revisar monitoreos registrados.
+            </p>
+            <a href="<?= BASE_URL ?>/vistas_pantallas/listado_monitoreos.php"
+               class="btn btn-success btn-sm fw-bold">
+                Ver listado
+            </a>
         </div>
     </div>
+</div>
 
-    <?php if (can_create()): ?>
-    <!-- TARJETA: MÓDULO DE PREGUNTAS -->
-    <div class="col-md-4">
-        <div class="card shadow-sm h-100 border-warning">
-            <div class="card-body text-center">
-                <i class="bi bi-question-circle fs-1 text-warning"></i>
-                <h5 class="mt-3 fw-bold">Módulo de Preguntas</h5>
-                <p class="text-muted small">
-                    Crear y administrar preguntas.
-                </p>
-                <a href="<?= BASE_URL ?>/vistas_pantallas/listado_preguntas.php"
-                   class="btn btn-warning btn-sm fw-bold">
-                    Administrar
-                </a>
-            </div>
+<?php if (can_create()): ?>
+<!-- TARJETA: MÓDULO DE PREGUNTAS -->
+<div class="col-md-4">
+    <div class="card shadow-sm h-100 border-warning">
+        <div class="card-body text-center">
+            <i class="bi bi-question-circle fs-1 text-warning"></i>
+            <h5 class="mt-3 fw-bold">Módulo de Preguntas</h5>
+            <p class="text-muted small">
+                Crear y administrar preguntas.
+            </p>
+            <a href="<?= BASE_URL ?>/vistas_pantallas/listado_preguntas.php"
+               class="btn btn-warning btn-sm fw-bold">
+                Administrar
+            </a>
         </div>
     </div>
-    <?php endif; ?>
+</div>
+<?php endif; ?>
 
-    <!-- TARJETA: USUARIOS -->
-  <?php if (can_create()): ?>
+<?php if (can_create()): ?>
+<!-- TARJETA: USUARIOS -->
 <div class="col-md-4">
     <div class="card card-soft h-100">
         <div class="card-body text-center">
@@ -234,7 +219,6 @@ $textoScope = can_see_all_areas()
 </div>
 <?php endif; ?>
 
-
 <!-- =============== FIN CONTENIDO =============== -->
 
 <?php
@@ -242,3 +226,4 @@ $textoScope = can_see_all_areas()
  * 5) FOOTER
  * ========================================================= */
 require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
+?>
