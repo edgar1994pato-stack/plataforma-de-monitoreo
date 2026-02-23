@@ -74,18 +74,7 @@ try {
     /* =====================================================
      * 5.3) VALIDAR HASH
      * ===================================================== */
-    $hashBD = (string)($usuario['password_hash'] ?? '');
-
-    $pareceHash =
-        strpos($hashBD, '$2y$') === 0 ||
-        strpos($hashBD, '$argon2') === 0;
-
-    if (!$pareceHash) {
-        $_SESSION['login_error'] = 'Debe restablecer su contraseña.';
-        header('Location: ' . BASE_URL . '/index.php?accion=recuperar_password');
-        exit;
-    }
-
+ 
     /* =====================================================
      * 5.4) VALIDAR CONTRASEÑA
      * ===================================================== */
