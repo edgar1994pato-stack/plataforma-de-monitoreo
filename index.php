@@ -10,7 +10,7 @@ session_start();
 
 define('BASE_PATH', __DIR__);
 
-// Configuración global (no imprime nada)
+// Configuración global
 require_once BASE_PATH . '/config_ajustes/app.php';
 
 /* =================================================
@@ -25,13 +25,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // POST no reconocido → login seguro
+    // POST no reconocido → login
     require_once BASE_PATH . '/vistas_pantallas/login.php';
     exit;
 }
 
 /* =================================================
-   * FLUJO GET
+   * FLUJO GET – RECUPERAR PASSWORD
+   * ================================================= */
+
+if (($_GET['accion'] ?? '') === 'recuperar_password') {
+    require_once BASE_PATH . '/vistas_pantallas/recuperar_password.php';
+    exit;
+}
+
+/* =================================================
+   * FLUJO NORMAL
    * ================================================= */
 
 if (!empty($_SESSION['id_usuario'])) {

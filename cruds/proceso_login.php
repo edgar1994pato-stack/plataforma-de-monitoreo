@@ -82,7 +82,7 @@ try {
 
     if (!$pareceHash) {
         $_SESSION['login_error'] = 'Debe restablecer su contraseña.';
-        header('Location: ' . BASE_URL . '/vistas_pantallas/reset_password.php');
+        header('Location: ' . BASE_URL . '/index.php?accion=recuperar_password');
         exit;
     }
 
