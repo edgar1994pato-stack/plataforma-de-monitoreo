@@ -239,7 +239,11 @@ try {
 /* Catálogos */
 $aspectos    = ['ERROR NO CRITICO','ERROR CRITICO','IMPULSOR DE SATISFACCIÓN'];
 $direcciones = ['USUARIO FINAL','NEGOCIO'];
-$tipos       = ['NORMAL','CRITICO','IMPULSOR'];
+$tipos = [
+  'NORMAL'   => 'PONDERADO',
+  'CRITICO'  => 'CRITICO',
+  'IMPULSOR' => 'IMPULSOR'
+];
 
 /* Header UI */
 $PAGE_TITLE    = "🧩 Módulo de Preguntas";
@@ -364,17 +368,17 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
           </select>
         </div>
 
-        <!-- Tipo -->
-        <div class="col-md-3">
-          <label class="form-label small fw-bold text-muted">TIPO <span class="text-danger">*</span></label>
-          <select class="form-select form-select-sm" name="tipo" id="tipo" required>
-            <option value="">Seleccione...</option>
-            <?php foreach ($tipos as $x): ?>
-              <?php $sel = (strtoupper($form['tipo']) === $x) ? 'selected' : ''; ?>
-              <option value="<?= h($x) ?>" <?= $sel ?>><?= h($x) ?></option>
-            <?php endforeach; ?>
-          </select>
-        </div>
+ <!-- Tipo -->
+<div class="col-md-3">
+  <label class="form-label small fw-bold text-muted">TIPO <span class="text-danger">*</span></label>
+  <select class="form-select form-select-sm" name="tipo" id="tipo" required>
+    <option value="">Seleccione...</option>
+    <?php foreach ($tipos as $value => $label): ?>
+      <?php $sel = (strtoupper($form['tipo']) === $value) ? 'selected' : ''; ?>
+      <option value="<?= h($value) ?>" <?= $sel ?>><?= h($label) ?></option>
+    <?php endforeach; ?>
+  </select>
+</div>
 
         <!-- Peso -->
         <div class="col-md-3">
