@@ -348,9 +348,11 @@ $urlProcesoAnular= $BASE_URL . "/cruds/proceso_anular_pregunta.php";
               <td><?= h($r['COLA'] ?? '-') ?></td>
               <td><?= h($r['NOMBRE_SECCION'] ?? '-') ?></td>
 
-              <td>
-                <span class="badge bg-light text-dark border"><?= h($r['TIPO'] ?? 'NORMAL') ?></span>
-              </td>
+<td>
+  <span class="badge bg-light text-dark border">
+    <?= h(($r['TIPO'] ?? 'NORMAL') === 'NORMAL' ? 'PONDERADO' : ($r['TIPO'] ?? 'NORMAL')) ?>
+  </span>
+</td>
 
               <td><?= h($r['GESTION'] ?? '-') ?></td>
 
