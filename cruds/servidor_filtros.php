@@ -453,7 +453,7 @@ if ($tipo === 'preguntas') {
             } elseif ($tipoP === 'IMPULSOR') {
                 $badgeTipo = "<span class='badge bg-primary ms-2' style='font-size:.65rem'>⚡ IMPULSOR</span>";
             } else {
-                $badgeTipo = "<span class='badge bg-secondary ms-2' style='font-size:.65rem'>NORMAL</span>";
+                $badgeTipo = "<span class='badge bg-secondary ms-2' style='font-size:.65rem'>PONDERADO</span>";
             }
 
             $gestion = isset($p['GESTION']) && trim((string)$p['GESTION']) !== '' ? trim((string)$p['GESTION']) : null;
