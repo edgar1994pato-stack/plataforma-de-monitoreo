@@ -51,3 +51,6 @@ $permitidas = [
 
 require_once BASE_PATH . ($permitidas[$view] ?? $permitidas['login']);
 exit;
+
+
+// Activando pipeline pruebas
