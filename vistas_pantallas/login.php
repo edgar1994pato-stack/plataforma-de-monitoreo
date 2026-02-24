@@ -98,7 +98,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
           <div class="text-end mb-3">
             <a href="<?= BASE_URL ?>/vistas_pantallas/reset_password.php" 
                class="small text-decoration-none">
-              ¿Olvidaste tu contraseña?
+              
             </a>
           </div>
 
