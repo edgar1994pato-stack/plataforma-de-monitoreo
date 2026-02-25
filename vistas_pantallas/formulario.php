@@ -1051,11 +1051,11 @@ function recalcularScoreEnVivo(){
   const impulsorNO = items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'NO');
 
   if(impulsorSI && nota < 100){
-    alert("⚠️ El Impulsor está en 'Cumple' pero la nota no es 100%. Revise coherencia.");
+    alert("⚠️ El Impulsor está en 'Cumple' pero la nota no es 100%. ");
   }
 
   if(impulsorNO && nota === 100){
-    alert("⚠️ El Impulsor está en 'Falla' pero la nota es 100%. Revise coherencia.");
+    alert("⚠️ El Impulsor está en 'Falla' pero la nota es 100%.");
   }
 
   chip.classList.remove('qa-chip-ok','qa-chip-bad','qa-chip-warn');
