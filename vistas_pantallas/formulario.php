@@ -919,53 +919,64 @@ document.addEventListener('click', (e) => {
 
   aplicarReglaImpulsorVsCritico();
   recalcularScoreEnVivo();
-  actualizarSeccionesCalificadas(); // 👈 ESTA ES LA LÍNEA QUE FALTABA
+  actualizarSeccionesCalificadas(); //
 });
 
-/* impulsor vs critico */
+/* ReglaImpulsorVsCritico */
+
 function aplicarReglaImpulsorVsCritico() {
   if (SOLO_LECTURA) return;
 
   const checks = Array.from(document.querySelectorAll('.respuesta:checked'));
 
-  const hayNormalSI = checks.some(x =>
-    x.dataset.tipo === 'NORMAL' && x.value === 'SI'
+  const hayNormalNO = checks.some(x =>
+    x.dataset.tipo === 'NORMAL' && x.value === 'NO'
   );
 
-  const impulsorNOSeleccionado = checks.some(x =>
-    x.dataset.tipo === 'IMPULSOR' && x.value === 'NO'
+  const hayCriticoNO = checks.some(x =>
+    x.dataset.tipo === 'CRITICO' && x.value === 'NO'
   );
 
-  // 🔴 BLOQUEO PRINCIPAL
-  if (hayNormalSI && impulsorNOSeleccionado) {
-
-    alert("❌ No puede marcar el Impulsor como 'Falla' si existen preguntas ponderadas en 'Cumple'.");
-
-    // Desmarcar el impulsor NO
-    document.querySelectorAll('.respuesta').forEach(inp => {
-      if (inp.dataset.tipo === 'IMPULSOR' && inp.value === 'NO') {
-        inp.checked = false;
-      }
-    });
-
-    return;
-  }
-
-  // ✅ Regla original: impulsor SI bloquea críticos
-  const tieneImpulsorSI = checks.some(x =>
-    x.dataset.tipo === 'IMPULSOR' && x.value === 'SI'
-  );
+  const todoEnSI = !hayNormalNO && !hayCriticoNO;
 
   document.querySelectorAll('.respuesta').forEach(inp => {
-    if (tieneImpulsorSI && inp.dataset.tipo === 'CRITICO') {
-      inp.disabled = true;
-      if (inp.checked) inp.checked = false;
+
+    // 🔴 Si hay algún NO → impedir seleccionar impulsor
+    if ((hayNormalNO || hayCriticoNO) && inp.dataset.tipo === 'IMPULSOR') {
+
+      inp.onclick = function(e){
+        e.preventDefault();
+        alert("❌ No puede calificar el Impulsor porque existe al menos una pregunta evaluada como 'No Cumple'.");
+      };
+
+      // Si estaba marcado lo limpia
+      if(inp.checked){
+        inp.checked = false;
+      }
+
     } else {
-      inp.disabled = false;
+      inp.onclick = null;
     }
   });
-}
 
+  // 🟢 Si todo está en SI → impedir marcar impulsor en NO
+  if (todoEnSI) {
+    document.querySelectorAll('.respuesta').forEach(inp => {
+      if (inp.dataset.tipo === 'IMPULSOR' && inp.value === 'NO') {
+
+        inp.onclick = function(e){
+          e.preventDefault();
+          alert("⚠️ No puede marcar 'No Cumple' en el Impulsor porque todas las preguntas anteriores cumplen.");
+        };
+
+        if(inp.checked){
+          inp.checked = false;
+        }
+
+      }
+    });
+  }
+}
 /* score chip */
 function recalcularScoreEnVivo(){
   const chip = document.getElementById('qaChip');
