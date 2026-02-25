@@ -922,54 +922,28 @@ document.addEventListener('click', (e) => {
   actualizarSeccionesCalificadas(); // 👈 ESTA ES LA LÍNEA QUE FALTABA
 });
 
-/* impulsor vs critico 
-function aplicarReglaImpulsorVsCritico() {
-  if(SOLO_LECTURA) return;
-  const checks = Array.from(document.querySelectorAll('.respuesta:checked'));
-  const tieneImpulsorSI = checks.some(x => (x.dataset.tipo || '').toUpperCase() === 'IMPULSOR' && (x.value || '').toUpperCase() === 'SI');
-
-  document.querySelectorAll('.respuesta').forEach(inp => {
-    const tipo = (inp.dataset.tipo || '').toUpperCase();
-    if (tieneImpulsorSI && tipo === 'CRITICO') {
-      inp.disabled = true;
-      if (inp.checked) inp.checked = false;
-    } else {
-      inp.disabled = false;
-    }
-  });
-}*/
-
+/* impulsor vs critico */
 function aplicarReglaImpulsorVsCritico() {
   if (SOLO_LECTURA) return;
 
   const checks = Array.from(document.querySelectorAll('.respuesta:checked'));
 
-  const tieneImpulsorSI = checks.some(x =>
-    (x.dataset.tipo || '').toUpperCase() === 'IMPULSOR' &&
-    (x.value || '').toUpperCase() === 'SI'
+  const hayNormalSI = checks.some(x =>
+    x.dataset.tipo === 'NORMAL' && x.value === 'SI'
   );
 
   const impulsorNOSeleccionado = checks.some(x =>
-    (x.dataset.tipo || '').toUpperCase() === 'IMPULSOR' &&
-    (x.value || '').toUpperCase() === 'NO'
+    x.dataset.tipo === 'IMPULSOR' && x.value === 'NO'
   );
 
-  // ⚠ Asumimos que tus "ponderadas" vienen como tipo NORMAL con peso > 0
-  const hayPonderadosCumple = checks.some(x => {
-    const tipo = (x.dataset.tipo || '').toUpperCase();
-    const val  = (x.value || '').toUpperCase();
-    const peso = parseFloat(x.dataset.peso || '0') || 0;
-    return (tipo === 'NORMAL') && (peso > 0) && (val === 'SI');
-  });
+  // 🔴 BLOQUEO PRINCIPAL
+  if (hayNormalSI && impulsorNOSeleccionado) {
 
-  // 🔴 REGLA NUEVA: no permitir impulsor NO si hay ponderados en SI
-  if (hayPonderadosCumple && impulsorNOSeleccionado) {
     alert("❌ No puede marcar el Impulsor como 'Falla' si existen preguntas ponderadas en 'Cumple'.");
 
-    // desmarcar impulsor NO
+    // Desmarcar el impulsor NO
     document.querySelectorAll('.respuesta').forEach(inp => {
-      if ((inp.dataset.tipo || '').toUpperCase() === 'IMPULSOR' &&
-          (inp.value || '').toUpperCase() === 'NO') {
+      if (inp.dataset.tipo === 'IMPULSOR' && inp.value === 'NO') {
         inp.checked = false;
       }
     });
@@ -977,11 +951,13 @@ function aplicarReglaImpulsorVsCritico() {
     return;
   }
 
-  // ✅ Regla original: Impulsor SI bloquea CRITICO
-  document.querySelectorAll('.respuesta').forEach(inp => {
-    const tipo = (inp.dataset.tipo || '').toUpperCase();
+  // ✅ Regla original: impulsor SI bloquea críticos
+  const tieneImpulsorSI = checks.some(x =>
+    x.dataset.tipo === 'IMPULSOR' && x.value === 'SI'
+  );
 
-    if (tieneImpulsorSI && tipo === 'CRITICO') {
+  document.querySelectorAll('.respuesta').forEach(inp => {
+    if (tieneImpulsorSI && inp.dataset.tipo === 'CRITICO') {
       inp.disabled = true;
       if (inp.checked) inp.checked = false;
     } else {
@@ -1026,54 +1002,50 @@ function recalcularScoreEnVivo(){
 
   const criticoFallado = items.some(x => x.tipo === 'CRITICO' && x.respuesta === 'NO');
 
-  // 🔴 FIX: evitar que N/A active el impulsor
-  const tieneImpulsor  = items.some(x => 
-    x.tipo === 'IMPULSOR' &&
-    x.respuesta !== 'NO_APLICA' &&
-    x.respuesta !== 'NA' &&
-    x.respuesta !== 'N/A'
-  );
-
   let nota = 0;
 
+  // 🔴 1. CRÍTICO domina
   if(criticoFallado){
     nota = 0;
   }
-  else if(tieneImpulsor){
-
-    const impulsorNO = items.some(x => 
-      x.tipo === 'IMPULSOR' && 
-      x.respuesta === 'NO'
-    );
-
-    const impulsorSI = items.some(x => 
-      x.tipo === 'IMPULSOR' && 
-      x.respuesta === 'SI'
-    );
-
-    if(impulsorNO){
-      nota = 0;
-    }else if(impulsorSI){
-      nota = 100;
-    }else{
-      nota = 0;
-    }
-  }
+  // 🟡 2. Si no hay crítico → ponderación real
   else{
-    let posibles = 0, obtenidos = 0;
+    let posibles = 0;
+    let obtenidos = 0;
 
     items.forEach(x => {
-      if((x.tipo === 'CRITICO' || x.tipo === 'NORMAL') && x.respuesta !== 'NO_APLICA'){
+      if(
+        (x.tipo === 'CRITICO' || x.tipo === 'NORMAL') &&
+        x.respuesta !== 'NO_APLICA' &&
+        x.respuesta !== 'NA' &&
+        x.respuesta !== 'N/A'
+      ){
         posibles += x.peso;
-        if(x.respuesta === 'SI') obtenidos += x.peso;
+        if(x.respuesta === 'SI'){
+          obtenidos += x.peso;
+        }
       }
     });
 
-    if(posibles > 0) nota = (obtenidos / posibles) * 100;
+    if(posibles > 0){
+      nota = (obtenidos / posibles) * 100;
+    }
   }
 
   const notaFmt = (Math.round(nota * 10) / 10).toFixed(1);
   scoreEl.textContent = notaFmt;
+
+  // 🔵 Validación pedagógica del IMPULSOR (no altera nota)
+  const impulsorSI = items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'SI');
+  const impulsorNO = items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'NO');
+
+  if(impulsorSI && nota < 100){
+    alert("⚠️ El Impulsor está en 'Cumple' pero la nota no es 100%. Revise coherencia.");
+  }
+
+  if(impulsorNO && nota === 100){
+    alert("⚠️ El Impulsor está en 'Falla' pero la nota es 100%. Revise coherencia.");
+  }
 
   chip.classList.remove('qa-chip-ok','qa-chip-bad','qa-chip-warn');
 
@@ -1089,8 +1061,7 @@ function recalcularScoreEnVivo(){
 
   chip.title = `Nota: ${notaFmt}% | Umbral: ${UMBRAL}%`;
 }
-
-
+ 
 /* submit */
 document.getElementById('formAuditoria').addEventListener('submit', (e) => {
 

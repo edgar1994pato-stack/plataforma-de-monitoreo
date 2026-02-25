@@ -132,11 +132,13 @@ try {
   }
 
 /* =========================================================
- * 3.1) Validación Regla Impulsor vs Ponderado (BACKEND)
+ * 3.1) Validación Regla Impulsor vs Jerarquía (BACKEND)
  * ========================================================= */
 
-$hayNormalSI = false;
-$impulsorNO  = false;
+$hayNormalSI   = false;
+$impulsorNO    = false;
+$hayCriticoNO  = false;
+$impulsorSI    = false;
 
 /* Obtener todos los IDs enviados */
 $idsPreguntas = array_map(fn($it) => (int)$it['id_pregunta'], $decoded);
@@ -144,7 +146,6 @@ $idsPreguntas = array_unique($idsPreguntas);
 
 if (count($idsPreguntas) > 0) {
 
-    // Crear placeholders dinámicos
     $placeholders = implode(',', array_fill(0, count($idsPreguntas), '?'));
 
     $sqlTipos = "
@@ -179,13 +180,26 @@ if (count($idsPreguntas) > 0) {
         if ($tipo === 'IMPULSOR' && $respuesta === 'NO') {
             $impulsorNO = true;
         }
+
+        if ($tipo === 'CRITICO' && $respuesta === 'NO') {
+            $hayCriticoNO = true;
+        }
+
+        if ($tipo === 'IMPULSOR' && $respuesta === 'SI') {
+            $impulsorSI = true;
+        }
     }
 }
 
+/* 🔴 Regla 1: NORMAL SI + IMPULSOR NO */
 if ($hayNormalSI && $impulsorNO) {
-    throw new Exception('Regla de negocio inválida: No puede existir Impulsor en Falla si hay preguntas ponderadas en Cumple.');
+    throw new Exception('Regla inválida: No puede existir Impulsor en Falla si hay preguntas ponderadas en Cumple.');
 }
 
+/* 🔴 Regla 2: CRÍTICO NO + IMPULSOR SI */
+if ($hayCriticoNO && $impulsorSI) {
+    throw new Exception('Regla inválida: No puede existir Impulsor en Cumple si hay un Crítico en Falla.');
+}
   /* =========================================================
    * 4) ✅ Anti-manipulación (cola/agente/área)
    * ========================================================= */
