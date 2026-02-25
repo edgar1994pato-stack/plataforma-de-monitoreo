@@ -922,7 +922,7 @@ document.addEventListener('click', (e) => {
   actualizarSeccionesCalificadas(); // 👈 ESTA ES LA LÍNEA QUE FALTABA
 });
 
-/* impulsor vs critico */
+/* impulsor vs critico 
 function aplicarReglaImpulsorVsCritico() {
   if(SOLO_LECTURA) return;
   const checks = Array.from(document.querySelectorAll('.respuesta:checked'));
@@ -930,6 +930,57 @@ function aplicarReglaImpulsorVsCritico() {
 
   document.querySelectorAll('.respuesta').forEach(inp => {
     const tipo = (inp.dataset.tipo || '').toUpperCase();
+    if (tieneImpulsorSI && tipo === 'CRITICO') {
+      inp.disabled = true;
+      if (inp.checked) inp.checked = false;
+    } else {
+      inp.disabled = false;
+    }
+  });
+}*/
+
+function aplicarReglaImpulsorVsCritico() {
+  if (SOLO_LECTURA) return;
+
+  const checks = Array.from(document.querySelectorAll('.respuesta:checked'));
+
+  const tieneImpulsorSI = checks.some(x =>
+    (x.dataset.tipo || '').toUpperCase() === 'IMPULSOR' &&
+    (x.value || '').toUpperCase() === 'SI'
+  );
+
+  const impulsorNOSeleccionado = checks.some(x =>
+    (x.dataset.tipo || '').toUpperCase() === 'IMPULSOR' &&
+    (x.value || '').toUpperCase() === 'NO'
+  );
+
+  // ⚠ Asumimos que tus "ponderadas" vienen como tipo NORMAL con peso > 0
+  const hayPonderadosCumple = checks.some(x => {
+    const tipo = (x.dataset.tipo || '').toUpperCase();
+    const val  = (x.value || '').toUpperCase();
+    const peso = parseFloat(x.dataset.peso || '0') || 0;
+    return (tipo === 'NORMAL') && (peso > 0) && (val === 'SI');
+  });
+
+  // 🔴 REGLA NUEVA: no permitir impulsor NO si hay ponderados en SI
+  if (hayPonderadosCumple && impulsorNOSeleccionado) {
+    alert("❌ No puede marcar el Impulsor como 'Falla' si existen preguntas ponderadas en 'Cumple'.");
+
+    // desmarcar impulsor NO
+    document.querySelectorAll('.respuesta').forEach(inp => {
+      if ((inp.dataset.tipo || '').toUpperCase() === 'IMPULSOR' &&
+          (inp.value || '').toUpperCase() === 'NO') {
+        inp.checked = false;
+      }
+    });
+
+    return;
+  }
+
+  // ✅ Regla original: Impulsor SI bloquea CRITICO
+  document.querySelectorAll('.respuesta').forEach(inp => {
+    const tipo = (inp.dataset.tipo || '').toUpperCase();
+
     if (tieneImpulsorSI && tipo === 'CRITICO') {
       inp.disabled = true;
       if (inp.checked) inp.checked = false;
