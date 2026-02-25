@@ -131,6 +131,61 @@ try {
     }
   }
 
+/* =========================================================
+ * 3.1) Validación Regla Impulsor vs Ponderado (BACKEND)
+ * ========================================================= */
+
+$hayNormalSI = false;
+$impulsorNO  = false;
+
+/* Obtener todos los IDs enviados */
+$idsPreguntas = array_map(fn($it) => (int)$it['id_pregunta'], $decoded);
+$idsPreguntas = array_unique($idsPreguntas);
+
+if (count($idsPreguntas) > 0) {
+
+    // Crear placeholders dinámicos
+    $placeholders = implode(',', array_fill(0, count($idsPreguntas), '?'));
+
+    $sqlTipos = "
+        SELECT id_pregunta, tipo
+        FROM dbo.PREGUNTAS
+        WHERE id_pregunta IN ($placeholders)
+    ";
+
+    $stmtTipos = $conexion->prepare($sqlTipos);
+    $stmtTipos->execute($idsPreguntas);
+
+    $tiposMap = [];
+    while ($row = $stmtTipos->fetch(PDO::FETCH_ASSOC)) {
+        $tiposMap[(int)$row['id_pregunta']] = strtoupper(trim($row['tipo']));
+    }
+
+    foreach ($decoded as $it) {
+
+        $idPregunta = (int)$it['id_pregunta'];
+        $respuesta  = strtoupper(trim($it['respuesta']));
+
+        if (!isset($tiposMap[$idPregunta])) {
+            throw new Exception('Pregunta inválida detectada.');
+        }
+
+        $tipo = $tiposMap[$idPregunta];
+
+        if ($tipo === 'NORMAL' && $respuesta === 'SI') {
+            $hayNormalSI = true;
+        }
+
+        if ($tipo === 'IMPULSOR' && $respuesta === 'NO') {
+            $impulsorNO = true;
+        }
+    }
+}
+
+if ($hayNormalSI && $impulsorNO) {
+    throw new Exception('Regla de negocio inválida: No puede existir Impulsor en Falla si hay preguntas ponderadas en Cumple.');
+}
+
   /* =========================================================
    * 4) ✅ Anti-manipulación (cola/agente/área)
    * ========================================================= */
