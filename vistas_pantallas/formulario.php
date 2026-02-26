@@ -972,8 +972,6 @@ function aplicarReglaImpulsorVsCritico() {
   });
 }
 
-
-
 /* score chip */
 function recalcularScoreEnVivo(){
   const chip = document.getElementById('qaChip');
@@ -1009,51 +1007,42 @@ function recalcularScoreEnVivo(){
   }));
 
   const criticoFallado = items.some(x => x.tipo === 'CRITICO' && x.respuesta === 'NO');
+  const impulsorSI     = items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'SI');
 
   let nota = 0;
 
-  // 🔴 1. CRÍTICO domina
-  if(criticoFallado){
+  // 🔴 1. Crítico domina siempre
+  if (criticoFallado) {
     nota = 0;
   }
-  // 🟡 2. Si no hay crítico → ponderación real
-  else{
+  // 🔵 2. Impulsor fuerza 100% si no hay crítico fallado
+  else if (impulsorSI) {
+    nota = 100;
+  }
+  // 🟢 3. Cálculo normal
+  else {
     let posibles = 0;
     let obtenidos = 0;
 
     items.forEach(x => {
-      if(
+      if (
         (x.tipo === 'CRITICO' || x.tipo === 'NORMAL') &&
         x.respuesta !== 'NO_APLICA' &&
         x.respuesta !== 'NA' &&
         x.respuesta !== 'N/A'
-      ){
+      ) {
         posibles += x.peso;
-        if(x.respuesta === 'SI'){
+        if (x.respuesta === 'SI') {
           obtenidos += x.peso;
         }
       }
     });
 
-    if(posibles > 0){
-      nota = (obtenidos / posibles) * 100;
-    }
+    nota = (posibles > 0) ? (obtenidos / posibles) * 100 : 0;
   }
 
   const notaFmt = (Math.round(nota * 10) / 10).toFixed(1);
   scoreEl.textContent = notaFmt;
-
-  // 🔵 Validación pedagógica del IMPULSOR (no altera nota)
-  const impulsorSI = items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'SI');
-  const impulsorNO = items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'NO');
-
-  if(impulsorSI && nota < 100){
-    alert("⚠️ El Impulsor está en 'Cumple' pero la nota no es 100%. ");
-  }
-
-  if(impulsorNO && nota === 100){
-    alert("⚠️ El Impulsor está en 'Falla' pero la nota es 100%.");
-  }
 
   chip.classList.remove('qa-chip-ok','qa-chip-bad','qa-chip-warn');
 
@@ -1069,6 +1058,7 @@ function recalcularScoreEnVivo(){
 
   chip.title = `Nota: ${notaFmt}% | Umbral: ${UMBRAL}%`;
 }
+
  
 /* submit */
 document.getElementById('formAuditoria').addEventListener('submit', (e) => {
