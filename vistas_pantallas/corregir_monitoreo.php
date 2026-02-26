@@ -892,23 +892,59 @@ function marcarSeccionesConEvaluadas() {
 
 
 
-
-
 function aplicarReglaImpulsorVsCritico() {
-  if(SOLO_LECTURA) return;
+  if (SOLO_LECTURA) return;
+
   const checks = Array.from(document.querySelectorAll('.respuesta:checked'));
-  const tieneImpulsorSI = checks.some(x => (x.dataset.tipo || '').toUpperCase() === 'IMPULSOR' && (x.value || '').toUpperCase() === 'SI');
+
+  const hayCriticoNO = checks.some(x =>
+    (x.dataset.tipo || '').toUpperCase() === 'CRITICO' &&
+    (x.value || '').toUpperCase() === 'NO'
+  );
 
   document.querySelectorAll('.respuesta').forEach(inp => {
+
     const tipo = (inp.dataset.tipo || '').toUpperCase();
-    if (tieneImpulsorSI && tipo === 'CRITICO') {
-      inp.disabled = true;
-      if (inp.checked) inp.checked = false;
-    } else {
-      inp.disabled = false;
+    const valor = (inp.value || '').toUpperCase();
+
+    // 🔴 Si hay CRÍTICO en NO → bloquear TODO el IMPULSOR
+    if (hayCriticoNO && tipo === 'IMPULSOR') {
+
+      inp.onclick = function(e){
+        e.preventDefault();
+        alert("❌ No puede calificar el Impulsor porque existe un Crítico en 'No Cumple'.");
+      };
+
+      if(inp.checked){
+        inp.checked = false;
+      }
+
+      return;
     }
+
+    // 🟡 El IMPULSOR solo puede marcarse como SI
+    if (tipo === 'IMPULSOR' && valor !== 'SI') {
+
+      inp.onclick = function(e){
+        e.preventDefault();
+        alert("⚠️ El Impulsor solo puede calificarse como 'Cumple'.");
+      };
+
+      if(inp.checked){
+        inp.checked = false;
+      }
+
+      return;
+    }
+
+    // 🔓 Limpia bloqueos
+    inp.onclick = null;
+
   });
 }
+
+
+
 
 function recalcularScoreEnVivo(){
   const chip = document.getElementById('qaChip');
@@ -920,6 +956,7 @@ function recalcularScoreEnVivo(){
   const umbralEl = document.getElementById('qaChipUmbral');
 
   const sel = Array.from(document.querySelectorAll('.respuesta:checked'));
+
   const UMBRAL = (typeof window.__UMBRAL_COLA__ === 'number') ? window.__UMBRAL_COLA__ : 60;
   umbralEl.textContent = UMBRAL;
 
@@ -943,46 +980,38 @@ function recalcularScoreEnVivo(){
   }));
 
   const criticoFallado = items.some(x => x.tipo === 'CRITICO' && x.respuesta === 'NO');
-
-  // SOLO IMPULSOR VALIDO (SIN N/A)
-  const impulsorItems = items.filter(x => 
-    x.tipo === 'IMPULSOR' &&
-    x.respuesta !== 'NO_APLICA' &&
-    x.respuesta !== 'NA' &&
-    x.respuesta !== 'N/A'
-  );
+  const impulsorSI     = items.some(x => x.tipo === 'IMPULSOR' && x.respuesta === 'SI');
 
   let nota = 0;
 
-  if(criticoFallado){
+  // 🔴 1. Crítico domina
+  if (criticoFallado) {
     nota = 0;
   }
-  else if(impulsorItems.length > 0){
-
-    const impulsorNO = impulsorItems.some(x => x.respuesta === 'NO');
-    const impulsorSI = impulsorItems.some(x => x.respuesta === 'SI');
-
-    if(impulsorNO){
-      nota = 0;
-    }else if(impulsorSI){
-      nota = 100;
-    }
-
+  // 🔵 2. Impulsor fuerza 100%
+  else if (impulsorSI) {
+    nota = 100;
   }
-  else{
-    // 🔵 CALCULO NORMAL (incluye cuando impulsor es N/A)
-    let posibles = 0, obtenidos = 0;
+  // 🟢 3. Cálculo normal
+  else {
+    let posibles = 0;
+    let obtenidos = 0;
 
     items.forEach(x => {
-      if((x.tipo === 'CRITICO' || x.tipo === 'NORMAL') && x.respuesta !== 'NO_APLICA'){
+      if (
+        (x.tipo === 'CRITICO' || x.tipo === 'NORMAL') &&
+        x.respuesta !== 'NO_APLICA' &&
+        x.respuesta !== 'NA' &&
+        x.respuesta !== 'N/A'
+      ) {
         posibles += x.peso;
-        if(x.respuesta === 'SI') obtenidos += x.peso;
+        if (x.respuesta === 'SI') {
+          obtenidos += x.peso;
+        }
       }
     });
 
-    if(posibles > 0){
-      nota = (obtenidos / posibles) * 100;
-    }
+    nota = (posibles > 0) ? (obtenidos / posibles) * 100 : 0;
   }
 
   const notaFmt = (Math.round(nota * 10) / 10).toFixed(1);
