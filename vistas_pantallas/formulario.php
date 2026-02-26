@@ -952,7 +952,7 @@ function aplicarReglaImpulsorVsCritico() {
     }
 
     // 🟡 El IMPULSOR solo puede marcarse como SI
-    if (inp.dataset.tipo === 'IMPULSOR' && inp.value === 'NO') {
+    if (inp.dataset.tipo === 'IMPULSOR' && inp.value !== 'SI') {
 
       inp.onclick = function(e){
         e.preventDefault();
