@@ -40,9 +40,30 @@ const ROLE_GERENTE      = 6;
 const ROLE_SIN_ACCESO   = 7;
 
 /* =========================================================
- * 4) MATRIZ DE PERMISOS
+ * 3.1) PERMISOS DINÁMICOS (NUEVO)
  * ========================================================= */
+function has_permission(string $codigo): bool {
+
+    // Si aún no hemos migrado completamente, usamos fallback
+    if (empty($_SESSION['permisos']) || !is_array($_SESSION['permisos'])) {
+        return false;
+    }
+
+    return in_array($codigo, $_SESSION['permisos'], true);
+}
+
+/* =========================================================
+ * 4) MATRIZ DE PERMISOS (HÍBRIDO: DINÁMICO + FALLBACK)
+ * ========================================================= */
+
 function role_can_see_all_areas(): bool {
+
+    // Primero intenta permiso dinámico
+    if (has_permission('ver_todas_areas')) {
+        return true;
+    }
+
+    // Fallback antiguo
     $rol = (int)($_SESSION['id_rol'] ?? 0);
     return in_array($rol, [
         ROLE_ADMIN,
@@ -53,21 +74,35 @@ function role_can_see_all_areas(): bool {
 }
 
 function role_can_create(): bool {
+
+    if (has_permission('crear_monitoreo')) {
+        return true;
+    }
+
     return role_can_see_all_areas();
 }
 
 function role_can_correct(): bool {
+
+    if (has_permission('corregir_monitoreo')) {
+        return true;
+    }
+
     return role_can_see_all_areas();
 }
 
 function role_is_readonly(): bool {
+
+    if (has_permission('solo_lectura')) {
+        return true;
+    }
+
     $rol = (int)($_SESSION['id_rol'] ?? 0);
     return in_array($rol, [
         ROLE_SUPERVISOR,
         ROLE_COORD_CX,
     ], true);
 }
-
 /* =========================================================
  * 5) AUTENTICACIÓN
  * ========================================================= */
