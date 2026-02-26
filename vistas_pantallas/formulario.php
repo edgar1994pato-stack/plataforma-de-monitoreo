@@ -922,61 +922,58 @@ document.addEventListener('click', (e) => {
   actualizarSeccionesCalificadas(); //
 });
 
-/* ReglaImpulsorVsCritico */
+
+
 
 function aplicarReglaImpulsorVsCritico() {
   if (SOLO_LECTURA) return;
 
   const checks = Array.from(document.querySelectorAll('.respuesta:checked'));
 
-  const hayNormalNO = checks.some(x =>
-    x.dataset.tipo === 'NORMAL' && x.value === 'NO'
-  );
-
   const hayCriticoNO = checks.some(x =>
     x.dataset.tipo === 'CRITICO' && x.value === 'NO'
   );
 
-  const todoEnSI = !hayNormalNO && !hayCriticoNO;
-
   document.querySelectorAll('.respuesta').forEach(inp => {
 
-    // 🔴 Si hay algún NO → impedir seleccionar impulsor
-    if ((hayNormalNO || hayCriticoNO) && inp.dataset.tipo === 'IMPULSOR') {
+    // 🔴 Si hay CRÍTICO en NO → bloquear todo el IMPULSOR
+    if (hayCriticoNO && inp.dataset.tipo === 'IMPULSOR') {
 
       inp.onclick = function(e){
         e.preventDefault();
-        alert("❌ No puede calificar el Impulsor porque existe al menos una pregunta evaluada como 'No Cumple'.");
+        alert("❌ No puede calificar el Impulsor porque existe un Crítico en 'No Cumple'.");
       };
 
-      // Si estaba marcado lo limpia
       if(inp.checked){
         inp.checked = false;
       }
 
-    } else {
-      inp.onclick = null;
+      return;
     }
-  });
 
-  // 🟢 Si todo está en SI → impedir marcar impulsor en NO
-  if (todoEnSI) {
-    document.querySelectorAll('.respuesta').forEach(inp => {
-      if (inp.dataset.tipo === 'IMPULSOR' && inp.value === 'NO') {
+    // 🟡 El IMPULSOR solo puede marcarse como SI
+    if (inp.dataset.tipo === 'IMPULSOR' && inp.value === 'NO') {
 
-        inp.onclick = function(e){
-          e.preventDefault();
-          alert("⚠️ No puede marcar 'No Cumple' en el Impulsor porque todas las preguntas anteriores cumplen.");
-        };
+      inp.onclick = function(e){
+        e.preventDefault();
+        alert("⚠️ El Impulsor solo puede calificarse como 'Cumple'.");
+      };
 
-        if(inp.checked){
-          inp.checked = false;
-        }
-
+      if(inp.checked){
+        inp.checked = false;
       }
-    });
-  }
+
+      return;
+    }
+
+    // 🔓 Limpia bloqueo en los demás casos
+    inp.onclick = null;
+
+  });
 }
+
+
+
 /* score chip */
 function recalcularScoreEnVivo(){
   const chip = document.getElementById('qaChip');
