@@ -120,6 +120,36 @@ try {
         $_SESSION['nombre_completo'] = 'SIN_NOMBRE_SESION';
     }
 
+
+
+        /* =====================================================
+     * 5.6.1) CARGAR PERMISOS DINÁMICOS DEL ROL
+     * ===================================================== */
+
+    $_SESSION['permisos'] = [];
+
+    $stmtPerm = $conexion->prepare("
+        SELECT p.codigo
+        FROM dbo.ROL_PERMISO rp
+        INNER JOIN dbo.PERMISOS p ON rp.id_permiso = p.id_permiso
+        WHERE rp.id_rol = :id_rol
+    ");
+
+    $stmtPerm->execute([
+        ':id_rol' => $_SESSION['id_rol']
+    ]);
+
+    while ($rowPerm = $stmtPerm->fetch(PDO::FETCH_ASSOC)) {
+        $_SESSION['permisos'][] = $rowPerm['codigo'];
+    }
+
+    $stmtPerm->closeCursor();
+
+
+
+
+
+
     /* =====================================================
      * 5.7) REDIRECCIONES
      * ===================================================== */
