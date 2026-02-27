@@ -42,14 +42,23 @@ const ROLE_SIN_ACCESO   = 7;
 /* =========================================================
  * 3.1) PERMISOS DINÁMICOS (NUEVO)
  * ========================================================= */
+
 function has_permission(string $codigo): bool {
 
-    // Si aún no hemos migrado completamente, usamos fallback
     if (empty($_SESSION['permisos']) || !is_array($_SESSION['permisos'])) {
         return false;
     }
 
     return in_array($codigo, $_SESSION['permisos'], true);
+}
+
+function require_permission(string $codigo): void {
+
+    if (!has_permission($codigo)) {
+        $_SESSION['flash_err'] = "No tienes permisos para acceder a este módulo.";
+        header("Location: " . BASE_URL . "/vistas_pantallas/menu.php");
+        exit;
+    }
 }
 
 /* =========================================================
