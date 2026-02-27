@@ -83,12 +83,7 @@ function role_can_create(): bool {
 }
 
 function role_can_correct(): bool {
-
-    if (has_permission('corregir_monitoreo')) {
-        return true;
-    }
-
-    return role_can_see_all_areas();
+    return has_permission('corregir_monitoreo');
 }
 
 function role_is_readonly(): bool {
