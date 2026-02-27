@@ -46,6 +46,11 @@ $PAGE_ACTION_HTML = '
  * ========================================================= */
 require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
+if (!empty($_SESSION['flash_err'])) {
+    echo '<div class="alert alert-danger shadow-sm">'.htmlspecialchars($_SESSION['flash_err']).'</div>';
+    unset($_SESSION['flash_err']);
+}
+
 /* ================= FLASH MONITOREO ================= */
 $flashMonitoreo = $_SESSION['flash_monitoreo_id'] ?? null;
 

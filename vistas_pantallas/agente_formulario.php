@@ -6,6 +6,12 @@ require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
 require_login();
 force_password_change();
 
+if (!has_permission('ver_modulo_monitoreos')) {
+    $_SESSION['flash_err'] = "No tienes permisos para acceder a este módulo.";
+    header("Location: " . BASE_URL . "/vistas_pantallas/menu.php");
+    exit;
+}
+
 function h($str){ return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8'); }
 $BASE_URL = BASE_URL;
 
