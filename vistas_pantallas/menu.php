@@ -145,7 +145,7 @@ $textoScope = can_see_all_areas()
 <!-- ================= CONTENIDO ================= -->
 <div class="row g-4">
 
-<?php if (can_create()): ?>
+<?php if (has_permission('ver_modulo_monitoreos')): ?>
 <!-- TARJETA: NUEVO MONITOREO -->
 <div class="col-md-4">
     <div class="card shadow-sm h-100">
@@ -162,7 +162,6 @@ $textoScope = can_see_all_areas()
         </div>
     </div>
 </div>
-<?php endif; ?>
 
 <!-- TARJETA: LISTADO DE MONITOREOS -->
 <div class="col-md-4">
@@ -181,7 +180,11 @@ $textoScope = can_see_all_areas()
     </div>
 </div>
 
-<?php if (can_create()): ?>
+<?php endif; ?>
+
+
+
+<?php if (has_permission('ver_modulo_preguntas')): ?>
 <!-- TARJETA: MÓDULO DE PREGUNTAS -->
 <div class="col-md-4">
     <div class="card shadow-sm h-100 border-warning">
@@ -200,8 +203,8 @@ $textoScope = can_see_all_areas()
 </div>
 <?php endif; ?>
 
-<?php if (can_create()): ?>
-<!-- TARJETA: USUARIOS -->
+<?php if (has_permission('ver_modulo_agentes')): ?>
+<!-- TARJETA: AGENTES -->
 <div class="col-md-4">
     <div class="card card-soft h-100">
         <div class="card-body text-center">
