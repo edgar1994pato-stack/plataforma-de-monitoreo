@@ -48,7 +48,7 @@ try {
 }
 
 /* =========================
-   ROL SELECCIONADO (GET)
+   ROL SELECCIONADO
 ========================= */
 $idRolSeleccionado = isset($_GET['rol'])
     ? (int)$_GET['rol']
@@ -97,7 +97,9 @@ try {
 
 <div class="container mt-4">
 
-<!-- SELECTOR DE ROL -->
+<!-- =========================
+   SELECTOR DE ROL
+========================= -->
 <div class="card shadow-sm mb-4">
     <div class="card-body">
 
@@ -123,13 +125,18 @@ try {
         </form>
 
         <small class="text-muted">
-            Selecciona un rol para visualizar sus permisos.
+            Selecciona un rol para administrar sus permisos.
         </small>
 
     </div>
 </div>
 
-<!-- PERMISOS AGRUPADOS -->
+<!-- =========================
+   FORMULARIO DE PERMISOS
+========================= -->
+<form method="POST" action="<?= BASE_URL ?>/cruds/proceso_guardar_roles.php">
+<input type="hidden" name="id_rol" value="<?= (int)$idRolSeleccionado ?>">
+
 <?php if (count($permisos) === 0): ?>
     <div class="alert alert-warning">
         No hay permisos activos configurados.
@@ -148,8 +155,9 @@ try {
                             <div class="form-check">
                                 <input class="form-check-input"
                                        type="checkbox"
-                                       <?= in_array($perm['id_permiso'], $permisosAsignados) ? 'checked' : '' ?>
-                                       disabled>
+                                       name="permisos[]"
+                                       value="<?= (int)$perm['id_permiso'] ?>"
+                                       <?= in_array($perm['id_permiso'], $permisosAsignados) ? 'checked' : '' ?>>
                                 <label class="form-check-label small">
                                     <?= htmlspecialchars($perm['codigo']) ?>
                                 </label>
@@ -161,7 +169,15 @@ try {
         </div>
     <?php endforeach; ?>
 
+    <div class="mt-4 text-end">
+        <button type="submit" class="btn btn-dark">
+            Guardar cambios
+        </button>
+    </div>
+
 <?php endif; ?>
+
+</form>
 
 </div>
 
