@@ -1,83 +1,205 @@
 <?php
-require_once __DIR__ . '/../config_ajustes/app.php';
-require_once BASE_PATH . '/config_ajustes/conectar_db.php';
-require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
+/**
+ * /vistas_pantallas/roles.php
+ * Administración visual de roles y permisos
+ */
 
+require_once __DIR__ . '/../config_ajustes/app.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+/* =========================
+   SEGURIDAD
+========================= */
+require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
 require_login();
 require_permission('ver_modulo_roles');
 force_password_change();
 
-echo "<h3>INICIO DEL PROCESO</h3>";
+/* =========================
+   CONEXIÓN BD
+========================= */
+require_once BASE_PATH . '/config_ajustes/conectar_db.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo "No es método POST";
-    exit;
+/* =========================
+   HEADER
+========================= */
+$PAGE_TITLE = "Administración de Roles";
+$PAGE_SUBTITLE = "Gestión de permisos del sistema";
+
+require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+
+/* =========================
+   MENSAJES FLASH
+========================= */
+if (!empty($_SESSION['flash_ok'])) {
+    echo '<div class="alert alert-success shadow-sm">'
+        . htmlspecialchars($_SESSION['flash_ok']) .
+        '</div>';
+    unset($_SESSION['flash_ok']);
 }
 
-$idRol = (int)($_POST['id_rol'] ?? 0);
-$permisos = $_POST['permisos'] ?? [];
-
-echo "<pre>";
-echo "ID ROL: " . $idRol . "\n";
-echo "PERMISOS:\n";
-print_r($permisos);
-echo "</pre>";
-
-if ($idRol <= 0) {
-    echo "ID de rol inválido";
-    exit;
+if (!empty($_SESSION['flash_err'])) {
+    echo '<div class="alert alert-danger shadow-sm">'
+        . htmlspecialchars($_SESSION['flash_err']) .
+        '</div>';
+    unset($_SESSION['flash_err']);
 }
 
 /* =========================
-   PROTEGER ADMIN
+   OBTENER ROLES ACTIVOS
 ========================= */
-$stmt = $conexion->prepare("SELECT nombre_rol FROM ROLES WHERE id_rol = ?");
-$stmt->execute([$idRol]);
-$rol = $stmt->fetch(PDO::FETCH_ASSOC);
+$roles = [];
+try {
+    $stmt = $conexion->query("
+        SELECT id_rol, nombre_rol
+        FROM ROLES
+        WHERE fecha_fin IS NULL
+        ORDER BY nombre_rol
+    ");
+    $roles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Throwable $e) {
+    $roles = [];
+}
 
-if ($rol && strtoupper($rol['nombre_rol']) === 'ADMINISTRADOR DEL SISTEMA') {
+/* =========================
+   ROL SELECCIONADO
+========================= */
+$idRolSeleccionado = isset($_GET['rol'])
+    ? (int)$_GET['rol']
+    : ($roles[0]['id_rol'] ?? 0);
 
-    $stmt = $conexion->prepare("SELECT id_permiso FROM PERMISOS WHERE codigo = 'ver_modulo_roles'");
-    $stmt->execute();
-    $permCritico = (int)$stmt->fetchColumn();
+/* =========================
+   PERMISOS ASIGNADOS
+========================= */
+$permisosAsignados = [];
 
-    if (!in_array($permCritico, $permisos)) {
-        echo "<h3 style='color:red'>No se puede quitar permiso crítico al ADMIN</h3>";
-        exit;
+if ($idRolSeleccionado > 0) {
+    try {
+        $stmt = $conexion->prepare("
+            SELECT id_permiso
+            FROM ROL_PERMISO
+            WHERE id_rol = ?
+        ");
+        $stmt->execute([$idRolSeleccionado]);
+        $permisosAsignados = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    } catch (Throwable $e) {
+        $permisosAsignados = [];
     }
 }
 
 /* =========================
-   ACTUALIZAR PERMISOS
+   PERMISOS ACTIVOS
 ========================= */
+$permisos = [];
 
 try {
+    $stmt = $conexion->query("
+        SELECT id_permiso, codigo, descripcion, modulo
+        FROM PERMISOS
+        WHERE activo = 1
+        ORDER BY modulo, codigo
+    ");
+    $permisosRaw = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo "<h4>Eliminando permisos actuales...</h4>";
-    $stmtDelete = $conexion->prepare("DELETE FROM ROL_PERMISO WHERE id_rol = ?");
-    $stmtDelete->execute([$idRol]);
-
-    echo "<h4>Insertando permisos nuevos...</h4>";
-
-    if (!empty($permisos)) {
-        $stmtInsert = $conexion->prepare("
-            INSERT INTO ROL_PERMISO (id_rol, id_permiso)
-            VALUES (?, ?)
-        ");
-
-        foreach ($permisos as $idPermiso) {
-            $stmtInsert->execute([$idRol, (int)$idPermiso]);
-        }
+    foreach ($permisosRaw as $p) {
+        $permisos[$p['modulo']][] = $p;
     }
 
-    echo "<h2 style='color:green'>GUARDADO CORRECTAMENTE</h2>";
-
 } catch (Throwable $e) {
-
-    echo "<h2 style='color:red'>ERROR EN BASE DE DATOS</h2>";
-    echo "<pre>";
-    echo $e->getMessage();
-    echo "</pre>";
+    $permisos = [];
 }
+?>
 
-exit;
+<div class="container mt-4">
+
+<!-- =========================
+   SELECTOR DE ROL
+========================= -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+        <form method="GET">
+            <label class="form-label fw-bold">Seleccionar Rol</label>
+
+            <select class="form-select"
+                    name="rol"
+                    onchange="this.form.submit()">
+
+                <?php if (empty($roles)): ?>
+                    <option>No hay roles registrados</option>
+                <?php else: ?>
+                    <?php foreach ($roles as $r): ?>
+                        <option value="<?= (int)$r['id_rol'] ?>"
+                            <?= $idRolSeleccionado == $r['id_rol'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($r['nombre_rol']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+
+            </select>
+        </form>
+
+        <small class="text-muted">
+            Selecciona un rol para administrar sus permisos.
+        </small>
+
+    </div>
+</div>
+
+<!-- =========================
+   FORMULARIO PERMISOS
+========================= -->
+<form method="POST" action="<?= BASE_URL ?>/cruds/proceso_guardar_roles.php">
+<input type="hidden" name="id_rol" value="<?= (int)$idRolSeleccionado ?>">
+
+<?php if (empty($permisos)): ?>
+
+    <div class="alert alert-warning">
+        No hay permisos activos configurados.
+    </div>
+
+<?php else: ?>
+
+    <?php foreach ($permisos as $modulo => $listaPermisos): ?>
+        <div class="card shadow-sm mb-3">
+            <div class="card-header fw-bold bg-light">
+                Módulo: <?= htmlspecialchars($modulo) ?>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <?php foreach ($listaPermisos as $perm): ?>
+                        <div class="col-md-4 mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       name="permisos[]"
+                                       value="<?= (int)$perm['id_permiso'] ?>"
+                                       <?= in_array($perm['id_permiso'], $permisosAsignados) ? 'checked' : '' ?>>
+                                <label class="form-check-label small">
+                                    <?= htmlspecialchars($perm['codigo']) ?>
+                                </label>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    <?php endforeach; ?>
+
+    <div class="mt-4 text-end">
+        <button type="submit" class="btn btn-dark">
+            Guardar cambios
+        </button>
+    </div>
+
+<?php endif; ?>
+
+</form>
+
+</div>
+
+<?php
+require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
