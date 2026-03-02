@@ -25,6 +25,7 @@ require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
 
 require_login();
 force_password_change();
+require_permission('ver_modulo_monitoreos');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   header('Location: ' . BASE_URL . '/index.php');

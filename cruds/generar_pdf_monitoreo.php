@@ -26,6 +26,7 @@ use Dompdf\Dompdf;
  * ========================================================= */
 require_login();
 force_password_change();
+require_permission('ver_modulo_monitoreos');
 
 /* =========================================================
  * 2) HELPER HTML SAFE

@@ -15,6 +15,7 @@ require_once '../includes_partes_fijas/seguridad.php';
 
 require_login();
 force_password_change();
+require_permission('ver_modulo_monitoreos');
 
 /* ============================================================
    2) HELPERS

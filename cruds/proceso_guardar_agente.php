@@ -5,6 +5,7 @@ require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
 
 require_login();
 force_password_change();
+require_permission('ver_modulo_agentes');
 
 $BASE_URL = BASE_URL;
 
