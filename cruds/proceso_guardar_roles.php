@@ -7,18 +7,24 @@ require_login();
 require_permission('ver_modulo_roles');
 force_password_change();
 
-$BASE_URL = BASE_URL;
+echo "<h3>INICIO DEL PROCESO</h3>";
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: {$BASE_URL}/vistas_pantallas/roles.php");
+    echo "No es método POST";
     exit;
 }
 
 $idRol = (int)($_POST['id_rol'] ?? 0);
 $permisos = $_POST['permisos'] ?? [];
 
+echo "<pre>";
+echo "ID ROL: " . $idRol . "\n";
+echo "PERMISOS:\n";
+print_r($permisos);
+echo "</pre>";
+
 if ($idRol <= 0) {
-    header("Location: {$BASE_URL}/vistas_pantallas/roles.php");
+    echo "ID de rol inválido";
     exit;
 }
 
@@ -36,8 +42,7 @@ if ($rol && strtoupper($rol['nombre_rol']) === 'ADMINISTRADOR DEL SISTEMA') {
     $permCritico = (int)$stmt->fetchColumn();
 
     if (!in_array($permCritico, $permisos)) {
-        $_SESSION['flash_err'] = "No se puede quitar el permiso crítico del ADMIN.";
-        header("Location: {$BASE_URL}/vistas_pantallas/roles.php?rol={$idRol}");
+        echo "<h3 style='color:red'>No se puede quitar permiso crítico al ADMIN</h3>";
         exit;
     }
 }
@@ -48,11 +53,12 @@ if ($rol && strtoupper($rol['nombre_rol']) === 'ADMINISTRADOR DEL SISTEMA') {
 
 try {
 
-    // Eliminar permisos actuales
+    echo "<h4>Eliminando permisos actuales...</h4>";
     $stmtDelete = $conexion->prepare("DELETE FROM ROL_PERMISO WHERE id_rol = ?");
     $stmtDelete->execute([$idRol]);
 
-    // Insertar nuevos
+    echo "<h4>Insertando permisos nuevos...</h4>";
+
     if (!empty($permisos)) {
         $stmtInsert = $conexion->prepare("
             INSERT INTO ROL_PERMISO (id_rol, id_permiso)
@@ -64,12 +70,14 @@ try {
         }
     }
 
-    $_SESSION['flash_ok'] = "Permisos actualizados correctamente.";
+    echo "<h2 style='color:green'>GUARDADO CORRECTAMENTE</h2>";
 
 } catch (Throwable $e) {
 
-    $_SESSION['flash_err'] = "Error al actualizar permisos.";
+    echo "<h2 style='color:red'>ERROR EN BASE DE DATOS</h2>";
+    echo "<pre>";
+    echo $e->getMessage();
+    echo "</pre>";
 }
 
-header("Location: {$BASE_URL}/vistas_pantallas/roles.php?rol={$idRol}");
 exit;
