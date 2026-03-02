@@ -1,7 +1,6 @@
 <?php
 /**
  * /vistas_pantallas/roles.php
- * ---------------------------------------
  * Administración visual de roles y permisos
  */
 
@@ -20,7 +19,7 @@ require_permission('ver_modulo_roles');
 force_password_change();
 
 /* =========================
-   CONEXIÓN BD (PDO)
+   CONEXIÓN BD
 ========================= */
 require_once BASE_PATH . '/config_ajustes/conectar_db.php';
 
@@ -49,6 +48,32 @@ try {
 }
 
 /* =========================
+   ROL SELECCIONADO (GET)
+========================= */
+$idRolSeleccionado = isset($_GET['rol'])
+    ? (int)$_GET['rol']
+    : ($roles[0]['id_rol'] ?? 0);
+
+/* =========================
+   OBTENER PERMISOS ASIGNADOS
+========================= */
+$permisosAsignados = [];
+
+if ($idRolSeleccionado > 0) {
+    try {
+        $stmt = $conexion->prepare("
+            SELECT id_permiso
+            FROM ROL_PERMISO
+            WHERE id_rol = ?
+        ");
+        $stmt->execute([$idRolSeleccionado]);
+        $permisosAsignados = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    } catch (Throwable $e) {
+        $permisosAsignados = [];
+    }
+}
+
+/* =========================
    OBTENER PERMISOS ACTIVOS
 ========================= */
 $permisos = [];
@@ -72,64 +97,73 @@ try {
 
 <div class="container mt-4">
 
-    <!-- SELECTOR DE ROL -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
+<!-- SELECTOR DE ROL -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+        <form method="GET">
             <label class="form-label fw-bold">Seleccionar Rol</label>
-            <select class="form-select" disabled>
+
+            <select class="form-select"
+                    name="rol"
+                    onchange="this.form.submit()">
+
                 <?php if (count($roles) === 0): ?>
                     <option>No hay roles registrados</option>
                 <?php else: ?>
                     <?php foreach ($roles as $r): ?>
-                        <option value="<?= (int)$r['id_rol'] ?>">
+                        <option value="<?= (int)$r['id_rol'] ?>"
+                            <?= $idRolSeleccionado == $r['id_rol'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($r['nombre_rol']) ?>
                         </option>
                     <?php endforeach; ?>
                 <?php endif; ?>
+
             </select>
-            <small class="text-muted">
-                Fase inicial: solo visualización
-            </small>
-        </div>
+        </form>
+
+        <small class="text-muted">
+            Selecciona un rol para visualizar sus permisos.
+        </small>
+
     </div>
+</div>
 
-    <!-- PERMISOS AGRUPADOS POR MÓDULO -->
-    <?php if (count($permisos) === 0): ?>
-        <div class="alert alert-warning">
-            No hay permisos activos configurados.
-        </div>
-    <?php else: ?>
+<!-- PERMISOS AGRUPADOS -->
+<?php if (count($permisos) === 0): ?>
+    <div class="alert alert-warning">
+        No hay permisos activos configurados.
+    </div>
+<?php else: ?>
 
-        <?php foreach ($permisos as $modulo => $listaPermisos): ?>
-            <div class="card shadow-sm mb-3">
-                <div class="card-header fw-bold bg-light">
-                    Módulo: <?= htmlspecialchars($modulo) ?>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <?php foreach ($listaPermisos as $perm): ?>
-                            <div class="col-md-4 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input"
-                                           type="checkbox"
-                                           disabled>
-                                    <label class="form-check-label small">
-                                        <?= htmlspecialchars($perm['codigo']) ?>
-                                    </label>
-                                </div>
+    <?php foreach ($permisos as $modulo => $listaPermisos): ?>
+        <div class="card shadow-sm mb-3">
+            <div class="card-header fw-bold bg-light">
+                Módulo: <?= htmlspecialchars($modulo) ?>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <?php foreach ($listaPermisos as $perm): ?>
+                        <div class="col-md-4 mb-2">
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       <?= in_array($perm['id_permiso'], $permisosAsignados) ? 'checked' : '' ?>
+                                       disabled>
+                                <label class="form-check-label small">
+                                    <?= htmlspecialchars($perm['codigo']) ?>
+                                </label>
                             </div>
-                        <?php endforeach; ?>
-                    </div>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
-        <?php endforeach; ?>
+        </div>
+    <?php endforeach; ?>
 
-    <?php endif; ?>
+<?php endif; ?>
 
 </div>
 
 <?php
-/* =========================
-   FOOTER
-========================= */
 require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
