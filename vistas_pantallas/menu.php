@@ -227,6 +227,25 @@ $textoScope = can_see_all_areas()
 </div>
 <?php endif; ?>
 
+<?php if (has_permission('ver_modulo_roles')): ?>
+<!-- TARJETA: ADMINISTRACIÓN DE ROLES -->
+<div class="col-md-4">
+    <div class="card shadow-sm h-100 border-dark">
+        <div class="card-body text-center">
+            <i class="bi bi-shield-lock fs-1 text-dark"></i>
+            <h5 class="mt-3 fw-bold">Administración de Roles</h5>
+            <p class="text-muted small">
+                Gestionar permisos y accesos del sistema.
+            </p>
+            <a href="<?= BASE_URL ?>/vistas_pantallas/roles.php"
+               class="btn btn-dark btn-sm fw-bold">
+                Administrar
+            </a>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- =============== FIN CONTENIDO =============== -->
 
 <?php
