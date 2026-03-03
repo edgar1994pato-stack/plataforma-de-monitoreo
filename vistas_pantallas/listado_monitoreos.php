@@ -110,7 +110,8 @@ $fechaFin = trim((string)($_GET['ff'] ?? $hoy));
 $idAreaGet   = isset($_GET['area']) ? (int)$_GET['area'] : 0;
 $idColaGet   = isset($_GET['cola']) ? (int)$_GET['cola'] : 0;
 $idAgenteGet = isset($_GET['agente']) ? (int)$_GET['agente'] : 0;
-$idMonitoreoGet = isset($_GET['mon']) ? (int)$_GET['mon'] : 0; // 🔹 NUEVO
+$idMonitoreoGet = isset($_GET['mon']) ? (int)$_GET['mon'] : 0; //
+$gestorGet = trim((string)($_GET['gestor'] ?? ''));
 
 
 /* sv: 0 = solo vigente, 1 = incluye sin vigente */
@@ -135,7 +136,8 @@ if ($esRolVeTodo) {
 $idColaParam   = ($idColaGet > 0) ? $idColaGet : null;
 $idAgenteParam = ($idAgenteGet > 0) ? $idAgenteGet : null;
 $svParam       = ($incluirSinVigente === 1) ? 1 : 0;
-$idMonitoreoParam = ($idMonitoreoGet > 0) ? $idMonitoreoGet : null; // 🔹 NUEVO
+$idMonitoreoParam = ($idMonitoreoGet > 0) ? $idMonitoreoGet : null; //
+$gestorParam = ($gestorGet !== '') ? $gestorGet : null;
 
 
 /* =========================================================
@@ -163,7 +165,7 @@ $errorListado = '';
 
 try {
     // SP: dbo.PR_LISTAR_MONITOREOS(@FechaInicio,@FechaFin,@IdArea,@IdCola,@IdAgente,@IncluirSinVigente)
-    $sql  = "EXEC dbo.PR_LISTAR_MONITOREOS ?, ?, ?, ?, ?, ?, ?";
+    $sql  = "EXEC dbo.PR_LISTAR_MONITOREOS ?, ?, ?, ?, ?, ?, ?, ?";
 
     $stmt = $conexion->prepare($sql);
 
@@ -174,7 +176,8 @@ $stmt->execute([
     $idColaParam,
     $idAgenteParam,
     $svParam,
-    $idMonitoreoParam
+    $idMonitoreoParam,
+    $gestorParam
 ]);
 
 
@@ -257,6 +260,37 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
           <option value="0">Todos</option>
         </select>
       </div>
+
+      <div class="col-12 col-md-3">
+  <label class="form-label small fw-bold text-muted">AGENTE DE MONITOREO</label>
+  <select class="form-select form-select-sm" name="gestor">
+    <option value="">Todos</option>
+
+    <?php
+    try {
+        $stmtG = $conexion->query("
+            SELECT DISTINCT gestor_monitoreo
+            FROM dbo.MONITOREO_VERSION
+            WHERE estado_version <> 'ELIMINADO'
+            ORDER BY gestor_monitoreo
+        ");
+        $gestores = $stmtG->fetchAll(PDO::FETCH_COLUMN);
+
+        foreach ($gestores as $g):
+            $selected = ($gestorGet === $g) ? 'selected' : '';
+    ?>
+        <option value="<?= h($g) ?>" <?= $selected ?>>
+            <?= h($g) ?>
+        </option>
+    <?php endforeach; ?>
+    <?php } catch (Throwable $e) {} ?>
+  </select>
+</div>
+
+
+
+
+
 
       <!-- ✅ Checkbox para incluir SIN VIGENTE -->
       <div class="col-12 col-md-3">
