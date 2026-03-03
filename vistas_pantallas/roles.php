@@ -26,50 +26,17 @@ require_once BASE_PATH . '/config_ajustes/conectar_db.php';
 /* =========================
    HEADER
 ========================= */
-$PAGE_TITLE = "Administración de Roles";
-$PAGE_SUBTITLE = "Gestión de permisos del sistema";
+$PAGE_TITLE = "Gestión de Roles y Permisos";
+$PAGE_SUBTITLE = "Administración de accesos del sistema";
+
+$PAGE_ACTION_HTML = '
+  <a class="btn btn-outline-primary btn-sm shadow-sm"
+     href="'.BASE_URL.'/vistas_pantallas/menu.php">
+    <i class="bi bi-house-door"></i> Volver al menú
+  </a>
+';
 
 require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
-?>
-
-<div class="container mt-4">
-
-<!-- =========================
-   BOTÓN VOLVER AL MENÚ
-========================= -->
-<div class="d-flex justify-content-end mb-3">
-    <a href="<?= BASE_URL ?>/vistas_pantallas/menu.php"
-       class="btn btn-outline-primary btn-sm shadow-sm">
-        <i class="bi bi-house-door me-1"></i> Volver al menú
-    </a>
-</div>
-
-<?php
-/* =========================
-   MENSAJES FLASH
-========================= */
-if (!empty($_SESSION['flash_ok'])):
-?>
-  <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-    <i class="bi bi-check-circle me-1"></i>
-    <?= htmlspecialchars($_SESSION['flash_ok']) ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-<?php
-  unset($_SESSION['flash_ok']);
-endif;
-
-if (!empty($_SESSION['flash_err'])):
-?>
-  <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-    <i class="bi bi-exclamation-triangle me-1"></i>
-    <?= htmlspecialchars($_SESSION['flash_err']) ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-<?php
-  unset($_SESSION['flash_err']);
-endif;
-
 
 /* =========================
    OBTENER ROLES ACTIVOS
@@ -129,42 +96,47 @@ try {
     foreach ($permisosRaw as $p) {
         $permisos[$p['modulo']][] = $p;
     }
-
 } catch (Throwable $e) {
     $permisos = [];
 }
 ?>
 
+<div class="container mt-4">
+
 <!-- =========================
    SELECTOR DE ROL
 ========================= -->
-<div class="card shadow-sm mb-4">
+<div class="card card-soft shadow-sm mb-4 border-0">
+    <div class="card-header card-header-dark py-2 small fw-bold">
+        <i class="bi bi-person-badge me-2"></i>
+        Seleccionar Rol
+    </div>
     <div class="card-body">
 
         <form method="GET">
-            <label class="form-label fw-bold">Seleccionar Rol</label>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted">
+                    Rol del sistema
+                </label>
 
-            <select class="form-select"
-                    name="rol"
-                    onchange="this.form.submit()">
+                <select class="form-select form-select-sm"
+                        name="rol"
+                        onchange="this.form.submit()">
 
-                <?php if (count($roles) === 0): ?>
-                    <option>No hay roles registrados</option>
-                <?php else: ?>
-                    <?php foreach ($roles as $r): ?>
-                        <option value="<?= (int)$r['id_rol'] ?>"
-                            <?= $idRolSeleccionado == $r['id_rol'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($r['nombre_rol']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                    <?php if (count($roles) === 0): ?>
+                        <option>No hay roles registrados</option>
+                    <?php else: ?>
+                        <?php foreach ($roles as $r): ?>
+                            <option value="<?= (int)$r['id_rol'] ?>"
+                                <?= $idRolSeleccionado == $r['id_rol'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($r['nombre_rol']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
 
-            </select>
+                </select>
+            </div>
         </form>
-
-        <small class="text-muted">
-            Selecciona un rol para administrar sus permisos.
-        </small>
 
     </div>
 </div>
@@ -176,15 +148,16 @@ try {
 <input type="hidden" name="id_rol" value="<?= (int)$idRolSeleccionado ?>">
 
 <?php if (count($permisos) === 0): ?>
-    <div class="alert alert-warning">
+    <div class="alert alert-warning shadow-sm border-0">
         No hay permisos activos configurados.
     </div>
 <?php else: ?>
 
     <?php foreach ($permisos as $modulo => $listaPermisos): ?>
-        <div class="card shadow-sm mb-3">
-            <div class="card-header fw-bold bg-light">
-                Módulo: <?= htmlspecialchars($modulo) ?>
+        <div class="card card-soft shadow-sm mb-3 border-0">
+            <div class="card-header card-header-dark py-2 small fw-bold">
+                <i class="bi bi-shield-lock me-2"></i>
+                <?= htmlspecialchars($modulo) ?>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -208,7 +181,9 @@ try {
     <?php endforeach; ?>
 
     <div class="mt-4 text-end">
-        <button type="submit" class="btn btn-primary fw-bold shadow-sm">
+        <button type="submit"
+                class="btn btn-primary fw-bold px-4 shadow-sm">
+            <i class="bi bi-save me-1"></i>
             Guardar cambios
         </button>
     </div>
@@ -218,6 +193,59 @@ try {
 </form>
 
 </div>
+
+<!-- =========================
+   TOAST PROFESIONAL
+========================= -->
+<?php if (!empty($_SESSION['flash_ok'])): ?>
+
+<style>
+.toast-profesional {
+  background: #ffffff;
+  border-left: 4px solid #198754;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  min-width: 320px;
+}
+.toast-profesional .toast-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: #198754;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.toast-profesional .toast-body {
+  font-size: 14px;
+  color: #2c2c2c;
+}
+</style>
+
+<div class="toast-container position-fixed top-0 end-0 p-4" style="z-index: 9999;">
+  <div id="toastSuccess" class="toast toast-profesional border-0">
+    <div class="toast-body">
+      <div class="toast-title mb-1">
+        <i class="bi bi-check-circle me-1"></i>
+        Actualización Exitosa
+      </div>
+      <div>
+        <?= htmlspecialchars($_SESSION['flash_ok']) ?>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const toastEl = document.getElementById('toastSuccess');
+  const toast = new bootstrap.Toast(toastEl, {
+    delay: 4000
+  });
+  toast.show();
+});
+</script>
+
+<?php unset($_SESSION['flash_ok']); ?>
+<?php endif; ?>
 
 <?php
 require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
