@@ -30,6 +30,46 @@ $PAGE_TITLE = "Administración de Roles";
 $PAGE_SUBTITLE = "Gestión de permisos del sistema";
 
 require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
+?>
+
+<div class="container mt-4">
+
+<!-- =========================
+   BOTÓN VOLVER AL MENÚ
+========================= -->
+<div class="d-flex justify-content-end mb-3">
+    <a href="<?= BASE_URL ?>/vistas_pantallas/menu.php"
+       class="btn btn-outline-primary btn-sm shadow-sm">
+        <i class="bi bi-house-door me-1"></i> Volver al menú
+    </a>
+</div>
+
+<?php
+/* =========================
+   MENSAJES FLASH
+========================= */
+if (!empty($_SESSION['flash_ok'])):
+?>
+  <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+    <i class="bi bi-check-circle me-1"></i>
+    <?= htmlspecialchars($_SESSION['flash_ok']) ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+<?php
+  unset($_SESSION['flash_ok']);
+endif;
+
+if (!empty($_SESSION['flash_err'])):
+?>
+  <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+    <i class="bi bi-exclamation-triangle me-1"></i>
+    <?= htmlspecialchars($_SESSION['flash_err']) ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+<?php
+  unset($_SESSION['flash_err']);
+endif;
+
 
 /* =========================
    OBTENER ROLES ACTIVOS
@@ -94,8 +134,6 @@ try {
     $permisos = [];
 }
 ?>
-
-<div class="container mt-4">
 
 <!-- =========================
    SELECTOR DE ROL
@@ -170,7 +208,7 @@ try {
     <?php endforeach; ?>
 
     <div class="mt-4 text-end">
-        <button type="submit" class="btn btn-dark">
+        <button type="submit" class="btn btn-primary fw-bold shadow-sm">
             Guardar cambios
         </button>
     </div>
