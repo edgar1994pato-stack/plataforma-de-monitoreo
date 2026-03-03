@@ -32,14 +32,10 @@ $estadoGet  = strtoupper(trim($_GET['estado'] ?? 'ACTIVOS')); // Default ACTIVO
 // Mapeo al SP nuevo
 if ($estadoGet === 'ACTIVOS') {
     $estadoParam = 1;
-} elseif ($estadoGet === 'AUSENTES') {
-    $estadoParam = 2;
 } elseif ($estadoGet === 'INACTIVOS') {
     $estadoParam = 0;
-} elseif ($estadoGet === 'TODOS') {
-    $estadoParam = null;
 } else {
-    $estadoParam = 1; // Seguridad: siempre activos por defecto
+    $estadoParam = 1; // siempre activos por defecto
 }
 
 /* Área backend */
@@ -152,9 +148,8 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
                 onchange="this.form.submit()">
 
           <option value="ACTIVOS" <?= $estadoGet === 'ACTIVOS' ? 'selected' : '' ?>>ACTIVOS</option>
-          <option value="AUSENTES" <?= $estadoGet === 'AUSENTES' ? 'selected' : '' ?>>AUSENTES</option>
           <option value="INACTIVOS" <?= $estadoGet === 'INACTIVOS' ? 'selected' : '' ?>>INACTIVOS</option>
-          <option value="TODOS" <?= $estadoGet === 'TODOS' ? 'selected' : '' ?>>TODOS</option>
+          
 
         </select>
       </div>
