@@ -99,7 +99,7 @@ $idSeccionGet = isset($_GET['seccion']) ? (int)$_GET['seccion'] : 0;
  *  - VIGENTE / ANULADA / VENCIDA / NO_VIGENTE / SIN_PONDERACION (si tu SP lo devuelve)
  */
 $ev = strtoupper(trim((string)($_GET['ev'] ?? 'TODOS')));
-$validEV = ['TODOS','VIGENTE','ANULADA','VENCIDA','NO_VIGENTE','SIN_PONDERACION'];
+$validEV = ['TODOS','VIGENTE','ANULADA'];
 if (!in_array($ev, $validEV, true)) $ev = 'TODOS';
 
 /* =========================================================
@@ -246,7 +246,7 @@ $urlProcesoAnular= $BASE_URL . "/cruds/proceso_anular_pregunta.php";
       <div class="col-12 col-md-3">
         <label class="form-label small fw-bold text-muted">ESTADO</label>
         <select class="form-select form-select-sm" name="ev">
-          <?php foreach (['TODOS','VIGENTE','ANULADA','VENCIDA','NO_VIGENTE','SIN_PONDERACION'] as $opt): ?>
+          <?php foreach (['TODOS','VIGENTE','ANULADA'] as $opt): ?>
             <option value="<?= $opt ?>" <?= ($ev === $opt ? 'selected' : '') ?>><?= $opt ?></option>
           <?php endforeach; ?>
         </select>
