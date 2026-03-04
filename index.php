@@ -5,8 +5,23 @@
    | Azure App Service · Linux · nginx · PHP 8.2
    |================================================= */
 
+/* =================================================
+   CONFIGURACIÓN SEGURA DE SESIÓN (OAUTH READY)
+   ================================================= */
+
 ini_set('session.save_path', sys_get_temp_dir());
+
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path'     => '/',
+    'secure'   => true,      // obligatorio en HTTPS
+    'httponly' => true,
+    'samesite' => 'None'     // CLAVE para permitir redirect desde Microsoft
+]);
+
 session_start();
+
+/* ================================================= */
 
 define('BASE_PATH', __DIR__);
 
