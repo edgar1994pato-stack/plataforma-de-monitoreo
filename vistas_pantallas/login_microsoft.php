@@ -1,43 +1,45 @@
 <?php
 require_once __DIR__ . '/../config_ajustes/app.php';
 
-/* 🔐 CONFIGURACIÓN SEGURA DE COOKIE PARA OAUTH */
+/* CONFIGURACIÓN SEGURA DE COOKIE PARA OAUTH */
 if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
         'lifetime' => 0,
         'path'     => '/',
-        'secure'   => true,      // obligatorio en HTTPS
+        'secure'   => true,
         'httponly' => true,
-        'samesite' => 'None'     // requerido para OAuth redirect
+        'samesite' => 'None'
     ]);
     session_start();
 }
 
-/* Variables Entra ID */
+/* Variables de entorno */
 $clientId = getenv('MS_CLIENT_ID');
-$tenantId = getenv('MS_TENANT_ID'); // USAR GUID REAL DEL TENANT
 
-if (!$clientId || !$tenantId) {
+/* MODO PRUEBA: permite usuarios de cualquier tenant empresarial */
+$tenantId = "organizations";
+
+if (!$clientId) {
     http_response_code(500);
-    exit('❌ Faltan variables MS_CLIENT_ID o MS_TENANT_ID.');
+    exit('❌ Falta MS_CLIENT_ID en variables de entorno.');
 }
 
-/* Callback exacto */
+/* URL de retorno */
 $redirectUri = BASE_URL . '/vistas_pantallas/callback_microsoft.php';
 
-/* Anti-CSRF */
+/* Protección CSRF */
 $state = bin2hex(random_bytes(16));
 $_SESSION['ms_state'] = $state;
 $_SESSION['ms_state_time'] = time();
 
-/* URL autorización */
+/* URL de autorización */
 $authUrl = "https://login.microsoftonline.com/{$tenantId}/oauth2/v2.0/authorize?" . http_build_query([
     'client_id'     => $clientId,
     'response_type' => 'code',
     'redirect_uri'  => $redirectUri,
     'response_mode' => 'query',
     'scope'         => 'openid profile email',
-    'state'         => $state,
+    'state'         => $state
 ]);
 
 header("Location: {$authUrl}");
