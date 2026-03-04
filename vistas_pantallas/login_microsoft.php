@@ -8,14 +8,14 @@ if (session_status() === PHP_SESSION_NONE) {
         'path'     => '/',
         'secure'   => true,      // obligatorio en HTTPS
         'httponly' => true,
-        'samesite' => 'None'     // CLAVE para OAuth
+        'samesite' => 'None'     // requerido para OAuth redirect
     ]);
     session_start();
 }
 
 /* Variables Entra ID */
 $clientId = getenv('MS_CLIENT_ID');
-$tenantId = getenv('MS_TENANT_ID'); // usar tenant fijo
+$tenantId = getenv('MS_TENANT_ID'); // USAR GUID REAL DEL TENANT
 
 if (!$clientId || !$tenantId) {
     http_response_code(500);
@@ -28,9 +28,9 @@ $redirectUri = BASE_URL . '/vistas_pantallas/callback_microsoft.php';
 /* Anti-CSRF */
 $state = bin2hex(random_bytes(16));
 $_SESSION['ms_state'] = $state;
-$_SESSION['ms_state_time'] = time(); // opcional (expiración)
+$_SESSION['ms_state_time'] = time();
 
-/* Construcción URL autorización */
+/* URL autorización */
 $authUrl = "https://login.microsoftonline.com/{$tenantId}/oauth2/v2.0/authorize?" . http_build_query([
     'client_id'     => $clientId,
     'response_type' => 'code',

@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../config_ajustes/app.php';
 require_once BASE_PATH . '/config_ajustes/conectar_db.php';
 
-/* 🔐 CONFIGURACIÓN SEGURA DE COOKIE PARA OAUTH */
+/* 🔐 CONFIGURACIÓN SEGURA DE COOKIE */
 if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
         'lifetime' => 0,
@@ -28,7 +28,7 @@ if (!$clientId || !$tenantId || !$clientSecret) {
 
 $redirectUri = BASE_URL . '/vistas_pantallas/callback_microsoft.php';
 
-/* 🔐 1) Validar state */
+/* 1) Validar state */
 $state = $_GET['state'] ?? '';
 
 if (
@@ -39,7 +39,7 @@ if (
     exit('❌ State inválido. Intenta nuevamente.');
 }
 
-/* Opcional: validar expiración (5 min) */
+/* Expiración opcional */
 if (isset($_SESSION['ms_state_time']) && (time() - $_SESSION['ms_state_time'] > 300)) {
     unset($_SESSION['ms_state']);
     http_response_code(400);
@@ -57,7 +57,7 @@ if ($code === '') {
     exit('❌ Error de Microsoft: ' . h($err));
 }
 
-/* 3) Intercambiar code por tokens */
+/* 3) Intercambiar code por token */
 $tokenUrl = "https://login.microsoftonline.com/{$tenantId}/oauth2/v2.0/token";
 
 $postData = [
@@ -118,7 +118,7 @@ if ($correo === '') {
     exit('❌ No se pudo obtener el correo del token.');
 }
 
-/* 5) AUTORIZACIÓN en tu BD */
+/* 5) Validar en tu BD */
 $stmt = $conexion->prepare("
     SELECT id_usuario, correo_corporativo, nombre_completo, id_rol, id_area, activo, debe_cambiar_password
     FROM dbo.USUARIOS
@@ -134,13 +134,13 @@ if (!$usuario) {
 }
 
 /* 6) Crear sesión local */
-$_SESSION['id_usuario']        = (int)$usuario['id_usuario'];
-$_SESSION['correo_corporativo']= (string)$usuario['correo_corporativo'];
-$_SESSION['nombre_completo']   = (string)$usuario['nombre_completo'];
-$_SESSION['id_rol']            = (int)($usuario['id_rol'] ?? 0);
-$_SESSION['id_area']           = (int)($usuario['id_area'] ?? 0);
-$_SESSION['debe_cambiar_password'] = (int)($usuario['debe_cambiar_password'] ?? 0);
+$_SESSION['id_usuario']         = (int)$usuario['id_usuario'];
+$_SESSION['correo_corporativo'] = (string)$usuario['correo_corporativo'];
+$_SESSION['nombre_completo']    = (string)$usuario['nombre_completo'];
+$_SESSION['id_rol']             = (int)$usuario['id_rol'];
+$_SESSION['id_area']            = (int)$usuario['id_area'];
+$_SESSION['debe_cambiar_password'] = (int)$usuario['debe_cambiar_password'];
 
-/* Redirigir al menú */
+/* Redirigir */
 header('Location: ' . BASE_URL . '/vistas_pantallas/menu.php');
 exit;
