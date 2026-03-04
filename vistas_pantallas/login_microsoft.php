@@ -7,7 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 /* Variables Entra ID (App Service) */
 $clientId = getenv('MS_CLIENT_ID');
-$tenantId = getenv('MS_TENANT_ID');
+$tenantId = "common";
 
 if (!$clientId || !$tenantId) {
     http_response_code(500);
