@@ -2,13 +2,21 @@
 require_once __DIR__ . '/../config_ajustes/app.php';
 require_once BASE_PATH . '/config_ajustes/conectar_db.php';
 
+/* 🔐 CONFIGURACIÓN SEGURA DE COOKIE PARA OAUTH */
 if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'secure'   => true,
+        'httponly' => true,
+        'samesite' => 'None'
+    ]);
     session_start();
 }
 
 function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
-/* Validaciones iniciales */
+/* Variables */
 $clientId     = getenv('MS_CLIENT_ID');
 $tenantId     = getenv('MS_TENANT_ID');
 $clientSecret = getenv('MS_CLIENT_SECRET');
@@ -20,13 +28,26 @@ if (!$clientId || !$tenantId || !$clientSecret) {
 
 $redirectUri = BASE_URL . '/vistas_pantallas/callback_microsoft.php';
 
-/* 1) Validar state (anti-CSRF) */
+/* 🔐 1) Validar state */
 $state = $_GET['state'] ?? '';
-if (empty($_SESSION['ms_state']) || !hash_equals($_SESSION['ms_state'], $state)) {
+
+if (
+    empty($_SESSION['ms_state']) ||
+    !hash_equals($_SESSION['ms_state'], $state)
+) {
     http_response_code(400);
     exit('❌ State inválido. Intenta nuevamente.');
 }
+
+/* Opcional: validar expiración (5 min) */
+if (isset($_SESSION['ms_state_time']) && (time() - $_SESSION['ms_state_time'] > 300)) {
+    unset($_SESSION['ms_state']);
+    http_response_code(400);
+    exit('❌ La sesión expiró. Intenta nuevamente.');
+}
+
 unset($_SESSION['ms_state']);
+unset($_SESSION['ms_state_time']);
 
 /* 2) Recibir code */
 $code = $_GET['code'] ?? '';
@@ -55,6 +76,7 @@ curl_setopt_array($ch, [
     CURLOPT_POSTFIELDS     => http_build_query($postData),
     CURLOPT_TIMEOUT        => 20,
 ]);
+
 $response = curl_exec($ch);
 $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $curlErr  = curl_error($ch);
@@ -66,19 +88,19 @@ if ($response === false) {
 }
 
 $data = json_decode($response, true);
+
 if ($httpCode !== 200 || !is_array($data)) {
     http_response_code(500);
     exit('❌ Respuesta inválida del token endpoint.');
 }
 
-/* 4) Leer id_token (JWT) */
+/* 4) Leer id_token */
 $idToken = $data['id_token'] ?? '';
 if ($idToken === '') {
     http_response_code(500);
-    exit('❌ No se recibió id_token. Revisa scopes/redirect URI.');
+    exit('❌ No se recibió id_token.');
 }
 
-/* Decodificar payload del JWT */
 $parts = explode('.', $idToken);
 if (count($parts) < 2) {
     http_response_code(500);
@@ -96,7 +118,7 @@ if ($correo === '') {
     exit('❌ No se pudo obtener el correo del token.');
 }
 
-/* 5) Validar en tu BD (AUTORIZACIÓN) */
+/* 5) AUTORIZACIÓN en tu BD */
 $stmt = $conexion->prepare("
     SELECT id_usuario, correo_corporativo, nombre_completo, id_rol, id_area, activo, debe_cambiar_password
     FROM dbo.USUARIOS
@@ -108,23 +130,17 @@ $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$usuario) {
     http_response_code(403);
-    exit('⛔ Usuario no autorizado en la plataforma (no existe o está inactivo).');
+    exit('⛔ Usuario no autorizado en la plataforma.');
 }
 
-/* 6) Crear sesión con tus keys reales */
-$_SESSION['id_usuario']       = (int)$usuario['id_usuario'];
+/* 6) Crear sesión local */
+$_SESSION['id_usuario']        = (int)$usuario['id_usuario'];
 $_SESSION['correo_corporativo']= (string)$usuario['correo_corporativo'];
-$_SESSION['nombre_completo']  = (string)$usuario['nombre_completo'];
-$_SESSION['id_rol']           = (int)($usuario['id_rol'] ?? 0);
-$_SESSION['id_area']          = (int)($usuario['id_area'] ?? 0);
-
-/* Opcional: si tu sistema usa esta bandera */
+$_SESSION['nombre_completo']   = (string)$usuario['nombre_completo'];
+$_SESSION['id_rol']            = (int)($usuario['id_rol'] ?? 0);
+$_SESSION['id_area']           = (int)($usuario['id_area'] ?? 0);
 $_SESSION['debe_cambiar_password'] = (int)($usuario['debe_cambiar_password'] ?? 0);
 
-/* IMPORTANTE:
-   Aquí NO tocamos tu lógica actual.
-   Tu sistema seguirá cargando permisos en sesión como ya lo hace.
-*/
-
+/* Redirigir al menú */
 header('Location: ' . BASE_URL . '/vistas_pantallas/menu.php');
 exit;
