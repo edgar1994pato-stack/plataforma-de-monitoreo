@@ -2,7 +2,12 @@
 require_once __DIR__ . '/../config_ajustes/app.php';
 require_once BASE_PATH . '/config_ajustes/conectar_db.php';
 
-/* COOKIE SEGURA */
+/* =====================================================
+ * CONFIGURACIÓN DE COOKIE SEGURA PARA OAUTH MICROSOFT
+ * =====================================================
+ * Necesario para que Azure / Microsoft puedan redirigir
+ * correctamente la sesión después del login.
+ */
 if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
         'lifetime' => 0,
@@ -16,11 +21,13 @@ if (session_status() === PHP_SESSION_NONE) {
 
 function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
-/* Variables */
+/* =====================================================
+ * VARIABLES DE ENTORNO DE MICROSOFT ENTRA ID
+ * ===================================================== */
 $clientId     = getenv('MS_CLIENT_ID');
 $clientSecret = getenv('MS_CLIENT_SECRET');
 
-/* modo pruebas */
+/* Tenant permitido (organizations permite cuentas corporativas) */
 $tenantId = "organizations";
 
 if (!$clientId || !$clientSecret) {
@@ -30,7 +37,9 @@ if (!$clientId || !$clientSecret) {
 
 $redirectUri = BASE_URL . '/vistas_pantallas/callback_microsoft.php';
 
-/* VALIDAR STATE */
+/* =====================================================
+ * VALIDACIÓN DE SEGURIDAD CSRF (STATE)
+ * ===================================================== */
 $state = $_GET['state'] ?? '';
 
 if (
@@ -44,7 +53,9 @@ if (
 unset($_SESSION['ms_state']);
 unset($_SESSION['ms_state_time']);
 
-/* RECIBIR CODE */
+/* =====================================================
+ * RECIBIR CODE DE MICROSOFT
+ * ===================================================== */
 $code = $_GET['code'] ?? '';
 
 if (!$code) {
@@ -52,7 +63,9 @@ if (!$code) {
     exit('❌ Error Microsoft: ' . h($err));
 }
 
-/* INTERCAMBIAR CODE POR TOKEN */
+/* =====================================================
+ * INTERCAMBIAR CODE POR TOKEN (OAUTH2)
+ * ===================================================== */
 $tokenUrl = "https://login.microsoftonline.com/{$tenantId}/oauth2/v2.0/token";
 
 $postData = [
@@ -83,7 +96,9 @@ if ($httpCode !== 200 || !isset($data['id_token'])) {
     exit('❌ Error obteniendo token.');
 }
 
-/* LEER TOKEN */
+/* =====================================================
+ * LEER INFORMACIÓN DEL USUARIO DESDE EL TOKEN
+ * ===================================================== */
 $idToken = $data['id_token'];
 
 $parts = explode('.', $idToken);
@@ -100,14 +115,16 @@ if (!$correo) {
     exit('❌ No se pudo obtener el correo.');
 }
 
-/* SEGURIDAD: SOLO CORREOS CORPORATIVOS */
-
+/* =====================================================
+ * SEGURIDAD: SOLO CORREOS CORPORATIVOS
+ * ===================================================== */
 if (!str_ends_with($correo, '@alfanet.net.ec')) {
     exit('⛔ Solo cuentas corporativas permitidas.');
 }
 
-/* VALIDAR EN BD */
-
+/* =====================================================
+ * VALIDAR QUE EL USUARIO EXISTA EN LA BASE DE DATOS
+ * ===================================================== */
 $stmt = $conexion->prepare("
     SELECT id_usuario,
            correo_corporativo,
@@ -129,8 +146,12 @@ if (!$usuario) {
     exit('⛔ Usuario no autorizado en la plataforma.');
 }
 
-/* CREAR SESIÓN */
-
+/* =====================================================
+ * CREAR SESIÓN DEL USUARIO
+ * =====================================================
+ * Aquí se guardan los datos principales del usuario
+ * que utilizará el sistema durante la sesión.
+ */
 $_SESSION['id_usuario'] = (int)$usuario['id_usuario'];
 $_SESSION['correo_corporativo'] = $usuario['correo_corporativo'];
 $_SESSION['nombre_completo'] = $usuario['nombre_completo'];
@@ -138,7 +159,40 @@ $_SESSION['id_rol'] = (int)$usuario['id_rol'];
 $_SESSION['id_area'] = (int)$usuario['id_area'];
 $_SESSION['debe_cambiar_password'] = (int)$usuario['debe_cambiar_password'];
 
-/* REDIRECCIÓN */
+/* =====================================================
+ * CARGAR PERMISOS DEL ROL DEL USUARIO
+ * =====================================================
+ * Este bloque replica exactamente la lógica que utiliza
+ * el login tradicional del sistema.
+ *
+ * Se consultan los permisos asociados al rol del usuario
+ * y se guardan en la sesión para que funciones como
+ * has_permission() puedan validar accesos en el sistema.
+ *
+ * Sin este bloque, el menú queda vacío porque
+ * has_permission() devuelve FALSE.
+ */
+$_SESSION['permisos'] = [];
 
+$stmtPerm = $conexion->prepare("
+    SELECT p.codigo
+    FROM dbo.ROL_PERMISO rp
+    INNER JOIN dbo.PERMISOS p ON rp.id_permiso = p.id_permiso
+    WHERE rp.id_rol = :id_rol
+");
+
+$stmtPerm->execute([
+    ':id_rol' => $_SESSION['id_rol']
+]);
+
+while ($rowPerm = $stmtPerm->fetch(PDO::FETCH_ASSOC)) {
+    $_SESSION['permisos'][] = $rowPerm['codigo'];
+}
+
+$stmtPerm->closeCursor();
+
+/* =====================================================
+ * REDIRECCIÓN FINAL AL MENÚ PRINCIPAL
+ * ===================================================== */
 header('Location: ' . BASE_URL . '/vistas_pantallas/menu.php');
 exit;
