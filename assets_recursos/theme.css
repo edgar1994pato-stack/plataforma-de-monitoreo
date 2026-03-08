@@ -324,3 +324,99 @@ body{
   background:#1c1c1c;
   color:var(--white);
 }
+
+
+
+
+
+
+
+
+
+/* =========================
+   LOGIN MICROSOFT – LANDING
+========================= */
+
+.login-wrapper{
+  min-height:100vh;
+  display:flex;
+}
+
+/* PANEL IZQUIERDO */
+
+.login-left{
+  flex:1;
+  background:linear-gradient(135deg,#0b3a46,#05252d);
+  color:white;
+  padding:80px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.login-left span{
+  background:var(--primary);
+  color:var(--black);
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:600;
+  width:fit-content;
+}
+
+.login-left h1{
+  font-size:58px;
+  font-weight:800;
+  line-height:1;
+}
+
+.login-left p{
+  margin-top:20px;
+  opacity:.9;
+  max-width:420px;
+}
+
+.features{
+  display:flex;
+  gap:30px;
+  margin-top:40px;
+}
+
+.feature{
+  text-align:center;
+}
+
+.feature i{
+  font-size:26px;
+  background:var(--primary);
+  color:var(--black);
+  padding:14px;
+  border-radius:8px;
+}
+
+/* PANEL DERECHO */
+
+.login-right{
+  width:460px;
+  background:var(--white);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.login-card{
+  width:100%;
+  max-width:360px;
+}
+
+.btn-microsoft{
+  background:#0a3a44;
+  color:white;
+  font-weight:600;
+  border-radius:8px;
+}
+
+.btn-microsoft:hover{
+  background:#06252c;
+  color:white;
+}

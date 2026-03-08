@@ -1,137 +1,100 @@
 <?php
 /**
- * ARCHIVO: /vistas_pantallas/login.php
- * =========================================================
- * VISTA DE LOGIN (FRONTEND) – PRODUCCIÓN AZURE
- *
- * ✔ No detecta entornos (no localhost)
- * ✔ Usa BASE_URL definido en app.php
- * ✔ POST entra por index.php (Front Controller)
- * ✔ No rompe diseño ni lógica de negocio
+ * LOGIN PRINCIPAL DEL SISTEMA
+ * Autenticación Microsoft Entra ID
  */
 
-// Si ya hay sesión → menú
+require_once __DIR__ . '/../config_ajustes/app.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+/* Si ya hay sesión → menú */
 if (!empty($_SESSION['id_usuario'])) {
     header('Location: ' . BASE_URL . '/vistas_pantallas/menu.php');
     exit;
 }
 
-// Error de login (si existe)
-$error = $_SESSION['login_error'] ?? '';
-unset($_SESSION['login_error']);
-
-// Variables de diseño
-$PAGE_TITLE       = "";
-$PAGE_SUBTITLE    = "";
+$PAGE_TITLE = "";
+$PAGE_SUBTITLE = "";
 $PAGE_ACTION_HTML = "";
 
-// Header
 require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 ?>
 
-<div class="row justify-content-center">
-  <div class="col-12 col-sm-10 col-md-6 col-lg-4">
+<div class="login-wrapper">
 
-    <div class="card card-soft shadow-sm">
-      <div class="card-header card-header-soft py-3">
-        <div class="fw-bold">
-          <i class="bi bi-shield-lock me-2"></i>Acceso al sistema
-        </div>
-        <div class="help-mini mt-1">
-          Ingrese su correo corporativo y contraseña.
-        </div>
-      </div>
+<!-- PANEL IZQUIERDO -->
 
-      <div class="card-body p-4">
+<div class="login-left">
 
-        <?php if (!empty($error)): ?>
-          <div class="alert alert-danger py-2 small mb-3">
-            <i class="bi bi-exclamation-triangle me-1"></i>
-            <?= htmlspecialchars($error) ?>
-          </div>
-        <?php endif; ?>
+<span>SISTEMA DE MONITOREO</span>
 
-        <!--
-          POST AL FRONT CONTROLLER (index.php)
-          nginx + Azure no usan reescrituras tipo Apache
-        -->
-        <form method="POST" action="<?= BASE_URL ?>/index.php" novalidate>
+<h1 class="mt-3">
+ALFA<br>MONITOR
+</h1>
 
-          <!-- requerido por index.php -->
-          <input type="hidden" name="accion" value="login">
+<p>
+Plataforma centralizada para la gestión, evaluación
+y monitoreo de calidad operativa.
+</p>
 
-          <!-- CORREO -->
-          <div class="mb-3">
-            <label class="form-label small fw-bold text-muted">
-              CORREO CORPORATIVO
-            </label>
-            <input
-              type="email"
-              name="correo"
-              class="form-control form-control-sm"
-              placeholder="usuario@alfanet..."
-              autocomplete="username"
-              required>
-          </div>
+<div class="features">
 
-          <!-- CONTRASEÑA -->
-          <div class="mb-2">
-            <label class="form-label small fw-bold text-muted">
-              CONTRASEÑA
-            </label>
-            <div class="input-group input-group-sm">
-              <input
-                type="password"
-                name="password"
-                class="form-control"
-                placeholder="••••••••"
-                autocomplete="current-password"
-                required>
-              <button class="btn btn-outline-secondary" type="button" id="btnTogglePassword">
-                <i class="bi bi-eye"></i>
-              </button>
-            </div>
-            <div class="help-mini"></div>
-          </div>
-
-          <!-- OLVIDÉ CONTRASEÑA -->
-          <div class="text-end mb-3">
-            <a href="<?= BASE_URL ?>/vistas_pantallas/reset_password.php" 
-               class="small text-decoration-none">
-              
-            </a>
-          </div>
-
-          <!-- BOTÓN -->
-          <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm">
-            Ingresar
-          </button>
-
-          <div class="text-center mt-3">
-            <span class="help-mini">
-              
-            </span>
-          </div>
-
-        </form>
-      </div>
-    </div>
-
-  </div>
+<div class="feature">
+<i class="bi bi-bar-chart"></i>
+<div class="small mt-2">Indicadores</div>
 </div>
 
-<script>
-document.getElementById('btnTogglePassword')?.addEventListener('click', function () {
-  const input = document.querySelector('input[name="password"]');
-  const icon  = this.querySelector('i');
-  if (!input) return;
+<div class="feature">
+<i class="bi bi-lightning"></i>
+<div class="small mt-2">Gestión rápida</div>
+</div>
 
-  const mostrar = (input.type === 'password');
-  input.type = mostrar ? 'text' : 'password';
-  if (icon) icon.className = mostrar ? 'bi bi-eye-slash' : 'bi bi-eye';
-});
-</script>
+<div class="feature">
+<i class="bi bi-shield-check"></i>
+<div class="small mt-2">Acceso seguro</div>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- PANEL DERECHO -->
+
+<div class="login-right">
+
+<div class="login-card card-soft p-4 text-center">
+
+<i class="bi bi-person-circle fs-1 mb-3 text-secondary"></i>
+
+<h5 class="fw-bold">Iniciar sesión</h5>
+
+<p class="small text-muted mb-4">
+Utiliza tu cuenta corporativa de Microsoft
+para acceder a la plataforma.
+</p>
+
+<a href="<?= BASE_URL ?>/vistas_pantallas/login_microsoft.php"
+class="btn btn-microsoft w-100 py-2">
+
+<i class="bi bi-microsoft me-2"></i>
+Iniciar sesión con Microsoft
+
+</a>
+
+<p class="small text-muted mt-3">
+Autenticación segura mediante Microsoft Entra ID
+</p>
+
+</div>
+
+</div>
+
+</div>
 
 <?php
-// Footer
 require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
+?>
