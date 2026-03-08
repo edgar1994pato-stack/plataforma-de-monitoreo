@@ -334,57 +334,70 @@ body{
 
 
 /* =========================
-   LOGIN MICROSOFT PREMIUM
+   LOGIN MICROSOFT FINAL
 ========================= */
 
-body{
-  background:linear-gradient(135deg,#0b3a46,#05252d);
-}
-
-/* contenedor central */
+/* contenedor login */
 
 .login-wrapper{
   min-height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
+  background:#0b3a46;
   padding:40px;
 }
 
-/* card login */
+/* tarjeta login */
 
 .login-card{
   width:100%;
-  max-width:460px;
+  max-width:480px;
   background:#ffffff;
-  border-radius:16px;
-  padding:50px 40px;
-  box-shadow:0 30px 80px rgba(0,0,0,.25);
+  border-radius:18px;
+  padding:55px 45px;
+  box-shadow:0 35px 90px rgba(0,0,0,.28);
   text-align:center;
+  animation:fadeLogin .35s ease;
+}
+
+/* animación suave */
+
+@keyframes fadeLogin{
+  from{
+    transform:translateY(10px);
+    opacity:0;
+  }
+  to{
+    transform:translateY(0);
+    opacity:1;
+  }
 }
 
 /* icono usuario */
 
 .login-icon{
-  width:70px;
-  height:70px;
+  width:75px;
+  height:75px;
   border-radius:50%;
-  background:#e9ecef;
+  background:#f1f3f5;
   display:flex;
   align-items:center;
   justify-content:center;
   margin:auto;
-  font-size:28px;
-  margin-bottom:20px;
+  font-size:30px;
+  margin-bottom:22px;
+  color:#6c757d;
 }
 
 /* titulo */
 
 .login-title{
-  font-size:24px;
+  font-size:26px;
   font-weight:700;
   color:#1c1c1c;
-  margin-bottom:10px;
+  margin-bottom:12px;
+  letter-spacing:.3px;
 }
 
 /* texto */
@@ -392,7 +405,8 @@ body{
 .login-text{
   color:#6c757d;
   font-size:14px;
-  margin-bottom:30px;
+  margin-bottom:32px;
+  line-height:1.5;
 }
 
 /* boton microsoft */
@@ -401,39 +415,51 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:12px;
+  gap:14px;
   background:#0a3a44;
   color:#fff;
   font-weight:600;
-  border-radius:10px;
-  padding:12px;
+  border-radius:12px;
+  padding:13px;
   font-size:15px;
-  transition:.2s;
+  transition:.25s ease;
+  box-shadow:0 6px 18px rgba(0,0,0,.15);
 }
 
 .btn-microsoft:hover{
   background:#072a31;
   color:#fff;
-  transform:translateY(-1px);
+  transform:translateY(-2px);
+  box-shadow:0 10px 28px rgba(0,0,0,.22);
 }
 
-/* icono microsoft */
+/* logo microsoft */
 
 .ms-logo{
-  width:18px;
-  height:18px;
+  width:20px;
+  height:20px;
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:2px;
 }
 
 .ms-logo span{
-  width:8px;
-  height:8px;
-  display:block;
+  width:9px;
+  height:9px;
+  border-radius:1px;
 }
+
+/* colores microsoft */
 
 .ms-red{background:#f25022;}
 .ms-green{background:#7fba00;}
 .ms-blue{background:#00a4ef;}
 .ms-yellow{background:#ffb900;}
+
+/* texto seguridad */
+
+.login-security{
+  margin-top:28px;
+  font-size:13px;
+  color:#6c757d;
+}
