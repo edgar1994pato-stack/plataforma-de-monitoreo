@@ -4,10 +4,7 @@ require_once BASE_PATH . '/config_ajustes/conectar_db.php';
 
 /* =====================================================
  * CONFIGURACIÓN DE COOKIE SEGURA PARA OAUTH MICROSOFT
- * =====================================================
- * Necesario para que Azure / Microsoft puedan redirigir
- * correctamente la sesión después del login.
- */
+ * ===================================================== */
 if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
         'lifetime' => 0,
@@ -27,7 +24,6 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 $clientId     = getenv('MS_CLIENT_ID');
 $clientSecret = getenv('MS_CLIENT_SECRET');
 
-/* Tenant permitido (organizations permite cuentas corporativas) */
 $tenantId = "organizations";
 
 if (!$clientId || !$clientSecret) {
@@ -148,41 +144,43 @@ if (!$usuario) {
 
 /* =====================================================
  * CREAR SESIÓN DEL USUARIO
- * =====================================================
- * Aquí se guardan los datos principales del usuario
- * que utilizará el sistema durante la sesión.
- */
+ * ===================================================== */
 $_SESSION['id_usuario'] = (int)$usuario['id_usuario'];
 $_SESSION['correo_corporativo'] = $usuario['correo_corporativo'];
 $_SESSION['nombre_completo'] = $usuario['nombre_completo'];
 $_SESSION['id_rol'] = (int)$usuario['id_rol'];
-$_SESSION['id_area'] = (int)$usuario['id_area'];
+$_SESSION['id_area'] = (int)$usuario['id_area']; // compatibilidad actual
 $_SESSION['debe_cambiar_password'] = (int)$usuario['debe_cambiar_password'];
 
 /* =====================================================
- * CARGAR PERMISOS DEL ROL DEL USUARIO
- * =====================================================
- * Este bloque replica exactamente la lógica que utiliza
- * el login tradicional del sistema.
- *
- * Se consultan los permisos asociados al rol del usuario
- * y se guardan en la sesión para que funciones como
- * has_permission() puedan validar accesos en el sistema.
- *
- * Sin este bloque, el menú queda vacío porque
- * has_permission() devuelve FALSE.
- */
+ * CARGAR PERMISOS DEL USUARIO
+ * ===================================================== */
 $_SESSION['permisos'] = [];
 
 $stmtPerm = $conexion->prepare("
-    SELECT p.codigo
-    FROM dbo.ROL_PERMISO rp
-    INNER JOIN dbo.PERMISOS p ON rp.id_permiso = p.id_permiso
-    WHERE rp.id_rol = :id_rol
+    SELECT codigo
+    FROM (
+
+        SELECT p.codigo
+        FROM dbo.ROL_PERMISO rp
+        INNER JOIN dbo.PERMISOS p
+            ON rp.id_permiso = p.id_permiso
+        WHERE rp.id_rol = :id_rol
+
+        UNION
+
+        SELECT p.codigo
+        FROM dbo.USUARIO_PERMISO up
+        INNER JOIN dbo.PERMISOS p
+            ON up.id_permiso = p.id_permiso
+        WHERE up.id_usuario = :id_usuario
+
+    ) permisos
 ");
 
 $stmtPerm->execute([
-    ':id_rol' => $_SESSION['id_rol']
+    ':id_rol' => $_SESSION['id_rol'],
+    ':id_usuario' => $_SESSION['id_usuario']
 ]);
 
 while ($rowPerm = $stmtPerm->fetch(PDO::FETCH_ASSOC)) {
@@ -190,6 +188,33 @@ while ($rowPerm = $stmtPerm->fetch(PDO::FETCH_ASSOC)) {
 }
 
 $stmtPerm->closeCursor();
+
+/* =====================================================
+ * CARGAR ÁREAS DEL USUARIO (NUEVO – SIN ROMPER SISTEMA)
+ * ===================================================== */
+
+$_SESSION['areas'] = [];
+
+$stmtAreas = $conexion->prepare("
+    SELECT id_area
+    FROM dbo.USUARIO_AREA
+    WHERE id_usuario = :id_usuario
+");
+
+$stmtAreas->execute([
+    ':id_usuario' => $_SESSION['id_usuario']
+]);
+
+while ($rowArea = $stmtAreas->fetch(PDO::FETCH_ASSOC)) {
+    $_SESSION['areas'][] = (int)$rowArea['id_area'];
+}
+
+$stmtAreas->closeCursor();
+
+/* fallback por compatibilidad con sistema actual */
+if (empty($_SESSION['areas']) && !empty($_SESSION['id_area'])) {
+    $_SESSION['areas'][] = (int)$_SESSION['id_area'];
+}
 
 /* =====================================================
  * REDIRECCIÓN FINAL AL MENÚ PRINCIPAL

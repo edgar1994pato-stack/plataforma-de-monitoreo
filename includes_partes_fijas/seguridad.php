@@ -21,9 +21,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 /* =========================================================
  * 2) BASE URL
- * =========================================================
- * 👉 Se usa SOLO la definida en app.php
- */
+ * ========================================================= */
 if (!defined('BASE_URL')) {
     throw new RuntimeException('BASE_URL no está definido.');
 }
@@ -40,7 +38,7 @@ const ROLE_GERENTE      = 6;
 const ROLE_SIN_ACCESO   = 7;
 
 /* =========================================================
- * 3.1) PERMISOS DINÁMICOS (NUEVO)
+ * 3.1) PERMISOS DINÁMICOS
  * ========================================================= */
 
 function has_permission(string $codigo): bool {
@@ -62,23 +60,22 @@ function require_permission(string $codigo): void {
 }
 
 /* =========================================================
- * 4) MATRIZ DE PERMISOS (HÍBRIDO: DINÁMICO + FALLBACK)
+ * 4) MATRIZ DE PERMISOS
  * ========================================================= */
 
 function role_can_see_all_areas(): bool {
 
-    // Primero intenta permiso dinámico
     if (has_permission('ver_todas_areas')) {
         return true;
     }
 
-    // Fallback antiguo
     $rol = (int)($_SESSION['id_rol'] ?? 0);
+
     return in_array($rol, [
         ROLE_ADMIN,
         ROLE_COORD_QA,
         ROLE_AGENTE_QA,
-        ROLE_GERENTE,
+        ROLE_GERENTE
     ], true);
 }
 
@@ -102,14 +99,17 @@ function role_is_readonly(): bool {
     }
 
     $rol = (int)($_SESSION['id_rol'] ?? 0);
+
     return in_array($rol, [
         ROLE_SUPERVISOR,
-        ROLE_COORD_CX,
+        ROLE_COORD_CX
     ], true);
 }
+
 /* =========================================================
  * 5) AUTENTICACIÓN
  * ========================================================= */
+
 function require_login(): void {
 
     if (empty($_SESSION['id_usuario'])) {
@@ -126,10 +126,13 @@ function require_login(): void {
 /* =========================================================
  * 6) FORZAR CAMBIO DE CONTRASEÑA
  * ========================================================= */
+
 function force_password_change(): void {
 
     if (!empty($_SESSION['debe_cambiar_password'])) {
+
         if (strpos($_SERVER['PHP_SELF'], 'cambiar_password.php') === false) {
+
             header('Location: ' . BASE_URL . '/vistas_pantallas/cambiar_password.php');
             exit;
         }
@@ -139,13 +142,38 @@ function force_password_change(): void {
 /* =========================================================
  * 7) FILTRO DE ÁREA PARA SQL
  * ========================================================= */
+
 function area_filter_sql(string $campoArea = 'id_area'): array {
 
-    $idArea = (int)($_SESSION['id_area'] ?? 0);
-
+    /* usuarios que ven todo */
     if (role_can_see_all_areas()) {
         return ['', []];
     }
+
+    /* NUEVO: múltiples áreas */
+    $areas = $_SESSION['areas'] ?? [];
+
+    if (is_array($areas) && count($areas) > 0) {
+
+        $placeholders = [];
+        $params = [];
+
+        foreach ($areas as $i => $area) {
+
+            $key = ":area{$i}";
+            $placeholders[] = $key;
+            $params[$key] = (int)$area;
+
+        }
+
+        return [
+            " AND {$campoArea} IN (" . implode(',', $placeholders) . ") ",
+            $params
+        ];
+    }
+
+    /* fallback: sistema antiguo */
+    $idArea = (int)($_SESSION['id_area'] ?? 0);
 
     if ($idArea <= 0) {
         return [' AND 1 = 0 ', []];
@@ -160,6 +188,7 @@ function area_filter_sql(string $campoArea = 'id_area'): array {
 /* =========================================================
  * 8) HELPERS
  * ========================================================= */
+
 function can_create(): bool { return role_can_create(); }
 function can_correct(): bool { return role_can_correct(); }
 function is_readonly(): bool { return role_is_readonly(); }
