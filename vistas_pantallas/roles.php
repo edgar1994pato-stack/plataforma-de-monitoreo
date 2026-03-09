@@ -199,7 +199,7 @@ onchange="this.form.submit()">
      PERMISOS DEL ROL
 ========================= -->
 
-<form method="POST" action="<?= BASE_URL ?>/cruds/proceso_guardar_permisos_rol.php">
+<form method="POST" action="<?= BASE_URL ?>/cruds/proceso_guardar_roles.php">
 
 <input type="hidden" name="id_rol" value="<?= $idRolSeleccionado ?>">
 
