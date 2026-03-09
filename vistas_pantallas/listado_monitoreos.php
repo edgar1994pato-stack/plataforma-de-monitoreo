@@ -48,7 +48,7 @@ $BASE_URL = BASE_URL;
  * ========================================================= */
 $idUsuario = (int)($_SESSION['id_usuario'] ?? 0);
 $idRol     = (int)($_SESSION['id_rol'] ?? 0);
-$idAreaSes = $_SESSION['areas'][0] ?? 0;
+$idAreaSes = !empty($_SESSION['areas']) ? implode(',', $_SESSION['areas']) : 0;
 
 /* =========================================================
  * 5) PERMISOS (VIENEN SOLO DE seguridad.php)
