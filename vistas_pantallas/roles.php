@@ -10,25 +10,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-/* =========================
-   SEGURIDAD
-========================= */
-
 require_once BASE_PATH . '/includes_partes_fijas/seguridad.php';
 
 require_login();
 require_permission('ver_modulo_roles');
 force_password_change();
 
-/* =========================
-   CONEXIÓN BD
-========================= */
-
 require_once BASE_PATH . '/config_ajustes/conectar_db.php';
-
-/* =========================
-   HEADER
-========================= */
 
 $PAGE_TITLE = "Gestión de Roles y Permisos";
 $PAGE_SUBTITLE = "Administración de accesos del sistema";
@@ -42,17 +30,13 @@ $PAGE_ACTION_HTML = '
 
 require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
+
 /* =========================================================
-   BLOQUE 1
-   OBTENER ROLES
+   BLOQUE 1 - ROLES
 ========================================================= */
 
-$roles = [];
-
-try {
-
 $stmt = $conexion->query("
-SELECT id_rol, nombre_rol
+SELECT id_rol,nombre_rol
 FROM ROLES
 WHERE fecha_fin IS NULL
 ORDER BY nombre_rol
@@ -60,37 +44,21 @@ ORDER BY nombre_rol
 
 $roles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-} catch (Throwable $e) {
-
-$roles = [];
-
-}
 
 /* =========================================================
-   BLOQUE 2
-   ROL SELECCIONADO
+   BLOQUE 2 - ROL SELECCIONADO
 ========================================================= */
-
-$idRolSeleccionado = 0;
-
-if (!empty($roles)) {
 
 $idRolSeleccionado = isset($_GET['rol'])
 ? (int)$_GET['rol']
-: (int)$roles[0]['id_rol'];
+: ($roles[0]['id_rol'] ?? 0);
 
-}
 
 /* =========================================================
-   BLOQUE 3
-   PERMISOS DEL ROL
+   BLOQUE 3 - PERMISOS DEL ROL
 ========================================================= */
 
 $permisosAsignados = [];
-
-if ($idRolSeleccionado > 0) {
-
-try {
 
 $stmt = $conexion->prepare("
 SELECT id_permiso
@@ -102,118 +70,74 @@ $stmt->execute([$idRolSeleccionado]);
 
 $permisosAsignados = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-} catch (Throwable $e) {
-
-$permisosAsignados = [];
-
-}
-
-}
 
 /* =========================================================
-   BLOQUE 4
-   TODOS LOS PERMISOS
+   BLOQUE 4 - LISTA DE PERMISOS
 ========================================================= */
 
 $permisos = [];
 
-try {
-
 $stmt = $conexion->query("
-SELECT id_permiso, codigo, descripcion, modulo
+SELECT id_permiso,codigo,descripcion,modulo
 FROM PERMISOS
 WHERE activo = 1
-ORDER BY modulo, codigo
+ORDER BY modulo,codigo
 ");
 
 $permisosRaw = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 foreach ($permisosRaw as $p) {
-
-$permisos[$p['modulo']][] = $p;
-
+    $permisos[$p['modulo']][] = $p;
 }
 
-} catch (Throwable $e) {
-
-$permisos = [];
-
-}
 
 /* =========================================================
-   BLOQUE 5
-   OBTENER USUARIOS
+   BLOQUE 5 - USUARIOS DEL ROL
 ========================================================= */
 
-$usuarios = [];
-
-try {
-
-$stmt = $conexion->query("
+$stmt = $conexion->prepare("
 SELECT id_usuario,nombre_completo
 FROM USUARIOS
 WHERE activo = 1
+AND id_rol = ?
 ORDER BY nombre_completo
 ");
 
+$stmt->execute([$idRolSeleccionado]);
+
 $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-} catch (Throwable $e) {
-
-$usuarios = [];
-
-}
 
 /* =========================================================
-   BLOQUE 6
-   USUARIO SELECCIONADO
+   BLOQUE 6 - USUARIO SELECCIONADO
 ========================================================= */
-
-$idUsuarioSeleccionado = 0;
-
-if (!empty($usuarios)) {
 
 $idUsuarioSeleccionado = isset($_GET['usuario'])
 ? (int)$_GET['usuario']
-: (int)$usuarios[0]['id_usuario'];
+: ($usuarios[0]['id_usuario'] ?? 0);
 
-}
 
 /* =========================================================
-   BLOQUE 7
-   OBTENER ÁREAS ACTIVAS
+   BLOQUE 7 - AREAS
 ========================================================= */
-
-$areas = [];
-
-try {
 
 $stmt = $conexion->query("
 SELECT id_area,nombre_area
 FROM AREAS
 WHERE estado = 1
-AND fecha_fin IS NULL
 ORDER BY nombre_area
 ");
 
 $areas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-} catch (Throwable $e) {
-
-$areas = [];
-
-}
 
 /* =========================================================
-   BLOQUE 8
-   ÁREAS DEL USUARIO
+   BLOQUE 8 - AREAS DEL USUARIO
 ========================================================= */
 
 $areasAsignadas = [];
 
 if ($idUsuarioSeleccionado > 0) {
-
-try {
 
 $stmt = $conexion->prepare("
 SELECT id_area
@@ -225,27 +149,20 @@ $stmt->execute([$idUsuarioSeleccionado]);
 
 $areasAsignadas = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-} catch (Throwable $e) {
-
-$areasAsignadas = [];
-
-}
-
 }
 
 ?>
 
+
 <div class="container mt-4">
 
-
 <!-- =========================
-     SELECTOR DE ROL
+     SELECCIONAR ROL
 ========================= -->
 
-<div class="card card-soft shadow-sm mb-4 border-0">
+<div class="card mb-4">
 
-<div class="card-header card-header-dark py-2 small fw-bold">
-<i class="bi bi-person-badge me-2"></i>
+<div class="card-header fw-bold">
 Seleccionar Rol
 </div>
 
@@ -253,19 +170,13 @@ Seleccionar Rol
 
 <form method="GET">
 
-<div class="col-md-6">
-
-<label class="form-label small fw-bold text-muted">
-Rol del sistema
-</label>
-
-<select class="form-select form-select-sm"
-name="rol"
+<select name="rol"
+class="form-select"
 onchange="this.form.submit()">
 
 <?php foreach ($roles as $r): ?>
 
-<option value="<?= (int)$r['id_rol'] ?>"
+<option value="<?= $r['id_rol'] ?>"
 <?= $idRolSeleccionado == $r['id_rol'] ? 'selected' : '' ?>>
 
 <?= htmlspecialchars($r['nombre_rol']) ?>
@@ -276,8 +187,6 @@ onchange="this.form.submit()">
 
 </select>
 
-</div>
-
 </form>
 
 </div>
@@ -285,14 +194,72 @@ onchange="this.form.submit()">
 </div>
 
 
+
 <!-- =========================
-     SELECTOR DE USUARIO
+     PERMISOS DEL ROL
 ========================= -->
 
-<div class="card card-soft shadow-sm mb-4 border-0">
+<form method="POST" action="<?= BASE_URL ?>/cruds/proceso_guardar_permisos_rol.php">
 
-<div class="card-header card-header-dark py-2 small fw-bold">
-<i class="bi bi-person me-2"></i>
+<input type="hidden" name="id_rol" value="<?= $idRolSeleccionado ?>">
+
+<div class="card mb-4">
+
+<div class="card-header fw-bold">
+Permisos del Rol
+</div>
+
+<div class="card-body">
+
+<?php foreach ($permisos as $modulo => $lista): ?>
+
+<h6 class="mt-3"><?= htmlspecialchars($modulo) ?></h6>
+
+<?php foreach ($lista as $p): ?>
+
+<div class="form-check">
+
+<input class="form-check-input"
+type="checkbox"
+name="permisos[]"
+value="<?= $p['id_permiso'] ?>"
+<?= in_array($p['id_permiso'],$permisosAsignados) ? 'checked' : '' ?>>
+
+<label class="form-check-label">
+
+<?= htmlspecialchars($p['descripcion']) ?>
+
+</label>
+
+</div>
+
+<?php endforeach; ?>
+
+<?php endforeach; ?>
+
+</div>
+
+<div class="card-footer text-end">
+
+<button class="btn btn-primary">
+Guardar permisos
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+
+
+<!-- =========================
+     SELECCIONAR USUARIO
+========================= -->
+
+<div class="card mb-4">
+
+<div class="card-header fw-bold">
 Seleccionar Usuario
 </div>
 
@@ -300,15 +267,15 @@ Seleccionar Usuario
 
 <form method="GET">
 
-<div class="col-md-6">
+<input type="hidden" name="rol" value="<?= $idRolSeleccionado ?>">
 
-<select class="form-select form-select-sm"
-name="usuario"
+<select name="usuario"
+class="form-select"
 onchange="this.form.submit()">
 
 <?php foreach ($usuarios as $u): ?>
 
-<option value="<?= (int)$u['id_usuario'] ?>"
+<option value="<?= $u['id_usuario'] ?>"
 <?= $idUsuarioSeleccionado == $u['id_usuario'] ? 'selected' : '' ?>>
 
 <?= htmlspecialchars($u['nombre_completo']) ?>
@@ -319,8 +286,6 @@ onchange="this.form.submit()">
 
 </select>
 
-</div>
-
 </form>
 
 </div>
@@ -328,20 +293,21 @@ onchange="this.form.submit()">
 </div>
 
 
+
 <!-- =========================
-     ÁREAS DEL USUARIO
+     AREAS DEL USUARIO
 ========================= -->
 
 <form method="POST"
 action="<?= BASE_URL ?>/cruds/proceso_guardar_areas_usuario.php">
 
-<input type="hidden" name="id_usuario"
-value="<?= (int)$idUsuarioSeleccionado ?>">
+<input type="hidden"
+name="id_usuario"
+value="<?= $idUsuarioSeleccionado ?>">
 
-<div class="card card-soft shadow-sm mb-4 border-0">
+<div class="card mb-4">
 
-<div class="card-header card-header-dark py-2 small fw-bold">
-<i class="bi bi-diagram-3 me-2"></i>
+<div class="card-header fw-bold">
 Áreas permitidas
 </div>
 
@@ -351,17 +317,17 @@ value="<?= (int)$idUsuarioSeleccionado ?>">
 
 <?php foreach ($areas as $a): ?>
 
-<div class="col-md-4 mb-2">
+<div class="col-md-4">
 
 <div class="form-check">
 
 <input class="form-check-input"
 type="checkbox"
 name="areas[]"
-value="<?= (int)$a['id_area'] ?>"
+value="<?= $a['id_area'] ?>"
 <?= in_array($a['id_area'],$areasAsignadas) ? 'checked' : '' ?>>
 
-<label class="form-check-label small">
+<label class="form-check-label">
 
 <?= htmlspecialchars($a['nombre_area']) ?>
 
@@ -377,17 +343,13 @@ value="<?= (int)$a['id_area'] ?>"
 
 </div>
 
-</div>
+<div class="card-footer text-end">
 
-<div class="text-end">
-
-<button type="submit"
-class="btn btn-primary fw-bold px-4 shadow-sm">
-
-<i class="bi bi-save me-1"></i>
-Guardar Áreas
-
+<button class="btn btn-success">
+Guardar áreas
 </button>
+
+</div>
 
 </div>
 
@@ -395,6 +357,7 @@ Guardar Áreas
 
 
 </div>
+
 
 <?php
 require_once BASE_PATH . '/includes_partes_fijas/diseno_abajo.php';
