@@ -239,7 +239,7 @@ try {
 
 /* Catálogos */
 $aspectos    = ['ERROR NO CRITICO','ERROR CRITICO','IMPULSOR DE SATISFACCIÓN'];
-$direcciones = ['USUARIO FINAL','NEGOCIO'];
+$direcciones = ['USUARIO FINAL','NEGOCIO','CUMPLIMIENTO'];
 $tipos = [
   'NORMAL'   => 'PONDERADO',
   'CRITICO'  => 'CRITICO',
