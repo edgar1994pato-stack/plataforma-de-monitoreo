@@ -41,6 +41,7 @@ $email      = trim($_POST['email'] ?? '');
 $celular    = trim($_POST['celular'] ?? '');
 $idArea     = (int)($_POST['id_area'] ?? 0);
 $idSucursal = (int)($_POST['id_sucursal'] ?? 0);
+$idSupervisor = (int)($_POST['id_supervisor_usuario'] ?? 0);
 $estado     = isset($_POST['estado']) ? (int)$_POST['estado'] : 1;
 
 $veTodo        = can_see_all_areas();
@@ -74,6 +75,11 @@ if ($idArea <= 0) {
 // Sucursal obligatoria
 if ($idSucursal <= 0) {
     redirError("Debe seleccionar una sucursal válida.", $BASE_URL, $idAgente);
+}
+
+// Supervisor obligatorio
+if ($idSupervisor <= 0) {
+    redirError("Debe seleccionar un supervisor válido.", $BASE_URL, $idAgente);
 }
 
 // Email corporativo
@@ -130,17 +136,17 @@ try {
             exit;
         }
 
-        $stmt = $conexion->prepare("EXEC dbo.$SP_CREAR ?, ?, ?, ?, ?, ?, ?, ?");
-        $stmt->execute([
-            null,
-            $nombre,
-            $email ?: null,
-            $celular ?: null,
-            $idArea,
-            null,
-            $idSucursal,
-            null
-        ]);
+$stmt = $conexion->prepare("EXEC dbo.$SP_CREAR ?, ?, ?, ?, ?, ?, ?, ?");
+$stmt->execute([
+    null,
+    $nombre,
+    $email ?: null,
+    $celular ?: null,
+    $idArea,
+    null,
+    $idSucursal,
+    $idSupervisor
+]);
 
         $_SESSION['flash_success'] = "Agente creado correctamente.";
     }
