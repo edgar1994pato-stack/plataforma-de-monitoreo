@@ -56,6 +56,8 @@ $areas = [];
 $sucursales = [];
 $supervisores = [];
 
+
+
 try {
 
   if ($veTodo) {
@@ -85,11 +87,11 @@ try {
 
   $sucursales = $st->fetchAll(PDO::FETCH_ASSOC);
 
-  /* =============================
+/* =============================
    CARGAR SUPERVISORES
 ============================= */
 $st = $conexion->prepare("
-  SELECT id_usuario, nombre_completo
+  SELECT id_usuario, nombre_completo, id_area
   FROM dbo.USUARIOS
   WHERE activo = 1
     AND id_rol = 4
@@ -242,16 +244,18 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
     SUPERVISOR *
   </label>
   <select name="id_supervisor_usuario"
-          class="form-select form-select-sm"
-          required>
-    <option value="0">Seleccione...</option>
-    <?php foreach($supervisores as $sp): ?>
-      <option value="<?= (int)$sp['id_usuario'] ?>"
-        <?= (int)$agente['id_supervisor_usuario'] === (int)$sp['id_usuario'] ? 'selected' : '' ?>>
-        <?= h($sp['nombre_completo']) ?>
-      </option>
-    <?php endforeach; ?>
-  </select>
+        id="id_supervisor_usuario"
+        class="form-select form-select-sm"
+        required>
+  <option value="0">Seleccione...</option>
+  <?php foreach($supervisores as $sp): ?>
+    <option value="<?= (int)$sp['id_usuario'] ?>"
+            data-area="<?= (int)$sp['id_area'] ?>"
+      <?= (int)$agente['id_supervisor_usuario'] === (int)$sp['id_usuario'] ? 'selected' : '' ?>>
+      <?= h($sp['nombre_completo']) ?>
+    </option>
+  <?php endforeach; ?>
+</select>
 </div>
 
 
@@ -276,6 +280,50 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
 <?php ob_start(); ?>
 <script>
+
+// 🔥 FILTRAR SUPERVISORES SEGÚN ÁREA
+function filtrarSupervisoresPorArea() {
+  const area = document.querySelector('select[name="id_area"]');
+  const supervisor = document.querySelector('select[name="id_supervisor_usuario"]');
+
+  if (!area || !supervisor) return;
+
+  const areaSeleccionada = area.value;
+  const valorActualSupervisor = supervisor.value;
+  const opciones = supervisor.querySelectorAll('option');
+  let supervisorVisible = false;
+
+  opciones.forEach(op => {
+    if (op.value === "0") {
+      op.hidden = false;
+      return;
+    }
+
+    const areaSupervisor = op.dataset.area || "";
+    const mostrar = areaSupervisor === areaSeleccionada;
+
+    op.hidden = !mostrar;
+
+    if (mostrar && op.value === valorActualSupervisor) {
+      supervisorVisible = true;
+    }
+  });
+
+  if (!supervisorVisible) {
+    supervisor.value = "0";
+  }
+}
+
+// 🔥 CUANDO CARGA LA PÁGINA
+document.addEventListener('DOMContentLoaded', function () {
+  const area = document.querySelector('select[name="id_area"]');
+
+  if (area) {
+    area.addEventListener('change', filtrarSupervisoresPorArea);
+    filtrarSupervisoresPorArea();
+  }
+});
+
 document.getElementById('formAgente').addEventListener('submit', function(e){
 
   const nombre   = document.querySelector('input[name="nombre_agente"]');
