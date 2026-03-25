@@ -85,9 +85,24 @@ try {
 
   $sucursales = $st->fetchAll(PDO::FETCH_ASSOC);
 
+  /* =============================
+   CARGAR SUPERVISORES
+============================= */
+$st = $conexion->prepare("
+  SELECT id_usuario, nombre_completo
+  FROM dbo.USUARIOS
+  WHERE activo = 1
+    AND id_rol = 4
+  ORDER BY nombre_completo
+");
+$st->execute();
+
+$supervisores = $st->fetchAll(PDO::FETCH_ASSOC);
+
 } catch (Throwable $e) {
   $areas = [];
   $sucursales = [];
+  $supervisores = [];
 }
 
 /* =============================
@@ -100,7 +115,7 @@ $agente = [
   'celular' => '',
   'id_area' => ($veTodo ? 0 : $idAreaSesion),
   'id_sucursal' => 0,
-  'estado' => 1
+  'estado' => 1,
   'id_supervisor_usuario' => 0,
 ];
 
@@ -220,6 +235,29 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         </select>
       </div>
 
+
+        <!-- Supervisor -->
+<div class="col-md-6">
+  <label class="form-label small fw-bold text-muted">
+    SUPERVISOR *
+  </label>
+  <select name="id_supervisor_usuario"
+          class="form-select form-select-sm"
+          required>
+    <option value="0">Seleccione...</option>
+    <?php foreach($supervisores as $sp): ?>
+      <option value="<?= (int)$sp['id_usuario'] ?>"
+        <?= (int)$agente['id_supervisor_usuario'] === (int)$sp['id_usuario'] ? 'selected' : '' ?>>
+        <?= h($sp['nombre_completo']) ?>
+      </option>
+    <?php endforeach; ?>
+  </select>
+</div>
+
+
+
+
+
       <div class="col-12 d-flex gap-2">
         <button type="submit"
                 class="btn btn-primary btn-sm shadow-sm">
@@ -245,6 +283,7 @@ document.getElementById('formAgente').addEventListener('submit', function(e){
   const celular  = document.querySelector('input[name="celular"]');
   const area     = document.querySelector('select[name="id_area"]');
   const sucursal = document.querySelector('select[name="id_sucursal"]');
+  const supervisor = document.querySelector('select[name="id_supervisor_usuario"]');
 
   if(nombre.value.trim().length < 3){
     alert('❌ El nombre debe tener mínimo 3 caracteres.');
@@ -266,6 +305,14 @@ document.getElementById('formAgente').addEventListener('submit', function(e){
     sucursal.focus();
     return;
   }
+
+
+  if(supervisor.value === "0"){
+  alert('❌ Debe seleccionar un supervisor.');
+  e.preventDefault();
+  supervisor.focus();
+  return;
+}
 
   if(email.value.trim() !== ''){
     const regexEmail = /^[a-zA-Z0-9._%+-]+@alfanet\.net\.ec$/;
