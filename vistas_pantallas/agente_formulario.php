@@ -54,6 +54,7 @@ if (!$esEdicion && !$puedeCrear) {
 ============================= */
 $areas = [];
 $sucursales = [];
+$supervisores = [];
 
 try {
 
@@ -100,6 +101,7 @@ $agente = [
   'id_area' => ($veTodo ? 0 : $idAreaSesion),
   'id_sucursal' => 0,
   'estado' => 1
+  'id_supervisor_usuario' => 0,
 ];
 
 if ($esEdicion) {
