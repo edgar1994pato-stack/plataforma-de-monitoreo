@@ -99,21 +99,19 @@ foreach ($permisosRaw as $p) {
 
 
 /* =========================================================
-   BLOQUE 5 - USUARIOS DEL ROL
+   BLOQUE 5 - USUARIOS DEL ROL (INCLUYE ESTADO ACTIVO)
 ========================================================= */
 
 $stmt = $conexion->prepare("
-SELECT id_usuario,nombre_completo
+SELECT id_usuario, nombre_completo, activo
 FROM USUARIOS
-WHERE activo = 1
-AND id_rol = ?
+WHERE id_rol = ?
 ORDER BY nombre_completo
 ");
 
 $stmt->execute([$idRolSeleccionado]);
 
 $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 
 /* =========================================================
    BLOQUE 6 - USUARIO SELECCIONADO
@@ -122,6 +120,10 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $idUsuarioSeleccionado = isset($_GET['usuario'])
 ? (int)$_GET['usuario']
 : ($usuarios[0]['id_usuario'] ?? 0);
+
+
+
+
 
 
 /* =========================================================
@@ -299,6 +301,69 @@ onchange="this.form.submit()">
 
 </div>
 
+
+<!-- =========================
+     ESTADO DEL USUARIO
+========================= -->
+
+<?php if ($idUsuarioSeleccionado > 0): ?>
+
+<?php
+$usuarioActual = null;
+foreach ($usuarios as $u) {
+    if ((int)$u['id_usuario'] === (int)$idUsuarioSeleccionado) {
+        $usuarioActual = $u;
+        break;
+    }
+}
+?>
+
+<?php if ($usuarioActual): ?>
+
+<div class="card mb-4">
+
+<div class="card-header fw-bold">
+Estado del Usuario
+</div>
+
+<div class="card-body">
+
+<form method="POST"
+      action="<?= BASE_URL ?>/cruds/proceso_estado_usuario.php">
+
+<input type="hidden"
+       name="id_usuario"
+       value="<?= (int)$usuarioActual['id_usuario'] ?>">
+
+<?php if ((int)$usuarioActual['activo'] === 1): ?>
+
+    <input type="hidden" name="activo" value="0">
+
+    <button class="btn btn-danger btn-sm"
+            onclick="return confirm('¿Desactivar usuario?')">
+        🔴 Desactivar
+    </button>
+
+<?php else: ?>
+
+    <input type="hidden" name="activo" value="1">
+
+    <button class="btn btn-success btn-sm"
+            onclick="return confirm('¿Activar usuario?')">
+        🟢 Activar
+    </button>
+
+<?php endif; ?>
+
+</form>
+
+</div>
+
+</div>
+
+<?php endif; ?>
+
+<?php endif; ?>
 
 
 <!-- =========================
