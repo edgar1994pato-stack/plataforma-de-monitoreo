@@ -28,6 +28,13 @@ $PAGE_ACTION_HTML = '
 </a>
 ';
 
+$PAGE_ACTION_HTML .= '
+<a class="btn btn-success btn-sm shadow-sm ms-2"
+   href="'.BASE_URL.'/vistas_pantallas/usuarios_formulario.php">
+<i class="bi bi-plus-circle"></i> Agregar usuario
+</a>
+';
+
 require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
 
