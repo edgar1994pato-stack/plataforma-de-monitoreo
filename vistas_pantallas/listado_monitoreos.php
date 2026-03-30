@@ -128,20 +128,43 @@ if ($fechaFin === '')    $fechaFin    = $ultimoDiaMes;
  * ========================================================= */
 $idAreaParam = null;
 
-// Si ve todo: respeta filtro GET si viene, si no -> null (todas)
+// 🔹 Rol global: mantiene comportamiento actual
 if ($esRolVeTodo) {
+
     $idAreaParam = ($idAreaGet > 0) ? $idAreaGet : null;
+
 } else {
-    // Si NO ve todo: FORZADO por sesión (ignora GET aunque lo cambien)
-    $idAreaParam = $idAreaSes;
+
+    $totalAreas = count($areasSesion);
+
+    // 🔹 Caso 1: usuario con UNA sola área
+    if ($totalAreas === 1) {
+
+        $idAreaParam = (int)$areasSesion[0];
+
+    } else {
+
+        // 🔹 Caso 2: usuario con MÚLTIPLES áreas
+        if ($idAreaGet > 0 && in_array($idAreaGet, $areasSesion)) {
+
+            // Usa solo el área seleccionada
+            $idAreaParam = $idAreaGet;
+
+        } else {
+
+            // Usa todas las áreas asignadas al usuario
+            $idAreaParam = implode(',', $areasSesion);
+
+        }
+    }
 }
 
+// 🔹 Otros filtros (NO TOCAR)
 $idColaParam   = ($idColaGet > 0) ? $idColaGet : null;
 $idAgenteParam = ($idAgenteGet > 0) ? $idAgenteGet : null;
 $svParam       = ($incluirSinVigente === 1) ? 1 : 0;
-$idMonitoreoParam = ($idMonitoreoGet > 0) ? $idMonitoreoGet : null; //
+$idMonitoreoParam = ($idMonitoreoGet > 0) ? $idMonitoreoGet : null;
 $gestorParam = ($gestorGet !== '') ? $gestorGet : null;
-
 
 /* =========================================================
  * 10) CARGA DE ÁREAS (SELECT)
@@ -256,24 +279,46 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         <input type="date" class="form-control form-control-sm" name="ff" value="<?= h($fechaFin) ?>" max="<?= h($hoy) ?>">
       </div>
 
-      <div class="col-12 col-md-3">
-        <label class="form-label small fw-bold text-muted">ÁREA</label>
-        <select class="form-select form-select-sm" name="area" id="f_area" <?= $esRolVeTodo ? '' : 'disabled' ?>>
-          <option value="0">Todas</option>
-          <?php foreach ($areas as $a): ?>
-            <?php
-              $idA = (int)$a['id_area'];
-              $sel = ($esRolVeTodo ? ($idAreaGet === $idA) : in_array($idA, $areasSesion)) ? 'selected' : '';
-            ?>
-            <option value="<?= $idA ?>" <?= $sel ?>><?= h($a['nombre_area']) ?></option>
-          <?php endforeach; ?>
-        </select>
+<div class="col-12 col-md-3">
+  <label class="form-label small fw-bold text-muted">ÁREA</label>
 
-        <?php if (!$esRolVeTodo): ?>
-          <!-- Forzado por backend, y además preserva GET en recargas -->
-          <input type="hidden" name="area" value="<?= (int)$idAreaSes ?>">
-        <?php endif; ?>
-      </div>
+  <?php
+  $totalAreas    = count($areasSesion);
+  $disableSelect = (!$esRolVeTodo && $totalAreas === 1);
+  ?>
+
+  <select class="form-select form-select-sm"
+          name="area"
+          id="f_area"
+          <?= $disableSelect ? 'disabled' : '' ?>>
+
+    <option value="0" <?= ($idAreaGet === 0 ? 'selected' : '') ?>>
+      <?= $esRolVeTodo ? 'Todas' : 'Mis áreas' ?>
+    </option>
+
+    <?php foreach ($areas as $a): ?>
+      <?php
+        $idA = (int)$a['id_area'];
+
+        if ($esRolVeTodo) {
+            $sel = ($idAreaGet === $idA) ? 'selected' : '';
+        } elseif ($totalAreas === 1) {
+            $sel = ((int)$areasSesion[0] === $idA) ? 'selected' : '';
+        } else {
+            $sel = ($idAreaGet === $idA) ? 'selected' : '';
+        }
+      ?>
+      <option value="<?= $idA ?>" <?= $sel ?>>
+        <?= h($a['nombre_area']) ?>
+      </option>
+    <?php endforeach; ?>
+
+  </select>
+
+  <?php if (!$esRolVeTodo && $totalAreas === 1): ?>
+    <input type="hidden" name="area" value="<?= (int)$areasSesion[0] ?>">
+  <?php endif; ?>
+</div>
 
       <div class="col-12 col-md-3">
         <label class="form-label small fw-bold text-muted">COLA</label>
