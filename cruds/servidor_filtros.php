@@ -33,9 +33,21 @@ function h($str) {
    CONTEXTO DE SEGURIDAD
 ========================================================= */
 $veTodo = can_see_all_areas();
-$idAreaSesion = (int)($_SESSION['id_area'] ?? 0);
+$areasSesion = $_SESSION['areas'] ?? [];
 
-if (!$veTodo && $idAreaSesion <= 0) {
+if (!is_array($areasSesion)) {
+    $areasSesion = [];
+}
+
+$areasSesion = array_values(array_unique(array_filter(array_map(
+    static fn($v) => (int)$v,
+    $areasSesion
+), static fn($v) => $v > 0)));
+
+// 🔥 AGREGA ESTA LÍNEA
+$idAreaSesion = !empty($areasSesion) ? (int)$areasSesion[0] : 0;
+
+if (!$veTodo && empty($areasSesion)) {
     json_error('Acceso denegado: usuario sin área asignada.', 403);
 }
 
@@ -45,16 +57,44 @@ if (!$veTodo && $idAreaSesion <= 0) {
  * - Si NO ve todo: ignora GET y toma sesión
  */
 function area_effective_from_get(string $key = 'id_area'): int {
-    global $veTodo, $idAreaSesion;
+    global $veTodo, $areasSesion;
+
     $idAreaGet = (int)($_GET[$key] ?? 0);
-    return $veTodo ? $idAreaGet : $idAreaSesion;
+
+    if ($veTodo) {
+        return $idAreaGet;
+    }
+
+    if (!empty($areasSesion)) {
+        return (int)$areasSesion[0];
+    }
+
+    return 0;
 }
+function areas_effective_from_get(string $key = 'id_area'): array {
+    global $veTodo;
+
+    $raw = trim((string)($_GET[$key] ?? ''));
+
+    if ($raw === '') return [];
+
+    if (strpos($raw, ',') !== false) {
+        return array_values(array_filter(array_map(
+            static fn($v) => (int)$v,
+            explode(',', $raw)
+        ), static fn($v) => $v > 0));
+    }
+
+    $id = (int)$raw;
+    return ($id > 0) ? [$id] : [];
+}
+
 
 /**
  * Valida que una cola pertenezca al área efectiva cuando NO ve todo
  */
 function enforce_cola_in_area(int $idCola): void {
-    global $conexion, $veTodo, $idAreaSesion;
+    global $conexion, $veTodo, $areasSesion;
 
     if ($veTodo) return;
 
@@ -67,8 +107,8 @@ function enforce_cola_in_area(int $idCola): void {
     $st->execute([$idCola]);
     $idAreaDb = (int)($st->fetchColumn() ?: 0);
 
-    if ($idAreaDb <= 0 || $idAreaDb !== $idAreaSesion) {
-        json_error('Acceso denegado: la cola no pertenece a tu área.', 403);
+    if ($idAreaDb <= 0 || !in_array($idAreaDb, $areasSesion, true)) {
+        json_error('Acceso denegado: la cola no pertenece a tus áreas.', 403);
     }
 }
 
@@ -77,13 +117,16 @@ function enforce_cola_in_area(int $idCola): void {
    GET: ?tipo=agentes&id_area=#
 =========================== */
 if ($tipo === 'agentes') {
-    $id_area = area_effective_from_get('id_area');
-    if ($id_area <= 0) json_ok([]);
+
+    $areas = areas_effective_from_get('id_area');
+    if (empty($areas)) json_ok([]);
+
+    $placeholders = implode(',', array_fill(0, count($areas), '?'));
 
     $sql = "
         SELECT A.id_agente_int, A.nombre_agente
         FROM dbo.AGENTES A
-        WHERE A.id_area = ?
+        WHERE A.id_area IN ($placeholders)
           AND ISNULL(A.estado,1) = 1
           AND NOT EXISTS (
                 SELECT 1
@@ -97,7 +140,7 @@ if ($tipo === 'agentes') {
     ";
 
     $stmt = $conexion->prepare($sql);
-    $stmt->execute([$id_area]);
+    $stmt->execute($areas);
 
     json_ok($stmt->fetchAll(PDO::FETCH_ASSOC));
 }
@@ -108,18 +151,22 @@ if ($tipo === 'agentes') {
    GET: ?tipo=colas&id_area=#
 =========================== */
 if ($tipo === 'colas') {
-    $id_area = area_effective_from_get('id_area');
-    if ($id_area <= 0) json_ok([]);
+
+    $areas = areas_effective_from_get('id_area');
+    if (empty($areas)) json_ok([]);
+
+    $placeholders = implode(',', array_fill(0, count($areas), '?'));
 
     $sql = "
         SELECT id_cola, nombre_cola
         FROM dbo.COLAS
-        WHERE id_area = ?
+        WHERE id_area IN ($placeholders)
           AND fecha_fin IS NULL
         ORDER BY nombre_cola
     ";
+
     $stmt = $conexion->prepare($sql);
-    $stmt->execute([$id_area]);
+    $stmt->execute($areas);
 
     json_ok($stmt->fetchAll(PDO::FETCH_ASSOC));
 }

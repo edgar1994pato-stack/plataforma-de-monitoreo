@@ -524,6 +524,7 @@ const fAgente = document.getElementById('f_agente');
 
 const selectedCola   = <?= (int)$idColaGet ?>;
 const selectedAgente = <?= (int)$idAgenteGet ?>;
+const AREAS_USUARIO  = <?= json_encode($areasSesion) ?>;
 
 function getAreaActual(){
   const v = parseInt((fArea?.value || '0'), 10);
@@ -532,10 +533,19 @@ function getAreaActual(){
 
 async function cargarColas(idArea){
   fCola.innerHTML = '<option value="0">Todas</option>';
-  if(!idArea || idArea <= 0) return;
+
+  let paramArea = '';
+
+  if (idArea > 0) {
+    paramArea = idArea;
+  } else {
+    paramArea = AREAS_USUARIO.join(',');
+  }
+
+  if (!paramArea) return;
 
   try{
-    const r = await fetch(`${BASE_URL}/cruds/servidor_filtros.php?tipo=colas&id_area=${idArea}`);
+    const r = await fetch(`${BASE_URL}/cruds/servidor_filtros.php?tipo=colas&id_area=${paramArea}`);
     const data = await r.json();
 
     data.forEach(d => {
@@ -552,10 +562,19 @@ async function cargarColas(idArea){
 
 async function cargarAgentes(idArea){
   fAgente.innerHTML = '<option value="0">Todos</option>';
-  if(!idArea || idArea <= 0) return;
+
+  let paramArea = '';
+
+  if (idArea > 0) {
+    paramArea = idArea;
+  } else {
+    paramArea = AREAS_USUARIO.join(',');
+  }
+
+  if (!paramArea) return;
 
   try{
-    const r = await fetch(`${BASE_URL}/cruds/servidor_filtros.php?tipo=agentes&id_area=${idArea}`);
+    const r = await fetch(`${BASE_URL}/cruds/servidor_filtros.php?tipo=agentes&id_area=${paramArea}`);
     const data = await r.json();
 
     data.forEach(a => {
@@ -575,7 +594,6 @@ const areaInicial = getAreaActual();
 cargarColas(areaInicial);
 cargarAgentes(areaInicial);
 
-// Solo si el select está habilitado (rol ve todo) se escucha change
 fArea?.addEventListener('change', () => {
   const idArea = getAreaActual();
 
@@ -588,7 +606,6 @@ fArea?.addEventListener('change', () => {
   cargarColas(idArea);
   cargarAgentes(idArea);
 
-  // 🔥 ESTA ES LA LÍNEA CLAVE
   const form = fArea.closest('form');
   if (form) {
     form.submit();
