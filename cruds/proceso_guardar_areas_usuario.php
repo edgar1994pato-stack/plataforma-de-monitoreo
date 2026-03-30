@@ -74,6 +74,22 @@ $idUsuario,
 $conexion->commit();
 
 $_SESSION['flash_ok'] = "Áreas actualizadas correctamente.";
+/* =========================================
+   ACTUALIZAR SESIÓN DE ÁREAS
+========================================= */
+
+if ((int)$_SESSION['id_usuario'] === (int)$idUsuario) {
+
+    $stmt = $conexion->prepare("
+        SELECT id_area
+        FROM USUARIO_AREA
+        WHERE id_usuario = ?
+    ");
+
+    $stmt->execute([$idUsuario]);
+
+    $_SESSION['areas'] = $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
 
 } catch (Throwable $e) {
 
