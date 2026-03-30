@@ -51,6 +51,16 @@ $idRol     = (int)($_SESSION['id_rol'] ?? 0);
 
 
 $areasSesion = $_SESSION['areas'] ?? [];
+
+if (!is_array($areasSesion)) {
+    $areasSesion = [];
+}
+
+$areasSesion = array_values(array_unique(array_filter(array_map(
+    static fn($v) => (int)$v,
+    $areasSesion
+), static fn($v) => $v > 0)));
+
 $idAreaSes = (!empty($areasSesion)) ? implode(',', $areasSesion) : null;
 
 /* =========================================================
@@ -165,6 +175,9 @@ $idAgenteParam = ($idAgenteGet > 0) ? $idAgenteGet : null;
 $svParam       = ($incluirSinVigente === 1) ? 1 : 0;
 $idMonitoreoParam = ($idMonitoreoGet > 0) ? $idMonitoreoGet : null;
 $gestorParam = ($gestorGet !== '') ? $gestorGet : null;
+
+
+
 
 /* =========================================================
  * 10) CARGA DE ÁREAS (SELECT)
