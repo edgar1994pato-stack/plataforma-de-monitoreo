@@ -48,7 +48,10 @@ $BASE_URL = BASE_URL;
  * ========================================================= */
 $idUsuario = (int)($_SESSION['id_usuario'] ?? 0);
 $idRol     = (int)($_SESSION['id_rol'] ?? 0);
-$idAreaSes = !empty($_SESSION['areas']) ? implode(',', $_SESSION['areas']) : 0;
+
+
+$areasSesion = $_SESSION['areas'] ?? [];
+$idAreaSes = (!empty($areasSesion)) ? implode(',', $areasSesion) : null;
 
 /* =========================================================
  * 5) PERMISOS (VIENEN SOLO DE seguridad.php)
@@ -57,7 +60,7 @@ $esRolVeTodo    = can_see_all_areas(); // centralizado
 $puedeModificar = can_correct();       // centralizado
 
 /* Si NO ve todo, debe tener área asignada */
-if (!$esRolVeTodo && $idAreaSes <= 0) {
+if (!$esRolVeTodo && empty($areasSesion)) {
     http_response_code(403);
     die('Tu usuario no tiene un área asignada. Contacta al administrador.');
 }
@@ -130,7 +133,7 @@ if ($esRolVeTodo) {
     $idAreaParam = ($idAreaGet > 0) ? $idAreaGet : null;
 } else {
     // Si NO ve todo: FORZADO por sesión (ignora GET aunque lo cambien)
-    $idAreaParam = ($idAreaSes > 0) ? $idAreaSes : null;
+    $idAreaParam = $idAreaSes;
 }
 
 $idColaParam   = ($idColaGet > 0) ? $idColaGet : null;
@@ -146,17 +149,42 @@ $gestorParam = ($gestorGet !== '') ? $gestorGet : null;
 $areas = [];
 try {
     if ($esRolVeTodo) {
-        $res = $conexion->query("SELECT id_area, nombre_area FROM dbo.AREAS WHERE estado=1 ORDER BY nombre_area");
+
+        $res = $conexion->query("
+            SELECT id_area, nombre_area 
+            FROM dbo.AREAS 
+            WHERE estado=1 
+            ORDER BY nombre_area
+        ");
         $areas = $res->fetchAll(PDO::FETCH_ASSOC);
+
     } else {
-        $stmtA = $conexion->prepare("SELECT id_area, nombre_area FROM dbo.AREAS WHERE estado=1 AND id_area = ? ORDER BY nombre_area");
-        $stmtA->execute([$idAreaSes]);
-        $areas = $stmtA->fetchAll(PDO::FETCH_ASSOC);
+
+        $areasSesion = $_SESSION['areas'] ?? [];
+
+        if (!empty($areasSesion)) {
+
+            $placeholders = implode(',', array_fill(0, count($areasSesion), '?'));
+
+            $stmtA = $conexion->prepare("
+                SELECT id_area, nombre_area 
+                FROM dbo.AREAS 
+                WHERE estado=1 
+                AND id_area IN ($placeholders)
+                ORDER BY nombre_area
+            ");
+
+            $stmtA->execute($areasSesion);
+            $areas = $stmtA->fetchAll(PDO::FETCH_ASSOC);
+
+        } else {
+            $areas = [];
+        }
+
     }
 } catch (Throwable $e) {
     $areas = [];
 }
-
 /* =========================================================
  * 11) EJECUTAR SP LISTADO
  * ========================================================= */
@@ -235,7 +263,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
           <?php foreach ($areas as $a): ?>
             <?php
               $idA = (int)$a['id_area'];
-              $sel = ($esRolVeTodo ? ($idAreaGet === $idA) : ($idAreaSes === $idA)) ? 'selected' : '';
+              $sel = ($esRolVeTodo ? ($idAreaGet === $idA) : in_array($idA, $areasSesion)) ? 'selected' : '';
             ?>
             <option value="<?= $idA ?>" <?= $sel ?>><?= h($a['nombre_area']) ?></option>
           <?php endforeach; ?>
