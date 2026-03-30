@@ -155,7 +155,7 @@ if ($esRolVeTodo) {
     } else {
 
         // 🔹 Caso 2: usuario con MÚLTIPLES áreas
-        if ($idAreaGet > 0 && in_array($idAreaGet, $areasSesion)) {
+        if ($idAreaGet > 0 && in_array((int)$idAreaGet, $areasSesion, true)) {
 
             // Usa solo el área seleccionada
             $idAreaParam = $idAreaGet;
@@ -195,8 +195,6 @@ try {
         $areas = $res->fetchAll(PDO::FETCH_ASSOC);
 
     } else {
-
-        $areasSesion = $_SESSION['areas'] ?? [];
 
         if (!empty($areasSesion)) {
 
@@ -589,6 +587,12 @@ fArea?.addEventListener('change', () => {
 
   cargarColas(idArea);
   cargarAgentes(idArea);
+
+  // 🔥 ESTA ES LA LÍNEA CLAVE
+  const form = fArea.closest('form');
+  if (form) {
+    form.submit();
+  }
 });
 </script>
 <?php
