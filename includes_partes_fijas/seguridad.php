@@ -64,19 +64,8 @@ function require_permission(string $codigo): void {
  * ========================================================= */
 
 function role_can_see_all_areas(): bool {
-
-    if (has_permission('ver_todas_areas')) {
-        return true;
-    }
-
-    $rol = (int)($_SESSION['id_rol'] ?? 0);
-
-    return in_array($rol, [
-        ROLE_ADMIN,
-        ROLE_COORD_QA,
-        ROLE_AGENTE_QA,
-        ROLE_GERENTE
-    ], true);
+    // 🔥 Ahora solo depende del permiso dinámico
+    return has_permission('ver_todas_areas');
 }
 
 function role_can_create(): bool {
