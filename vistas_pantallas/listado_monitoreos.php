@@ -427,7 +427,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
             <th style="width:170px;">Interacción</th>
             <th style="width:170px;">Fecha</th>
             <th>Agente</th>
-            <th>Cola</th>
+            <th>Area</th>
             <th>Agente de Monitoreo</th>
             <th style="width:110px;">Nota</th>
             <th style="width:130px;">Estado</th>
