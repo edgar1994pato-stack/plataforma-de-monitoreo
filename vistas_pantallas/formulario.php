@@ -237,7 +237,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         </div>
 
         <div class="col-md-3">
-          <label class="form-label small fw-bold text-muted">ID TICKET / INTERACCIÓN <span class="text-danger">*</span></label>
+          <label class="form-label small fw-bold text-muted">ID TICKET ODOO <span class="text-danger">*</span></label>
           <input <?= $READONLY_ATTR ?> type="text" name="id_interaccion" id="id_interaccion"
                  class="form-control form-control-sm" placeholder="ID TICKET" required>
         </div>
@@ -255,9 +255,9 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         </div>
 
         <div class="col-md-6">
-          <label class="form-label small fw-bold text-muted">LINK DE LA INTERACCIÓN <span class="text-danger">*</span></label>
+          <label class="form-label small fw-bold text-muted">ID GENESYS/WOLKVOX <span class="text-danger">*</span></label>
           <input <?= $READONLY_ATTR ?> type="url" name="link_evidencia" id="link_evidencia"
-                 class="form-control form-control-sm" placeholder="https://..." required>
+                 class="form-control form-control-sm" placeholder="" required>
         </div>
 
 <!-- HORA INTERACCIÓN (oculto pero funcional) -->
