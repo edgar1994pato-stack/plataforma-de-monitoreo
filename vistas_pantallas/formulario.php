@@ -387,7 +387,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         class="form-control"
         rows="3"
         placeholder="Escriba aquí los detalles de la auditoría..."
-        maxlength="500"
+        maxlength="10000"
         required></textarea>
 
       <div class="help-mini mt-1">Recomendado: mínimo 10 caracteres.</div>
