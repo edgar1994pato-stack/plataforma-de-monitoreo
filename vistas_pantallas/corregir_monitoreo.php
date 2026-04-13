@@ -993,26 +993,22 @@ function recalcularScoreEnVivo(){
   else if (impulsorSI) {
     nota = 100;
   }
-  // 🟢 3. Cálculo normal
+  // 🟢 3. Nuevo cálculo
   else {
-    let posibles = 0;
-    let obtenidos = 0;
+    let puntosFallados = 0;
 
     items.forEach(x => {
       if (
         (x.tipo === 'CRITICO' || x.tipo === 'NORMAL') &&
-        x.respuesta !== 'NO_APLICA' &&
-        x.respuesta !== 'NA' &&
-        x.respuesta !== 'N/A'
+        x.respuesta === 'NO'
       ) {
-        posibles += x.peso;
-        if (x.respuesta === 'SI') {
-          obtenidos += x.peso;
-        }
+        puntosFallados += x.peso;
       }
     });
 
-    nota = (posibles > 0) ? (obtenidos / posibles) * 100 : 0;
+    nota = 100 - puntosFallados;
+
+    if (nota < 0) nota = 0;
   }
 
   const notaFmt = (Math.round(nota * 10) / 10).toFixed(1);
