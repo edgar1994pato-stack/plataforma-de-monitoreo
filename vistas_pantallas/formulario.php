@@ -1105,6 +1105,47 @@ if (!/^09\d{8}$/.test(telefono.value)) {
     respuestas.push({ id_pregunta: parseInt(m[0]), respuesta: r.value });
   });
 
+  const preguntasObligatorias = Array.from(document.querySelectorAll('.pregunta-card'))
+  .filter(card => {
+    const radios = Array.from(card.querySelectorAll('.respuesta'));
+    if (!radios.length) return false;
+
+    const esImpulsor = radios.every(r => (r.dataset.tipo || '').toUpperCase() === 'IMPULSOR');
+    return !esImpulsor;
+  });
+
+const seccionesFaltantes = new Set();
+
+preguntasObligatorias.forEach(card => {
+  const respondida = card.querySelector('.respuesta:checked');
+  if (respondida) return;
+
+  const pane = card.closest('.tab-pane');
+  let nombreSeccion = 'Sección sin nombre';
+
+  if (pane && pane.id) {
+    const link = document.querySelector(`.list-group a[href="#${pane.id}"]`);
+    if (link) {
+      nombreSeccion = link.textContent.trim().replace(/\s+/g, ' ');
+    } else if (pane.dataset.seccion) {
+      nombreSeccion = pane.dataset.seccion.trim();
+    }
+  }
+
+  seccionesFaltantes.add(nombreSeccion);
+});
+
+if (seccionesFaltantes.size > 0) {
+  alert(
+    '❌ Debe responder todas las preguntas antes de guardar.\n\n' +
+    'Secciones pendientes:\n- ' +
+    Array.from(seccionesFaltantes).join('\n- ')
+  );
+  e.preventDefault();
+  return;
+}
+
+
   if(!hiddenAgente.value || !hiddenCola.value){
     alert('❌ Debe seleccionar Área, Cola y Agente.');
     e.preventDefault();
