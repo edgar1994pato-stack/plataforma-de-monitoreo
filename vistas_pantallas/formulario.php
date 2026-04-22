@@ -186,6 +186,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
             <option value="REMOTO">Remoto</option>
             <option value="PRESENCIAL">Presencial</option>
             <option value="FANTASMA">Fantasma</option>
+            <option value="FOCALIZADO">Focalizado</option>
             
           </select>
 
