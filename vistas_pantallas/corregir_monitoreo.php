@@ -448,7 +448,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         class="form-control"
         rows="2"
         placeholder="Explique claramente por qué se corrige este monitoreo..."
-        maxlength="500"
+        maxlength="5000"
         required></textarea>
       <div class="help-mini mt-1">Obligatorio. Recomendado mínimo 10 caracteres.</div>
     </div>
@@ -493,7 +493,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         id="descripcion_final"
         class="form-control"
         rows="3"
-        maxlength="500"
+        maxlength="5000"
         required><?= h((string)$version['descripcion_final']) ?></textarea>
       <div class="help-mini mt-1"></div>
     </div>
