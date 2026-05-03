@@ -209,7 +209,14 @@ $READONLY_ATTR = ($soloLectura || !$puedeCorregir) ? 'disabled' : '';
    ============================================================ */
 $PAGE_TITLE    = "✏️ Corregir Monitoreo";
 
+$paramsVolver = $_GET;
+unset($paramsVolver['id']);
+
 $urlVolver = $BASE_URL . "/vistas_pantallas/listado_monitoreos.php";
+if (!empty($paramsVolver)) {
+  $urlVolver .= "?" . http_build_query($paramsVolver);
+} 
+
 $urlPdf    = $BASE_URL . "/cruds/generar_pdf_monitoreo.php?id=" . $idVersionBase . "&t=" . time();
 
 $PAGE_ACTION_HTML = '
