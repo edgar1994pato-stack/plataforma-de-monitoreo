@@ -1,7 +1,7 @@
 <?php
 /**
  * /vistas_pantallas/corregir_monitoreo.php
- * ✅ 100% funcional con tu stack actual (diseño_unificado + servidor_filtros.php)
+ * (diseño_unificado + servidor_filtros.php)
  *
  * OBJETIVO:
  * - Mostrar la “foto” del monitoreo
@@ -529,7 +529,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
 <?php
 /* ============================================================
-   SCRIPTS (sin cambios funcionales)
+   SCRIPTS
    ============================================================ */
 ob_start();
 ?>
@@ -538,6 +538,7 @@ const BASE_URL = <?= json_encode($BASE_URL) ?>;
 const SOLO_LECTURA = <?= json_encode($soloLectura) ?>;
 
 const ID_COLA = <?= (int)$idCola ?>;
+const ID_AREA = <?= (int)$idArea ?>;
 const RESPUESTAS_ANTERIORES = <?= json_encode($mapRespuestas, JSON_UNESCAPED_UNICODE) ?>;
 
 const seccionPreguntas = document.getElementById('seccion_preguntas');
@@ -993,20 +994,44 @@ function recalcularScoreEnVivo(){
   else if (impulsorSI) {
     nota = 100;
   }
-  // 🟢 3. Nuevo cálculo
+  // 🟢 3. Cálculo por área
   else {
+    let puntosPosibles = 0;
+    let puntosObtenidos = 0;
     let puntosFallados = 0;
 
     items.forEach(x => {
-      if (
-        (x.tipo === 'CRITICO' || x.tipo === 'NORMAL') &&
-        x.respuesta === 'NO'
-      ) {
-        puntosFallados += x.peso;
+      if (x.tipo === 'CRITICO' || x.tipo === 'NORMAL') {
+        if (x.respuesta !== 'NO_APLICA') {
+          puntosPosibles += x.peso;
+
+          if (x.respuesta === 'SI') {
+            puntosObtenidos += x.peso;
+          }
+
+          if (x.respuesta === 'NO') {
+            puntosFallados += x.peso;
+          }
+        }
       }
     });
 
-    nota = 100 - puntosFallados;
+    /*
+      🔥 CAMBIO:
+      - ATENCIÓN AL CLIENTE (3)
+      - VENTAS (7)
+      usan:
+          Nota = puntos_obtenidos / puntos_posibles * 100
+      - Otras áreas:
+          Nota = 100 - puntos_fallados
+    */
+    if (ID_AREA === 3 || ID_AREA === 7) {
+      nota = puntosPosibles > 0
+        ? (puntosObtenidos / puntosPosibles) * 100
+        : 0;
+    } else {
+      nota = 100 - puntosFallados;
+    }
 
     if (nota < 0) nota = 0;
   }
@@ -1028,22 +1053,6 @@ function recalcularScoreEnVivo(){
 
   chip.title = `Nota: ${notaFmt}% | Umbral: ${UMBRAL}%`;
 }
-
-
-document.addEventListener('change', (e) => {
-  if (SOLO_LECTURA) return;
-  if (!e.target.classList.contains('respuesta')) return;
-
-  const card = e.target.closest('.pregunta-card');
-  if (card) {
-    card.className = `card mb-3 shadow-sm border-0 pregunta-card estado-${e.target.dataset.estado}`;
-  }
-
-  aplicarReglaImpulsorVsCritico();
-  recalcularScoreEnVivo();
-  marcarSeccionesConEvaluadas(); // ✅ ACTUALIZA EL MENÚ DE SECCIONES
-});
-
 
 document.addEventListener('click', (e) => {
   if (SOLO_LECTURA) return;
