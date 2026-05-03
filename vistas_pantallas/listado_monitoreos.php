@@ -462,7 +462,9 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
               $esCorregido   = ($numeroVersion > 1);
 
               $urlPdf       = $BASE_URL . "/cruds/generar_pdf_monitoreo.php?id=" . $idAccion . "&t=" . time();
-              $urlModificar = $BASE_URL . "/vistas_pantallas/corregir_monitoreo.php?id=" . $idAccion;
+              $paramsRetorno = $_GET;
+              $paramsRetorno['id'] = $idAccion;
+              $urlModificar = $BASE_URL . "/vistas_pantallas/corregir_monitoreo.php?" . http_build_query($paramsRetorno);
             ?>
             <tr>
 <td class="fw-bold text-primary">
