@@ -98,9 +98,9 @@ $idSeccionGet = isset($_GET['seccion']) ? (int)$_GET['seccion'] : 0;
  *  - TODOS (default)
  *  - VIGENTE / ANULADA / VENCIDA / NO_VIGENTE / SIN_PONDERACION (si tu SP lo devuelve)
  */
-$ev = strtoupper(trim((string)($_GET['ev'] ?? 'TODOS')));
+$ev = strtoupper(trim((string)($_GET['ev'] ?? 'VIGENTE')));
 $validEV = ['TODOS','VIGENTE','ANULADA'];
-if (!in_array($ev, $validEV, true)) $ev = 'TODOS';
+if (!in_array($ev, $validEV, true)) $ev = 'VIGENTE';
 
 /* =========================================================
  * CONTROL DE ÁREA por rol (backend)
