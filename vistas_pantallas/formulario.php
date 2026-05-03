@@ -1021,20 +1021,46 @@ function recalcularScoreEnVivo(){
   else if (impulsorSI) {
     nota = 100;
   }
-  // 🟢 3. Nuevo cálculo
+  // 🟢 3. Cálculo por área
   else {
+    const idAreaActual = parseInt(document.getElementById('sel_area')?.value || '0');
+
+    let puntosPosibles = 0;
+    let puntosObtenidos = 0;
     let puntosFallados = 0;
 
     items.forEach(x => {
-      if (
-        (x.tipo === 'CRITICO' || x.tipo === 'NORMAL') &&
-        x.respuesta === 'NO'
-      ) {
-        puntosFallados += x.peso;
+      if (x.tipo === 'CRITICO' || x.tipo === 'NORMAL') {
+        if (x.respuesta !== 'NO_APLICA') {
+          puntosPosibles += x.peso;
+
+          if (x.respuesta === 'SI') {
+            puntosObtenidos += x.peso;
+          }
+
+          if (x.respuesta === 'NO') {
+            puntosFallados += x.peso;
+          }
+        }
       }
     });
 
-    nota = 100 - puntosFallados;
+    /*
+      🔥 CAMBIO:
+      - ATENCIÓN AL CLIENTE (3)
+      - VENTAS (7)
+      usan:
+          Nota = puntos_obtenidos / puntos_posibles * 100
+      - Otras áreas:
+          Nota = 100 - puntos_fallados
+    */
+    if (idAreaActual === 3 || idAreaActual === 7) {
+      nota = puntosPosibles > 0
+        ? (puntosObtenidos / puntosPosibles) * 100
+        : 0;
+    } else {
+      nota = 100 - puntosFallados;
+    }
 
     if (nota < 0) nota = 0;
   }
