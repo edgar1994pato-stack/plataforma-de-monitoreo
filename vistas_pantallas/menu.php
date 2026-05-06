@@ -227,6 +227,36 @@ $textoScope = can_see_all_areas()
 </div>
 <?php endif; ?>
 
+
+
+
+<?php if (has_permission('ver_modulo_planificacion')): ?>
+<!-- TARJETA: PLANIFICACIÓN QA -->
+<div class="col-md-4">
+    <div class="card shadow-sm h-100 border-primary">
+        <div class="card-body text-center">
+            <i class="bi bi-calendar-check fs-1 text-primary"></i>
+            <h5 class="mt-3 fw-bold">Planificación QA</h5>
+            <p class="text-muted small">
+                Carga y seguimiento de planificación mensual de monitoreos.
+            </p>
+            <a href="<?= BASE_URL ?>/vistas_pantallas/cargar_planificacion.php"
+               class="btn btn-primary btn-sm fw-bold">
+                Ingresar
+            </a>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+
+
+
+
+
+
+
+
 <?php if (has_permission('ver_modulo_roles')): ?>
 <!-- TARJETA: ADMINISTRACIÓN DE ROLES -->
 <div class="col-md-4">
