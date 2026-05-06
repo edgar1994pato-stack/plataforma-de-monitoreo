@@ -3,14 +3,12 @@ declare(strict_types=1);
 
 /**
  * /cruds/proceso_cargar_planificacion.php
- * =========================================================
- * BLOQUE 1:
- * - Recibe Excel
- * - Valida columnas
- * - Limpia staging
- * - Inserta en PLANIFICACION_CARGA_EXCEL
- * - NO toca monitoreos reales
- * - NO toca tabla final todavía
+ * Carga real de planificación QA:
+ * - Lee Excel
+ * - Inserta en staging
+ * - Homologa id_agente
+ * - Limpia tabla final por período cargado
+ * - Inserta registros válidos en PLANIFICACION_MONITOREO
  */
 
 require_once __DIR__ . '/../config_ajustes/app.php';
@@ -57,13 +55,18 @@ require_once $autoloadPath;
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
+$insertadasStaging = 0;
+$insertadasFinal = 0;
+$pendientes = [];
+$periodosCargados = [];
+
 try {
     $spreadsheet = IOFactory::load($tmpPath);
     $sheet = $spreadsheet->getActiveSheet();
     $filas = $sheet->toArray(null, true, true, true);
 
     if (count($filas) < 2) {
-        throw new Exception('El Excel no contiene datos para cargar.');
+        throw new Exception('El Excel no contiene datos.');
     }
 
     $encabezadosEsperados = [
@@ -86,9 +89,11 @@ try {
 
     $conexion->beginTransaction();
 
+    // 1. Limpiar staging
     $conexion->exec("TRUNCATE TABLE dbo.PLANIFICACION_CARGA_EXCEL");
 
-    $sqlInsert = "
+    // 2. Insertar Excel en staging
+    $stmtInsertStaging = $conexion->prepare("
         INSERT INTO dbo.PLANIFICACION_CARGA_EXCEL
         (
             monitor,
@@ -109,15 +114,9 @@ try {
             :cantidad,
             :periodo
         )
-    ";
-
-    $stmtInsert = $conexion->prepare($sqlInsert);
-
-    $insertadas = 0;
-    $errores = [];
+    ");
 
     foreach ($filas as $numeroFila => $fila) {
-
         if ($numeroFila === 1) {
             continue;
         }
@@ -142,12 +141,15 @@ try {
             continue;
         }
 
-        if (!is_numeric($cantidad)) {
-            $errores[] = "Fila {$numeroFila}: cantidad inválida.";
-            continue;
+        if (!is_numeric($cantidad) || (int)$cantidad <= 0) {
+            throw new Exception("Fila {$numeroFila}: cantidad inválida.");
         }
 
-        $stmtInsert->execute([
+        if (!preg_match('/^\d{4}-\d{2}$/', $periodo)) {
+            throw new Exception("Fila {$numeroFila}: periodo inválido. Formato esperado YYYY-MM.");
+        }
+
+        $stmtInsertStaging->execute([
             ':monitor'  => $monitor,
             ':asesor'   => $asesor,
             ':area'     => $area,
@@ -157,27 +159,89 @@ try {
             ':periodo'  => $periodo,
         ]);
 
-        $insertadas++;
+        $periodosCargados[$periodo] = true;
+        $insertadasStaging++;
     }
 
-    if (!empty($errores)) {
-        $conexion->rollBack();
-        throw new Exception(implode(' | ', $errores));
+    if ($insertadasStaging === 0) {
+        throw new Exception('No se insertó ninguna fila válida en staging.');
     }
+
+    // 3. Homologar id_agente
+    $conexion->exec("
+        UPDATE p
+        SET p.id_agente = a.id_agente_int
+        FROM dbo.PLANIFICACION_CARGA_EXCEL p
+        INNER JOIN dbo.AGENTES a
+            ON UPPER(LTRIM(RTRIM(a.nombre_agente))) COLLATE Latin1_General_CI_AI
+             = UPPER(LTRIM(RTRIM(p.asesor))) COLLATE Latin1_General_CI_AI
+    ");
+
+    // 4. Obtener pendientes sin id_agente
+    $stmtPend = $conexion->query("
+        SELECT DISTINCT asesor, area, sucursal
+        FROM dbo.PLANIFICACION_CARGA_EXCEL
+        WHERE id_agente IS NULL
+        ORDER BY area, asesor
+    ");
+
+    $pendientes = $stmtPend->fetchAll(PDO::FETCH_ASSOC);
+
+    // 5. Limpiar tabla final SOLO de los períodos cargados
+    $periodos = array_keys($periodosCargados);
+    $placeholders = implode(',', array_fill(0, count($periodos), '?'));
+
+    $stmtDeleteFinal = $conexion->prepare("
+        DELETE FROM dbo.PLANIFICACION_MONITOREO
+        WHERE periodo IN ($placeholders)
+    ");
+    $stmtDeleteFinal->execute($periodos);
+
+    // 6. Insertar tabla final solo registros con id_agente
+    $stmtInsertFinal = $conexion->prepare("
+        INSERT INTO dbo.PLANIFICACION_MONITOREO
+        (
+            periodo,
+            id_agente,
+            monitor,
+            asesor,
+            area,
+            sucursal,
+            tipo,
+            cantidad,
+            estado,
+            fecha_creacion
+        )
+        SELECT
+            periodo,
+            id_agente,
+            monitor,
+            asesor,
+            area,
+            sucursal,
+            tipo,
+            cantidad,
+            'ACTIVO',
+            GETDATE()
+        FROM dbo.PLANIFICACION_CARGA_EXCEL
+        WHERE id_agente IS NOT NULL
+    ");
+
+    $stmtInsertFinal->execute();
+    $insertadasFinal = $stmtInsertFinal->rowCount();
 
     $conexion->commit();
 
 } catch (Throwable $e) {
-
     if ($conexion->inTransaction()) {
         $conexion->rollBack();
     }
 
-    exit('❌ Error en carga staging: ' . h($e->getMessage()));
+    exit('❌ Error en carga de planificación: ' . h($e->getMessage()));
 }
 
 $PAGE_TITLE = "📅 Planificación QA";
-$PAGE_SUBTITLE = "Carga inicial a staging";
+$PAGE_SUBTITLE = "Resultado de carga automática";
 
 $PAGE_ACTION_HTML = '
 <a class="btn btn-outline-primary btn-sm shadow-sm"
@@ -191,25 +255,56 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
 <div class="card card-soft mb-4">
     <div class="card-header card-header-dark py-2 small">
-        <i class="bi bi-database-check me-2"></i>Resultado de carga staging
+        <i class="bi bi-database-check me-2"></i>Resultado de carga planificación
     </div>
 
     <div class="card-body">
 
         <div class="alert alert-success">
-            ✅ Archivo cargado correctamente en staging:
+            ✅ Archivo procesado correctamente:
             <b><?= h($nombreOriginal) ?></b>
         </div>
 
-        <p class="mb-2">
-            Filas insertadas en <b>PLANIFICACION_CARGA_EXCEL</b>:
-            <span class="badge bg-success"><?= (int)$insertadas ?></span>
+        <p>
+            Filas cargadas en staging:
+            <span class="badge bg-primary"><?= (int)$insertadasStaging ?></span>
         </p>
 
-        <div class="alert alert-warning small">
-            Esta carga todavía <b>NO pasó a la tabla final</b>.
-            Solo se insertó en staging para validaciones.
-        </div>
+        <p>
+            Filas insertadas en planificación final:
+            <span class="badge bg-success"><?= (int)$insertadasFinal ?></span>
+        </p>
+
+        <?php if (!empty($pendientes)): ?>
+            <div class="alert alert-warning">
+                ⚠️ Registros no insertados en tabla final porque no tienen agente homologado.
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Asesor</th>
+                            <th>Área</th>
+                            <th>Sucursal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($pendientes as $p): ?>
+                            <tr>
+                                <td><?= h($p['asesor'] ?? '') ?></td>
+                                <td><?= h($p['area'] ?? '') ?></td>
+                                <td><?= h($p['sucursal'] ?? '') ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php else: ?>
+            <div class="alert alert-info">
+                ✅ Todos los registros fueron homologados correctamente.
+            </div>
+        <?php endif; ?>
 
         <a href="<?= BASE_URL ?>/vistas_pantallas/cargar_planificacion.php"
            class="btn btn-outline-primary btn-sm">
