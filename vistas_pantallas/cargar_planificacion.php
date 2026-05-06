@@ -42,7 +42,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         </div>
 
         <form method="POST"
-              action="<?= BASE_URL ?>/sql_base_de_datos/proceso_cargar_planificacion.php"
+              action="<?= BASE_URL ?>/cruds/proceso_cargar_planificacion.php"
               enctype="multipart/form-data">
 
             <div class="mb-3">
