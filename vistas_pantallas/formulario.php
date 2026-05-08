@@ -1049,12 +1049,13 @@ function recalcularScoreEnVivo(){
       🔥 CAMBIO:
       - ATENCIÓN AL CLIENTE (3)
       - VENTAS (7)
+      --RETENCION Y FIDELIZACIÓN (6)
       usan:
           Nota = puntos_obtenidos / puntos_posibles * 100
       - Otras áreas:
           Nota = 100 - puntos_fallados
     */
-    if (idAreaActual === 2 || idAreaActual === 3 || idAreaActual === 7) {
+    if (idAreaActual === 2 || idAreaActual === 3 || idAreaActual === 6 || idAreaActual === 7) {
       nota = puntosPosibles > 0
         ? (puntosObtenidos / puntosPosibles) * 100
         : 0;
