@@ -1048,7 +1048,7 @@ function recalcularScoreEnVivo(){
       - Otras áreas:
           Nota = 100 - puntos_fallados
     */
-    if (idAreaActual === 2 || idAreaActual === 3 || idAreaActual === 6 || idAreaActual === 7) {
+     if (idAreaActual === 3 || idAreaActual === 6 || idAreaActual === 7) {
       nota = puntosPosibles > 0
         ? (puntosObtenidos / puntosPosibles) * 100
         : 0;
@@ -1196,8 +1196,7 @@ if (seccionesFaltantes.size > 0) {
 
 
 /* reset */
-document.getElementById('btnReset').addEventListener('click', () => {
-  sessionStorage.removeItem('monitoreo_ts_inicio_iso');
+document.getElementById('btnReset')?.addEventListener('click', () => {
   location.reload();
 });
 </script>
