@@ -735,31 +735,24 @@ function toLocalISO(dt){
     + 'T' + pad(dt.getHours()) + ':' + pad(dt.getMinutes()) + ':' + pad(dt.getSeconds());
 }
 
-const KEY_TS_INICIO = 'monitoreo_ts_inicio_iso';
-let tsInicioISO = sessionStorage.getItem(KEY_TS_INICIO);
-
-if(!tsInicioISO){
-  tsInicioISO = toLocalISO(new Date());   // ✅ ahora LOCAL
-  sessionStorage.setItem(KEY_TS_INICIO, tsInicioISO);
-}
-
+const tsInicioISO = toLocalISO(new Date());
 const tsInicio = new Date(tsInicioISO);
 
-document.getElementById('ts_inicio').value = tsInicioISO;  // ✅ LOCAL
+document.getElementById('ts_inicio').value = tsInicioISO;
 document.getElementById('hora_inicio').value = hhmm(tsInicio);
 
 function setHoraFinYDuracion() {
   const tsFin = new Date();
 
-  document.getElementById('ts_fin').value = toLocalISO(tsFin);  // ✅ LOCAL
+  document.getElementById('ts_fin').value = toLocalISO(tsFin);
   document.getElementById('hora_fin').value = hhmm(tsFin);
 
   const diffMs = tsFin - tsInicio;
   const diffSeg = Math.max(0, Math.floor(diffMs / 1000));
+
   document.getElementById('duracion_segundos').value = diffSeg;
   document.getElementById('duracion_min').value = Math.floor(diffSeg / 60);
 }
-
 
 /* contador observaciones */
 
