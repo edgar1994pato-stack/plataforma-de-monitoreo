@@ -993,16 +993,11 @@ function recalcularScoreEnVivo(){
 
   let nota = 0;
 
-  // 🔴 1. Crítico domina
   if (criticoFallado) {
     nota = 0;
-  }
-  // 🔵 2. Impulsor fuerza 100%
-  else if (impulsorSI) {
+  } else if (impulsorSI) {
     nota = 100;
-  }
-  // 🟢 3. Cálculo por área
-  else {
+  } else {
     let puntosPosibles = 0;
     let puntosObtenidos = 0;
     let puntosFallados = 0;
@@ -1023,16 +1018,9 @@ function recalcularScoreEnVivo(){
       }
     });
 
-    /*
-      🔥 CAMBIO:
-      - ATENCIÓN AL CLIENTE (3)
-      - VENTAS (7)
-      usan:
-          Nota = puntos_obtenidos / puntos_posibles * 100
-      - Otras áreas:
-          Nota = 100 - puntos_fallados
-    */
-    if (ID_AREA === 3 || ID_AREA === 7) {
+    const idAreaActual = parseInt(document.getElementById('sel_area')?.value || ID_AREA || '0');
+
+    if (idAreaActual === 3 || idAreaActual === 6 || idAreaActual === 7) {
       nota = puntosPosibles > 0
         ? (puntosObtenidos / puntosPosibles) * 100
         : 0;
@@ -1060,6 +1048,10 @@ function recalcularScoreEnVivo(){
 
   chip.title = `Nota: ${notaFmt}% | Umbral: ${UMBRAL}%`;
 }
+
+
+
+
 
 document.addEventListener('click', (e) => {
   if (SOLO_LECTURA) return;
