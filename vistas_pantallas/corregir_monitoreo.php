@@ -1032,7 +1032,7 @@ function recalcularScoreEnVivo(){
       - Otras áreas:
           Nota = 100 - puntos_fallados
     */
-    if (ID_AREA === 2 || ID_AREA === 3 || ID_AREA === 6 || ID_AREA === 7) {
+    if (ID_AREA === 3 || ID_AREA === 7) {
       nota = puntosPosibles > 0
         ? (puntosObtenidos / puntosPosibles) * 100
         : 0;
