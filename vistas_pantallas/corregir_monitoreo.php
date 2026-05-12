@@ -1007,19 +1007,16 @@ function recalcularScoreEnVivo(){
         if (x.respuesta !== 'NO_APLICA') {
           puntosPosibles += x.peso;
 
-          if (x.respuesta === 'SI') {
-            puntosObtenidos += x.peso;
-          }
-
-          if (x.respuesta === 'NO') {
-            puntosFallados += x.peso;
-          }
+          if (x.respuesta === 'SI') puntosObtenidos += x.peso;
+          if (x.respuesta === 'NO') puntosFallados += x.peso;
         }
       }
     });
 
     const idAreaActual = parseInt(document.getElementById('sel_area')?.value || ID_AREA || '0');
 
+    // 3 = Atención, 6 = Retención, 7 = Ventas → regla de tres
+    // 2 = Cobranza → 100 - puntos fallados
     if (idAreaActual === 3 || idAreaActual === 6 || idAreaActual === 7) {
       nota = puntosPosibles > 0
         ? (puntosObtenidos / puntosPosibles) * 100
@@ -1050,9 +1047,18 @@ function recalcularScoreEnVivo(){
 }
 
 
+/* Recalcular al cambiar respuestas */
+document.addEventListener('change', (e) => {
+  if (SOLO_LECTURA) return;
+  if (!e.target.classList.contains('respuesta')) return;
+
+  aplicarReglaImpulsorVsCritico();
+  recalcularScoreEnVivo();
+  marcarSeccionesConEvaluadas();
+});
 
 
-
+/* Limpiar respuesta */
 document.addEventListener('click', (e) => {
   if (SOLO_LECTURA) return;
 
@@ -1074,9 +1080,7 @@ document.addEventListener('click', (e) => {
 
   aplicarReglaImpulsorVsCritico();
   recalcularScoreEnVivo();
-  marcarSeccionesConEvaluadas(); // ✅ ACTUALIZA EL MENÚ DE SECCIONES
-  // 👈 para manterner las secciones  actualizarSeccionesCalificadas();
-   marcarSeccionesConEvaluadas(); // ✅ ACTUALIZA EL MENÚ DE SECCIONES
+  marcarSeccionesConEvaluadas();
 });
 
 document.getElementById('formCorreccion').addEventListener('submit', (e) => {
