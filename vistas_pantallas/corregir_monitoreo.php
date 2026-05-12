@@ -1075,7 +1075,8 @@ document.addEventListener('click', (e) => {
   aplicarReglaImpulsorVsCritico();
   recalcularScoreEnVivo();
   marcarSeccionesConEvaluadas(); // ✅ ACTUALIZA EL MENÚ DE SECCIONES
-   actualizarSeccionesCalificadas(); // 👈 para manterner las secciones 
+  // 👈 para manterner las secciones  actualizarSeccionesCalificadas();
+   marcarSeccionesConEvaluadas(); // ✅ ACTUALIZA EL MENÚ DE SECCIONES
 });
 
 document.getElementById('formCorreccion').addEventListener('submit', (e) => {
