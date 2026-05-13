@@ -442,24 +442,24 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   </div>
 
   <!-- ===================== MOTIVO DE CORRECCIÓN ===================== -->
-  <div class="card card-soft mb-3">
-    <div class="card-header card-header-dark py-2 small d-flex justify-content-between align-items-center">
-      <div><i class="bi bi-exclamation-diamond me-2"></i>Motivo de corrección <span class="text-danger">*</span></div>
-      <div class="small opacity-75"><span id="char_motivo">0</span> / 500</div>
-    </div>
-
-    <div class="card-body">
-      <textarea <?= ($soloLectura ? 'readonly' : '') ?>
-        name="motivo_correccion"
-        id="motivo_correccion"
-        class="form-control"
-        rows="2"
-        placeholder="Explique claramente por qué se corrige este monitoreo..."
-        maxlength="5000"
-        required></textarea>
-      <div class="help-mini mt-1">Obligatorio. Recomendado mínimo 10 caracteres.</div>
-    </div>
+<div class="card card-soft mb-3">
+  <div class="card-header card-header-dark py-2 small d-flex justify-content-between align-items-center">
+    <div><i class="bi bi-exclamation-diamond me-2"></i>Motivo de corrección <span class="text-danger">*</span></div>
+    <div class="small opacity-75"><span id="char_motivo">0</span> / 500</div>
   </div>
+
+  <div class="card-body">
+    <textarea <?= ($soloLectura ? 'readonly' : '') ?>
+      name="motivo_correccion"
+      id="motivo_correccion"
+      class="form-control"
+      rows="2"
+      placeholder="Explique claramente por qué se corrige este monitoreo..."
+      maxlength="500"
+      required></textarea>
+    <div class="help-mini mt-1">Obligatorio. Recomendado mínimo 10 caracteres.</div>
+  </div>
+</div>
 
     <!-- ===================== 🔎 BUSCADOR DE PREGUNTAS ===================== -->
   <div class="card card-soft mt-3">
@@ -500,7 +500,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         id="descripcion_final"
         class="form-control"
         rows="3"
-        maxlength="5000"
+        maxlength="10000"
         required><?= h((string)$version['descripcion_final']) ?></textarea>
       <div class="help-mini mt-1"></div>
     </div>
