@@ -716,15 +716,8 @@ function controlarFechaPorTipo() {
 
   if (tipo === 'PRESENCIAL' || tipo === 'FANTASMA') {
 
-    // Obtener fecha actual
-    const hoy = new Date();
-    const yyyy = hoy.getFullYear();
-    const mm = String(hoy.getMonth() + 1).padStart(2,'0');
-    const dd = String(hoy.getDate()).padStart(2,'0');
-
-    inputFecha.value = `${yyyy}-${mm}-${dd}`;
-
-    // Bloquear edición
+    // 🔒 Solo bloquear edición
+    // ❌ NO cambiar la fecha original del monitoreo
     inputFecha.readOnly = true;
 
   } else {
@@ -734,9 +727,8 @@ function controlarFechaPorTipo() {
 
 selTipoMon?.addEventListener('change', controlarFechaPorTipo);
 
-// Ejecutar una vez al cargar (por si ya viene seleccionado)
+// Ejecutar una vez al cargar
 controlarFechaPorTipo();
-
 
 
 function syncTipoMonitoreo() {
