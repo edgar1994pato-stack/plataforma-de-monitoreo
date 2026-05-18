@@ -1009,7 +1009,7 @@ function recalcularScoreEnVivo(){
 
     // 3 = Atención, 6 = Retención, 7 = Ventas → regla de tres
     // 2 = Cobranza → 100 - puntos fallados
-    if (idAreaActual === 3 || idAreaActual === 6 || idAreaActual === 7 || idAreaActual === 2 ) {
+    if (idAreaActual === 3 || idAreaActual === 6 || idAreaActual === 7 || idAreaActual === 2 || idAreaActual === 1 ) {
       nota = puntosPosibles > 0
         ? (puntosObtenidos / puntosPosibles) * 100
         : 0;
