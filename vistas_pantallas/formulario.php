@@ -314,6 +314,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         class="d-none"
         accept="image/png,image/jpeg,image/webp"
         multiple
+        onchange="validarCapturasQA(this)"
     >
 
     <input
@@ -1120,7 +1121,7 @@ function recalcularScoreEnVivo(){
 
 
 /* evidencias - validar y mostrar archivos seleccionados */
-document.getElementById('capturas')?.addEventListener('change', function () {
+function validarCapturasQA(input) {
   const salida = document.getElementById('capturasNombre');
 
   const maxArchivos = 5;
@@ -1128,52 +1129,53 @@ document.getElementById('capturas')?.addEventListener('change', function () {
   const maxTotalBytes = 10 * 1024 * 1024;
   const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
 
-  if (!salida) return;
+  if (!salida) return false;
 
-  if (!this.files || this.files.length === 0) {
+  if (!input.files || input.files.length === 0) {
     salida.value = 'Sin imágenes seleccionadas';
-    return;
+    return true;
   }
 
-  if (this.files.length > maxArchivos) {
+  if (input.files.length > maxArchivos) {
     alert('❌ Máximo se permiten 5 imágenes de evidencia.');
-    this.value = '';
+    input.value = '';
     salida.value = 'Sin imágenes seleccionadas';
-    return;
+    return false;
   }
 
   let totalBytes = 0;
 
-  for (const file of this.files) {
+  for (const file of input.files) {
     totalBytes += file.size;
 
     if (!tiposPermitidos.includes(file.type)) {
       alert('❌ Solo se permiten imágenes JPG, PNG o WEBP.');
-      this.value = '';
+      input.value = '';
       salida.value = 'Sin imágenes seleccionadas';
-      return;
+      return false;
     }
 
     if (file.size > maxBytes) {
       alert('❌ Cada imagen debe pesar máximo 3 MB.');
-      this.value = '';
+      input.value = '';
       salida.value = 'Sin imágenes seleccionadas';
-      return;
+      return false;
     }
   }
 
   if (totalBytes > maxTotalBytes) {
     alert('❌ El peso total de las imágenes no debe superar 10 MB.');
-    this.value = '';
+    input.value = '';
     salida.value = 'Sin imágenes seleccionadas';
-    return;
+    return false;
   }
 
-  salida.value = this.files.length === 1
-    ? this.files[0].name
-    : this.files.length + ' imágenes seleccionadas';
-});
+  salida.value = input.files.length === 1
+    ? input.files[0].name
+    : input.files.length + ' imágenes seleccionadas';
 
+  return true;
+}
 
 
 
@@ -1189,92 +1191,12 @@ document.getElementById('formAuditoria').addEventListener('submit', (e) => {
     return;
   }
 
+  const inputCapturas = document.getElementById('capturas');
 
-// 🖼️ Validar evidencias antes de enviar al servidor
-const inputCapturas = document.getElementById('capturas');
-
-if (inputCapturas && inputCapturas.files.length > 0) {
-
-  const maxArchivos = 5;
-  const maxBytes = 3 * 1024 * 1024;
-  const maxTotalBytes = 10 * 1024 * 1024;
-
-  let totalBytes = 0;
-
-  const tiposPermitidos = [
-    'image/jpeg',
-    'image/png',
-    'image/webp'
-  ];
-
-  // validar cantidad
-  if (inputCapturas.files.length > maxArchivos) {
-
+  if (inputCapturas && !validarCapturasQA(inputCapturas)) {
     e.preventDefault();
-
-    alert('❌ Máximo se permiten 5 imágenes de evidencia.');
-
-    inputCapturas.value = '';
-
-    document.getElementById('capturasNombre').value =
-      'Sin imágenes seleccionadas';
-
     return;
   }
-
-  // validar archivos
-  for (const file of inputCapturas.files) {
-
-    totalBytes += file.size;
-
-    // validar tipo
-    if (!tiposPermitidos.includes(file.type)) {
-
-      e.preventDefault();
-
-      alert('❌ Solo se permiten imágenes JPG, PNG o WEBP.');
-
-      inputCapturas.value = '';
-
-      document.getElementById('capturasNombre').value =
-        'Sin imágenes seleccionadas';
-
-      return;
-    }
-
-    // validar tamaño individual
-    if (file.size > maxBytes) {
-
-      e.preventDefault();
-
-      alert('❌ Cada imagen debe pesar máximo 3 MB.');
-
-      inputCapturas.value = '';
-
-      document.getElementById('capturasNombre').value =
-        'Sin imágenes seleccionadas';
-
-      return;
-    }
-  }
-
-  // validar peso total
-  if (totalBytes > maxTotalBytes) {
-
-    e.preventDefault();
-
-    alert('❌ El peso total de las imágenes no debe superar 10 MB.');
-
-    inputCapturas.value = '';
-
-    document.getElementById('capturasNombre').value =
-      'Sin imágenes seleccionadas';
-
-    return;
-  }
-}   
-
-
 
 
 
