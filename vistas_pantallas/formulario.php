@@ -301,18 +301,32 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
     EVIDENCIAS DEL MONITOREO
   </label>
 
-  <input
-      <?= $READONLY_ATTR ?>
-      type="file"
-      name="capturas[]"
-      id="capturas"
-      class="form-control form-control-sm"
-      accept="image/png,image/jpeg,image/webp"
-      multiple
-  >
+  <div class="input-group input-group-sm">
+    <label class="btn btn-outline-primary mb-0" for="capturas">
+      <i class="bi bi-image"></i> Adjuntar
+    </label>
+
+    <input
+        <?= $READONLY_ATTR ?>
+        type="file"
+        name="capturas[]"
+        id="capturas"
+        class="d-none"
+        accept="image/png,image/jpeg,image/webp"
+        multiple
+    >
+
+    <input
+        type="text"
+        id="capturasNombre"
+        class="form-control"
+        value="Sin imágenes seleccionadas"
+        readonly
+    >
+  </div>
 
   <div class="help-mini">
-   Máximo 5 imágenes · JPG, PNG 
+    Máximo 5 imágenes · JPG, PNG o WEBP · máximo 3 MB cada una
   </div>
 
 </div>
@@ -1102,6 +1116,30 @@ function recalcularScoreEnVivo(){
 
   chip.title = `Nota: ${notaFmt}% | Umbral: ${UMBRAL}%`;
 }
+
+
+
+/* evidencias - mostrar archivos seleccionados */
+document.getElementById('capturas')?.addEventListener('change', function () {
+  const salida = document.getElementById('capturasNombre');
+
+  if (!this.files || this.files.length === 0) {
+    salida.value = 'Sin imágenes seleccionadas';
+    return;
+  }
+
+  if (this.files.length === 1) {
+    salida.value = this.files[0].name;
+  } else {
+    salida.value = this.files.length + ' imágenes seleccionadas';
+  }
+});
+
+
+
+
+
+
  
 /* submit */
 document.getElementById('formAuditoria').addEventListener('submit', (e) => {
@@ -1112,6 +1150,41 @@ document.getElementById('formAuditoria').addEventListener('submit', (e) => {
     return;
   }
 
+
+    // 🖼️ Validar evidencias antes de enviar al servidor
+  const inputCapturas = document.getElementById('capturas');
+
+  if (inputCapturas && inputCapturas.files.length > 0) {
+    const maxArchivos = 5;
+    const maxBytes = 3 * 1024 * 1024;
+    const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+
+    if (inputCapturas.files.length > maxArchivos) {
+      e.preventDefault();
+      alert('❌ Máximo se permiten 5 imágenes de evidencia.');
+      inputCapturas.value = '';
+      document.getElementById('capturasNombre').value = 'Sin imágenes seleccionadas';
+      return;
+    }
+
+    for (const file of inputCapturas.files) {
+      if (!tiposPermitidos.includes(file.type)) {
+        e.preventDefault();
+        alert('❌ Solo se permiten imágenes JPG, PNG o WEBP.');
+        inputCapturas.value = '';
+        document.getElementById('capturasNombre').value = 'Sin imágenes seleccionadas';
+        return;
+      }
+
+      if (file.size > maxBytes) {
+        e.preventDefault();
+        alert('❌ Cada imagen debe pesar máximo 3 MB.');
+        inputCapturas.value = '';
+        document.getElementById('capturasNombre').value = 'Sin imágenes seleccionadas';
+        return;
+      }
+    }
+  }
 
   // 📞 Validar teléfono Ecuador (09XXXXXXXX)
 const telefono = document.getElementById('numero_contacto');
