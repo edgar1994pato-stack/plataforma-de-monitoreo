@@ -17,6 +17,8 @@ require_once __DIR__ . '/../config_ajustes/app.php';
 
 require_once BASE_PATH . '/config_ajustes/conectar_db.php';
 
+require_once BASE_PATH . '/libs/blob_storage.php';
+
 
 /* =========================================================
  * 0) SEGURIDAD / SESIÓN
@@ -101,6 +103,53 @@ try {
   $idAreaSesion = (int)($_SESSION['id_area'] ?? 0);
 
   $veTodo = function_exists('can_see_all_areas') ? can_see_all_areas() : false;
+
+
+
+
+/* =========================================================
+ * VALIDAR EVIDENCIAS (OPCIONAL)
+ * ========================================================= */
+$capturas = $_FILES['capturas'] ?? null;
+
+if ($capturas && isset($capturas['name']) && is_array($capturas['name'])) {
+
+    $totalArchivos = count(
+        array_filter($capturas['name'])
+    );
+
+    if ($totalArchivos > 5) {
+
+        throw new Exception(
+            'Solo se permiten máximo 5 imágenes de evidencia.'
+        );
+    }
+
+    foreach ($capturas['name'] as $idx => $nombre) {
+
+        if ($nombre === '') {
+            continue;
+        }
+
+        if ($capturas['error'][$idx] !== UPLOAD_ERR_OK) {
+
+            throw new Exception(
+                'Error al cargar una de las imágenes.'
+            );
+        }
+
+        if ($capturas['size'][$idx] > 3 * 1024 * 1024) {
+
+            throw new Exception(
+                'Una imagen supera el máximo permitido de 3 MB.'
+            );
+        }
+    }
+}
+
+
+
+
 
   /* =========================================================
    * 2) Validación obligatorios mínimos
@@ -346,11 +395,67 @@ $idOrigen  = $row['id_origen'] ?? null;
   }
 
   /* =========================================================
-   * 9) ÉXITO
+   * 9) Validar id_version generado
    * ========================================================= */
  if (!$idVersion) {
     throw new Exception('No se pudo obtener el id_version del monitoreo.');
 }
+
+
+
+/* =========================================================
+ * 10) Guardar evidencias del monitoreo en Azure Blob + SQL
+ *     -> Opcional: si falla evidencia, NO tumba monitoreo
+ * ========================================================= */
+try {
+
+    if ($capturas && isset($capturas['name']) && is_array($capturas['name'])) {
+
+        foreach ($capturas['name'] as $idx => $nombreOriginal) {
+
+            if ($nombreOriginal === '') {
+                continue;
+            }
+
+            $resultadoBlob = subirImagenAzureBlob(
+                $capturas['tmp_name'][$idx],
+                $nombreOriginal,
+                'monitoreos/' . (int)$idVersion
+            );
+
+            $stmtImg = $conexion->prepare("
+                INSERT INTO dbo.MONITOREO_EVIDENCIA_IMAGEN
+                (
+                    id_version,
+                    nombre_archivo,
+                    url_archivo,
+                    tipo_archivo,
+                    tamano_bytes,
+                    subido_por
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+            ");
+
+            $stmtImg->execute([
+                (int)$idVersion,
+                $resultadoBlob['nombre_archivo'],
+                $resultadoBlob['url_archivo'],
+                $resultadoBlob['tipo_archivo'],
+                $resultadoBlob['tamano_bytes'],
+                $idAuditor
+            ]);
+        }
+    }
+
+} catch (Throwable $evidenciaError) {
+
+    $_SESSION['flash_evidencia_warning'] =
+        'El monitoreo se guardó correctamente, pero no se pudieron cargar una o más evidencias.';
+}
+
+
+
+
 
 /* Flash en sesión */
   $_SESSION['flash_monitoreo_id'] = (int)$idOrigen;

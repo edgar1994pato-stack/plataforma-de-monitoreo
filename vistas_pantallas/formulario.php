@@ -141,7 +141,7 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   </div>
 <?php endif; ?>
 
-<form id="formAuditoria" method="POST" action="<?= h($BASE_URL) ?>/cruds/proceso_guardar_monitoreo.php" novalidate>
+<form id="formAuditoria" method="POST" action="<?= h($BASE_URL) ?>/cruds/proceso_guardar_monitoreo.php" enctype="multipart/form-data" novalidate>
 
   <!-- ============================================================
        DATOS DE INTERACCIÓN
@@ -291,6 +291,32 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
          id="duracion_interaccion_segundos"
          value="">
 </div>
+
+
+
+
+<div class="col-md-6">
+
+  <label class="form-label small fw-bold text-muted">
+    EVIDENCIAS DEL MONITOREO
+  </label>
+
+  <input
+      <?= $READONLY_ATTR ?>
+      type="file"
+      name="capturas[]"
+      id="capturas"
+      class="form-control form-control-sm"
+      accept="image/png,image/jpeg,image/webp"
+      multiple
+  >
+
+  <div class="help-mini">
+   Máximo 5 imágenes · JPG, PNG 
+  </div>
+
+</div>
+
 
 
 
