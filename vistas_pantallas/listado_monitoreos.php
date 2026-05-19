@@ -408,6 +408,16 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
   </div>
 <?php endif; ?>
 
+<style>
+.interaccion-col{
+    max-width: 220px;
+    width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+</style>
+
 <!-- =========================================================
      TABLA RESULTADOS
 ========================================================= -->
@@ -472,7 +482,10 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
 </td>
 
-<td class="fw-bold"><?= h($ref) ?></td>
+<td class="fw-bold text-truncate interaccion-col"
+    title="<?= h($ref) ?>">
+    <?= h($ref) ?>
+</td>
 <td><?= h($r['fecha_registro'] ?? '') ?></td>
 <td><?= h($r['nombre_agente'] ?? '-') ?></td>
 <td><?= h($r['nombre_cola'] ?? '-') ?></td>
