@@ -295,40 +295,30 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
 
 
 
-<div class="col-md-6">
+<div class="d-flex align-items-center gap-2 flex-wrap">
 
-  <label class="form-label small fw-bold text-muted">
-    EVIDENCIAS DEL MONITOREO
+  <label class="btn btn-sm btn-outline-primary mb-0" for="capturas">
+    <i class="bi bi-image"></i> Adjuntar imágenes
   </label>
 
-  <div class="input-group input-group-sm">
-    <label class="btn btn-outline-primary mb-0" for="capturas">
-      <i class="bi bi-image"></i> Adjuntar
-    </label>
+  <input
+      <?= $READONLY_ATTR ?>
+      type="file"
+      name="capturas[]"
+      id="capturas"
+      class="d-none"
+      accept="image/png,image/jpeg,image/webp"
+      multiple
+      onchange="validarCapturasQA(this)"
+  >
 
-    <input
-        <?= $READONLY_ATTR ?>
-        type="file"
-        name="capturas[]"
-        id="capturas"
-        class="d-none"
-        accept="image/png,image/jpeg,image/webp"
-        multiple
-        onchange="validarCapturasQA(this)"
-    >
-
-    <input
-        type="text"
-        id="capturasNombre"
-        class="form-control"
-        value="Sin imágenes seleccionadas"
-        readonly
-    >
-  </div>
-
-  <div class="help-mini">
-    Máximo 5 imágenes · JPG, PNG o WEBP · máximo 3 MB cada una
-  </div>
+  <span
+      id="capturasNombre"
+      class="badge rounded-pill bg-light text-dark border"
+      style="font-size: 11px;"
+  >
+    Sin imágenes
+  </span>
 
 </div>
 
@@ -1132,14 +1122,14 @@ function validarCapturasQA(input) {
   if (!salida) return false;
 
   if (!input.files || input.files.length === 0) {
-    salida.value = 'Sin imágenes seleccionadas';
+    salida.textContent = 'Sin imágenes seleccionadas';
     return true;
   }
 
   if (input.files.length > maxArchivos) {
     alert('❌ Máximo se permiten 5 imágenes de evidencia.');
     input.value = '';
-    salida.value = 'Sin imágenes seleccionadas';
+    salida.textContent = 'Sin imágenes seleccionadas';
     return false;
   }
 
@@ -1151,14 +1141,14 @@ function validarCapturasQA(input) {
     if (!tiposPermitidos.includes(file.type)) {
       alert('❌ Solo se permiten imágenes JPG, PNG o WEBP.');
       input.value = '';
-      salida.value = 'Sin imágenes seleccionadas';
+      salida.textContent = 'Sin imágenes seleccionadas';
       return false;
     }
 
     if (file.size > maxBytes) {
       alert('❌ Cada imagen debe pesar máximo 3 MB.');
       input.value = '';
-      salida.value = 'Sin imágenes seleccionadas';
+      salida.textContent = 'Sin imágenes seleccionadas';
       return false;
     }
   }
@@ -1166,11 +1156,11 @@ function validarCapturasQA(input) {
   if (totalBytes > maxTotalBytes) {
     alert('❌ El peso total de las imágenes no debe superar 10 MB.');
     input.value = '';
-    salida.value = 'Sin imágenes seleccionadas';
+    salida.textContent = 'Sin imágenes seleccionadas';
     return false;
   }
 
-  salida.value = input.files.length === 1
+  salida.textContent = input.files.length === 1
     ? input.files[0].name
     : input.files.length + ' imágenes seleccionadas';
 
