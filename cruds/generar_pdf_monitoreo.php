@@ -121,6 +121,37 @@ try {
   $stmt->nextRowset();
   $detalle = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+
+  // IMPORTANTE: cerrar cursor antes de consultar evidencias
+$stmt->closeCursor();
+
+/* =========================================================
+ * EVIDENCIAS DEL MONITOREO
+ * ========================================================= */
+$evidencias = [];
+
+try {
+    $sqlEvidencias = "
+        SELECT TOP 5
+            url_archivo
+        FROM dbo.MONITOREO_EVIDENCIA_IMAGEN
+        WHERE id_version = ?
+          AND estado = 1
+        ORDER BY fecha_subida ASC
+    ";
+
+    $stEv = $conexion->prepare($sqlEvidencias);
+    $stEv->execute([$idVersion]);
+
+    $evidencias = $stEv->fetchAll(PDO::FETCH_ASSOC);
+
+} catch (Throwable $e) {
+    $evidencias = [];
+}
+
+
+
+
 } catch (Throwable $e) {
   http_response_code(500);
   exit('Error al generar PDF.');
@@ -197,6 +228,8 @@ ob_start();
 <head>
 <meta charset="utf-8">
 <style>
+
+
   body{ font-family: DejaVu Sans, sans-serif; font-size:11px; color:#111; }
   .wrap{ width:100%; }
   .title{ font-size:16px; font-weight:700; margin:0; }
@@ -229,6 +262,29 @@ ob_start();
   .right{ text-align:right; }
   .center{ text-align:center; }
   .small{ font-size:9px; }
+
+
+  .evidencias-grid {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.evidencia-item {
+  display: inline-block;
+  width: 48%;
+  margin: 0 1% 12px 0;
+  vertical-align: top;
+  text-align: center;
+}
+
+.evidencia-item img {
+  max-width: 100%;
+  max-height: 260px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 4px;
+}
+
 </style>
 </head>
 <body>
@@ -374,6 +430,19 @@ ob_start();
     <b>Observaciones</b><br>
     <?= nl2br(h($observaciones)) ?>
   </div>
+<?php if (!empty($evidencias)): ?>
+  <div class="section">
+    <h2>EVIDENCIAS DEL MONITOREO</h2>
+
+    <div class="evidencias-grid">
+      <?php foreach ($evidencias as $ev): ?>
+        <div class="evidencia-item">
+          <img src="<?= h($ev['url_archivo'] ?? '') ?>" alt="Evidencia del monitoreo">
+        </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
+<?php endif; ?>
 
 </div>
 </body>
