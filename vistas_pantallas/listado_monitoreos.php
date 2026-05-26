@@ -226,26 +226,29 @@ $rows = [];
 $errorListado = '';
 
 try {
-    // SP: dbo.PR_LISTAR_MONITOREOS(@FechaInicio,@FechaFin,@IdArea,@IdCola,@IdAgente,@IncluirSinVigente)
-    $sql  = "EXEC dbo.PR_LISTAR_MONITOREOS ?, ?, ?, ?, ?, ?, ?, ?";
+
+    $busqueda = trim($_GET['busqueda'] ?? '');
+
+    // SP: dbo.PR_LISTAR_MONITOREOS
+    $sql  = "EXEC dbo.PR_LISTAR_MONITOREOS ?, ?, ?, ?, ?, ?, ?, ?, ?";
 
     $stmt = $conexion->prepare($sql);
 
-$stmt->execute([
-    $fechaInicio,
-    $fechaFin,
-    $idAreaParam,
-    $idColaParam,
-    $idAgenteParam,
-    $svParam,
-    $idMonitoreoParam,
-    $gestorParam
-]);
-
+    $stmt->execute([
+        $fechaInicio,
+        $fechaFin,
+        $idAreaParam,
+        $idColaParam,
+        $idAgenteParam,
+        $svParam,
+        $idMonitoreoParam,
+        $gestorParam,
+        $busqueda
+    ]);
 
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-} catch (Throwable $e) {
+}catch (Throwable $e) {
     $errorListado = $e->getMessage();
     $rows = [];
 }
@@ -278,6 +281,21 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
            value="<?= $idMonitoreoGet > 0 ? h($idMonitoreoGet) : '' ?>"
            placeholder="Ej: 1025">
   </div>
+
+
+  <div class="col-md-3">
+  <label class="form-label small fw-bold text-muted">
+    CONTRATO / REFERENCIA
+  </label>
+
+  <input
+      type="text"
+      name="busqueda"
+      class="form-control form-control-sm"
+      value="<?= h($_GET['busqueda'] ?? '') ?>"
+      placeholder="Buscar contrato, referencia..."
+  >
+</div>
 
 
       <div class="col-12 col-md-3">
