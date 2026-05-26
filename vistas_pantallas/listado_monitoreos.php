@@ -355,7 +355,8 @@ require_once BASE_PATH . '/includes_partes_fijas/diseno_arriba.php';
         $stmtG = $conexion->query("
             SELECT DISTINCT gestor_monitoreo
             FROM dbo.MONITOREO_VERSION
-            WHERE estado_version <> 'ELIMINADO'
+            WHERE estado_version = 'REGISTRADO'
+            AND ISNULL(es_ultima_version,0) = 1
             ORDER BY gestor_monitoreo
         ");
         $gestores = $stmtG->fetchAll(PDO::FETCH_COLUMN);
